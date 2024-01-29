@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: andor
+  name: ahsoka-adasit
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ahsoka-adasit
+  template:
+    metadata:
+      labels:
+        app: ahsoka-adasit
+    spec:
+      containers:
+        - name: ahsoka-adasit
+          image: ahsoka-adasit
+          ports:
+            - containerPort: 80
+              name: http
