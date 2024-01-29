@@ -1,0 +1,11 @@
+/home/lucas-de-oliveira/source/ahsoka/src/Ahsoka.Domain/obj/Debug/net8.0/Ahsoka.Domain.GeneratedMSBuildEditorConfig.editorconfig
+/home/lucas-de-oliveira/source/ahsoka/src/Ahsoka.Domain/obj/Debug/net8.0/Ahsoka.Domain.AssemblyInfoInputs.cache
+/home/lucas-de-oliveira/source/ahsoka/src/Ahsoka.Domain/obj/Debug/net8.0/Ahsoka.Domain.AssemblyInfo.cs
+/home/lucas-de-oliveira/source/ahsoka/src/Ahsoka.Domain/obj/Debug/net8.0/Ahsoka.Domain.csproj.CoreCompileInputs.cache
+/home/lucas-de-oliveira/source/ahsoka/src/Ahsoka.Domain/bin/Debug/net8.0/Ahsoka.Domain.deps.json
+/home/lucas-de-oliveira/source/ahsoka/src/Ahsoka.Domain/bin/Debug/net8.0/Ahsoka.Domain.dll
+/home/lucas-de-oliveira/source/ahsoka/src/Ahsoka.Domain/bin/Debug/net8.0/Ahsoka.Domain.pdb
+/home/lucas-de-oliveira/source/ahsoka/src/Ahsoka.Domain/obj/Debug/net8.0/Ahsoka.Domain.dll
+/home/lucas-de-oliveira/source/ahsoka/src/Ahsoka.Domain/obj/Debug/net8.0/refint/Ahsoka.Domain.dll
+/home/lucas-de-oliveira/source/ahsoka/src/Ahsoka.Domain/obj/Debug/net8.0/Ahsoka.Domain.pdb
+/home/lucas-de-oliveira/source/ahsoka/src/Ahsoka.Domain/obj/Debug/net8.0/ref/Ahsoka.Domain.dll
