@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 using Ahsoka.Domain;
 using Microsoft.EntityFrameworkCore;
 
-public class QueryHelper<T> where T : Entity
+public class QueryHelper<T, R> where T : Entity<R> where R : IEquatable<R>
 {
     protected readonly DbSet<T> _dbSet;
 

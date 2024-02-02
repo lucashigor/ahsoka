@@ -11,16 +11,16 @@ public class DateValidationServices(IConfigurationRepository configurationReposi
 
     public async Task Handle(Configuration entity, CancellationToken cancellationToken)
     {
-        var listWithSameName = await configurationRepository.GetAllByNameAsync(entity.Name, [ConfigurationStatus.Active, ConfigurationStatus.Previous] ,cancellationToken);
+        var listWithSameName = await configurationRepository.GetAllByNameAsync(entity.Name, [ConfigurationStatus.Active, ConfigurationStatus.Awaiting] ,cancellationToken);
 
-        if (listWithSameName is not null && listWithSameName.Where(x => x.Id != entity.Id).Any())
+        if (listWithSameName is not null && listWithSameName.Exists(x => x.Id != entity.Id))
         {
-            if (listWithSameName.Where(x => x.StartDate < entity.StartDate && x.FinalDate > entity.StartDate && x.Id != entity.Id).Any())
+            if (listWithSameName.Exists(x => x.StartDate < entity.StartDate && x.ExpireDate > entity.StartDate && x.Id != entity.Id))
             {
                 notifier.Errors.Add(ConfigurationErrors.ThereWillCurrentConfigurationStartDate());
             }
 
-            if (listWithSameName.Where(x => x.StartDate < entity.FinalDate && x.FinalDate > entity.FinalDate && x.Id != entity.Id).Any())
+            if (listWithSameName.Exists(x => x.StartDate < entity.ExpireDate && x.ExpireDate > entity.ExpireDate && x.Id != entity.Id))
             {
                 notifier.Errors.Add(ConfigurationErrors.ThereWillCurrentConfigurationEndDate());
             }

@@ -2,7 +2,7 @@
 
 namespace Ahsoka.Domain;
 
-public abstract class AggregateRoot : Entity, IAggregateRoot
+public abstract class AggregateRoot<T> : Entity<T>, IAggregateRoot where T : IEquatable<T>
 {
     protected AggregateRoot()
     {

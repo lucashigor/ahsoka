@@ -17,6 +17,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ahsoka.Application", "src\A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ahsoka.Application.Dto", "src\Ahsoka.Application.Dto\Ahsoka.Application.Dto.csproj", "{1C87326A-C71B-4995-95A0-FFDA2DFE4EB6}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{EC856E7B-39C6-48C9-AE61-EEEF38BC706D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ahsoka.Unit.Tests", "src\Tests\Ahsoka.Unit.Tests\Ahsoka.Unit.Tests.csproj", "{DDCFE98E-08FB-4480-B47D-DD217DBFB942}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,6 +51,10 @@ Global
 		{1C87326A-C71B-4995-95A0-FFDA2DFE4EB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1C87326A-C71B-4995-95A0-FFDA2DFE4EB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1C87326A-C71B-4995-95A0-FFDA2DFE4EB6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DDCFE98E-08FB-4480-B47D-DD217DBFB942}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DDCFE98E-08FB-4480-B47D-DD217DBFB942}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DDCFE98E-08FB-4480-B47D-DD217DBFB942}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DDCFE98E-08FB-4480-B47D-DD217DBFB942}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -58,6 +66,8 @@ Global
 		{7225796D-9C16-4375-996B-67295582AA65} = {1B15CC6D-6FB6-4799-87F5-A9F8ADB597E4}
 		{049A1A86-30FC-448D-905E-CAF2430422DC} = {1B15CC6D-6FB6-4799-87F5-A9F8ADB597E4}
 		{1C87326A-C71B-4995-95A0-FFDA2DFE4EB6} = {1B15CC6D-6FB6-4799-87F5-A9F8ADB597E4}
+		{EC856E7B-39C6-48C9-AE61-EEEF38BC706D} = {1B15CC6D-6FB6-4799-87F5-A9F8ADB597E4}
+		{DDCFE98E-08FB-4480-B47D-DD217DBFB942} = {EC856E7B-39C6-48C9-AE61-EEEF38BC706D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EC52520D-997E-4E32-88E5-B00E14F64642}

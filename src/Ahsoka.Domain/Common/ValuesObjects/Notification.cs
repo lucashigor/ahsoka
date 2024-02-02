@@ -12,8 +12,14 @@ public sealed record Notification
         FieldName = fieldName;
         Message = message;
     }
+    public Notification(string message, DomainErrorCode error)
+    {
+        Error = error;
+        FieldName = string.Empty;
+        Message = message;
+    }
 
-    public override string ToString() => $"{Error.Value}: Field - {Message}, Message - {Message}";
+    public override string ToString() => $"{Error.Value}: Message - {Message}";
 }
 
 

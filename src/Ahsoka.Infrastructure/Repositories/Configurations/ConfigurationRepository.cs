@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Ahsoka.Infrastructure;
 
-public class ConfigurationRepository : QueryHelper<Configuration>, IConfigurationRepository
+public class ConfigurationRepository : QueryHelper<Configuration, ConfigurationId>, IConfigurationRepository
 {
     public ConfigurationRepository(PrincipalContext context) : base(context)
     {
@@ -23,7 +23,7 @@ public class ConfigurationRepository : QueryHelper<Configuration>, IConfiguratio
     public Task DeleteAsync(Configuration entity, CancellationToken cancellationToken)
         => Task.FromResult(_dbSet.Remove(entity));
 
-    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken)
+    public async Task DeleteAsync(ConfigurationId id, CancellationToken cancellationToken)
     {
         var ids = new object[] { id };
         var item = await _dbSet.FindAsync(ids, cancellationToken);
@@ -34,7 +34,7 @@ public class ConfigurationRepository : QueryHelper<Configuration>, IConfiguratio
         }
     }
 
-    public async Task<Configuration?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<Configuration?> GetByIdAsync(ConfigurationId id, CancellationToken cancellationToken)
     => await _dbSet
         .AsNoTracking()
         .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
@@ -64,6 +64,6 @@ public class ConfigurationRepository : QueryHelper<Configuration>, IConfiguratio
     => await _dbSet.AsNoTracking().FirstOrDefaultAsync(x => x.Name.Equals(name) &&
         /*statuses.Contains(x.GetStatus()) &&*/
         x.StartDate <= DateTime.UtcNow &&
-        (x.FinalDate == null || (x.FinalDate != null && x.FinalDate >= DateTime.UtcNow)));
+        (x.ExpireDate == null || (x.ExpireDate != null && x.ExpireDate >= DateTime.UtcNow)));
 }
 

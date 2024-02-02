@@ -1,6 +1,7 @@
 ﻿namespace Ahsoka.Domain;
 
-public interface IConfigurationRepository : IRepository<Configuration>, ISearchableRepository<Configuration, SearchInput>
+public interface IConfigurationRepository : IRepository<Configuration, ConfigurationId>, 
+    ISearchableRepository<Configuration, ConfigurationId, SearchInput>
 {
     Task<List<Configuration>> GetAllByNameAsync(string name,
         ConfigurationStatus[] statuses,

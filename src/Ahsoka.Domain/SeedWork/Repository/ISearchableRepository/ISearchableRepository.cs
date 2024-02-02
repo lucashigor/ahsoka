@@ -1,6 +1,6 @@
 ﻿namespace Ahsoka.Domain;
 
-public interface ISearchableRepository<T, R> where T : Entity where R : SearchInput
+public interface ISearchableRepository<T, J, R> where T : Entity<J> where R : SearchInput where J : IEquatable<J>
 {
     Task<SearchOutput<T>> SearchAsync(R input, CancellationToken cancellationToken);
 }

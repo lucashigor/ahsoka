@@ -2,9 +2,9 @@
 
 namespace Ahsoka.Domain;
 
-public abstract class Entity
+public abstract class Entity<T> where T : IEquatable<T>
 {
-    public Guid Id { get; init; }
+    public T Id { get; init; }
     private readonly ICollection<Notification> _notifications;
     public IReadOnlyCollection<Notification> Notifications => _notifications.ToImmutableArray();
 
@@ -23,12 +23,14 @@ public abstract class Entity
         }
     }
 
-    protected void AddNotification(Notification notification)
+    protected void AddNotification(Notification? notification)
     {
         if (notification != null)
         {
             _notifications.Add(notification);
         }
     }
+    protected void AddNotification(string message, DomainErrorCode domainError)
+    => AddNotification(new (message, domainError));
 
 }

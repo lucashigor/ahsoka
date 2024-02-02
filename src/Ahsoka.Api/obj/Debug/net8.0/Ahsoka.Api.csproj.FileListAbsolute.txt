@@ -99,3 +99,4 @@
 /home/lucas-de-oliveira/source/ahsoka/src/Ahsoka.Api/bin/Debug/net8.0/Ahsoka.Infrastructure.pdb
 /home/lucas-de-oliveira/source/ahsoka/src/Ahsoka.Api/bin/Debug/net8.0/Microsoft.AspNetCore.Mvc.NewtonsoftJson.dll
 /home/lucas-de-oliveira/source/ahsoka/src/Ahsoka.Api/bin/Debug/net8.0/Newtonsoft.Json.Bson.dll
+/home/lucas-de-oliveira/source/ahsoka/src/Ahsoka.Api/obj/Debug/net8.0/Ahsoka.Api.sourcelink.json

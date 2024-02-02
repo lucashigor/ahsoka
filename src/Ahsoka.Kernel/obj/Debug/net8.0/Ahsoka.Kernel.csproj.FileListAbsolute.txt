@@ -19,3 +19,4 @@
 /home/lucas-de-oliveira/source/ahsoka/src/Ahsoka.Kernel/bin/Debug/net8.0/Ahsoka.Application.Dto.pdb
 /home/lucas-de-oliveira/source/ahsoka/src/Ahsoka.Kernel/bin/Debug/net8.0/Ahsoka.Domain.pdb
 /home/lucas-de-oliveira/source/ahsoka/src/Ahsoka.Kernel/obj/Debug/net8.0/Ahsoka.Kernel.csproj.CopyComplete
+/home/lucas-de-oliveira/source/ahsoka/src/Ahsoka.Kernel/obj/Debug/net8.0/Ahsoka.Kernel.sourcelink.json

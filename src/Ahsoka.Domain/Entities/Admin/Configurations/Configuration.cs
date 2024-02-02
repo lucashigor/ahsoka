@@ -1,85 +1,84 @@
-﻿using System.Net.Http.Headers;
+﻿namespace Ahsoka.Domain;
 
-namespace Ahsoka.Domain;
+public record struct ConfigurationId(Guid Value)
+{
+    public static ConfigurationId New() =>new(Guid.NewGuid());
 
-public class Configuration : AggregateRoot
+    public static ConfigurationId Load(string value)
+    {
+        if (!Guid.TryParse(value, out Guid guid))
+        {
+            throw new ArgumentException("The value provided is not a valid GUID.", nameof(value));
+        }
+        return new ConfigurationId(guid);
+    }
+
+    public static ConfigurationId Load(Guid value) => new(value);
+
+    public override string ToString() => Value.ToString();
+
+    public static implicit operator ConfigurationId(Guid value) => new(value);
+
+    public static implicit operator Guid(ConfigurationId id) => id.Value;
+}
+
+public class Configuration : AggregateRoot<ConfigurationId>
 {
     public string Name { get; private set; }
     public string Value { get; private set; }
     public string Description { get; private set; }
-    public DateTimeOffset StartDate { get; private set; }
-    public DateTimeOffset? FinalDate { get; private set; }
-    public string CreatedBy { get; init; }
-    public DateTimeOffset CreatedAt { get; init; }
+    public DateTime StartDate { get; private set; }
+    public DateTime? ExpireDate { get; private set; }
+    public string CreatedBy { get; private set; }
+    public DateTime CreatedAt { get; private set; }
+    public bool IsDeleted { get; private set; }
 
-    public ConfigurationStatus GetStatus()
+    public ConfigurationStatus Status
     {
-        if(StartDate > DateTime.UtcNow)
+        get
         {
-            return ConfigurationStatus.Previous;
-        }
+            if(StartDate > DateTime.UtcNow)
+            {
+                return ConfigurationStatus.Awaiting;
+            }
 
-        if(FinalDate.HasValue is false || (FinalDate.Value > DateTime.UtcNow))
-        {
-            return ConfigurationStatus.Active;
-        }
+            if(ExpireDate.HasValue is false || (ExpireDate.Value > DateTime.UtcNow))
+            {
+                return ConfigurationStatus.Active;
+            }
 
-        if(FinalDate.HasValue && (FinalDate.Value < DateTime.UtcNow))
-        {
-            return ConfigurationStatus.Disable;
-        }
+            if(ExpireDate.HasValue && (ExpireDate.Value < DateTime.UtcNow))
+            {
+                return ConfigurationStatus.Expired;
+            }
 
-        return ConfigurationStatus.Undefined;
+            return ConfigurationStatus.Undefined;
+        }
     }
 
-    private Configuration(Guid id,
-        string name,
-        string value,
-        string description,
-        DateTimeOffset startDate,
-        DateTimeOffset? finalDate,
-        string createdBy,
-        DateTimeOffset createdAt)
+    private Configuration()
     {
-        Id = id;
-        Name = name;
-        Value = value;
-        Description = description;
-        StartDate = startDate;
-        FinalDate = finalDate;
-        CreatedBy = createdBy;
-        CreatedAt = createdAt;
-
-        Validate();
+        Id = ConfigurationId.New();
+        Name = string.Empty;
+        Value = string.Empty;
+        Description = string.Empty;
+        CreatedBy = string.Empty;
+        StartDate = DateTime.MinValue;
+        CreatedAt = DateTime.MinValue;
+        IsDeleted = false;
     }
 
     public static Configuration New(
         string name,
         string value,
         string description,
-        DateTimeOffset startDate,
-        DateTimeOffset? finalDate,
-        string UserId)
+        DateTime startDate,
+        DateTime? expireDate,
+        string userId)
     {
-        var entity = new Configuration(Guid.NewGuid(), name, value, description, startDate, finalDate, UserId, DateTime.UtcNow);
+        var entity = new Configuration();
 
-        if (entity.StartDate < DateTimeOffset.UtcNow)
-        {
-            var message = "StartDate should be greater than now";
-
-            var notification = new Notification(nameof(FinalDate), message, ConfigurationsErrorsCodes.Validation);
-
-            entity.AddNotification(notification);
-        }
-
-        if (entity.FinalDate != (default) && finalDate < DateTimeOffset.UtcNow)
-        {
-            var message = "FinalDate should be greater than now";
-
-            var notification = new Notification(nameof(FinalDate), message, ConfigurationsErrorsCodes.Validation);
-
-            entity.AddNotification(notification);
-        }
+        entity.SetValues(name, value, description, startDate, expireDate, userId, DateTime.UtcNow);
 
         entity.Validate();
 
@@ -87,56 +86,94 @@ public class Configuration : AggregateRoot
 
         return entity;
     }
-
-    protected override void Validate()
-    {
-        AddNotification(Name.NotNullOrEmptyOrWhiteSpace());
-        AddNotification(Name.BetweenLength(3, 100));
-
-        AddNotification(Value.NotNullOrEmptyOrWhiteSpace());
-        AddNotification(Value.BetweenLength(1, 2500));
-
-        AddNotification(Description.NotNullOrEmptyOrWhiteSpace());
-        AddNotification(Description.BetweenLength(3, 1000));
-
-        AddNotification(StartDate.NotDefaultDateTime());
-
-        AddNotification(FinalDate.NotDefaultDateTime());
-
-        if (FinalDate != (default) && FinalDate < StartDate)
+    private void SetValues(
+            string name,
+            string value,
+            string description,
+            DateTime startDate,
+            DateTime? expireDate,
+            string userId,
+            DateTime createdAt)
         {
-            var message = DefaultsErrorsMessages.Date0CannotBeBeforeDate1.GetMessage(nameof(FinalDate), nameof(StartDate));
-
-            var notification = new Notification(nameof(FinalDate), message, ConfigurationsErrorsCodes.Validation);
-
-            AddNotification(notification);
+            
+        if (startDate < DateTimeOffset.UtcNow.AddSeconds(-5))
+        {
+            AddNotification($"{nameof(StartDate)} should be greater than now", ConfigurationsErrorsCodes.Validation);
         }
 
-        base.Validate();
-    }
+        if (ExpireDate is not null && ExpireDate < startDate)
+        {
+            AddNotification(DefaultsErrorsMessages.Date0CannotBeBeforeDate1.GetMessage(nameof(ExpireDate), nameof(StartDate)), 
+                ConfigurationsErrorsCodes.Validation);
+        }
 
-    public void ChangeConfiguration(string name,
-        string value,
-        string description,
-        DateTimeOffset startDate,
-        DateTimeOffset? finalDate)
-    {
+        if (expireDate.HasValue && expireDate == DateTime.MinValue && expireDate < DateTimeOffset.UtcNow.AddSeconds(-5))
+        {
+            AddNotification($"{nameof(ExpireDate)} should be greater than now", ConfigurationsErrorsCodes.Validation);
+        }
+
+        AddNotification(startDate.NotDefaultDateTime());
+        AddNotification(ExpireDate.NotDefaultDateTime());
+        AddNotification(name.NotNullOrEmptyOrWhiteSpace());
+        AddNotification(name.BetweenLength(3, 100));
+        AddNotification(value.NotNullOrEmptyOrWhiteSpace());
+        AddNotification(value.BetweenLength(1, 2500));
+        AddNotification(description.NotNullOrEmptyOrWhiteSpace());
+        AddNotification(description.BetweenLength(3, 1000));
+        
         Name = name;
-        Value = value;
-        Description = description;
-        StartDate = startDate;
-        FinalDate = finalDate;
-
-        Validate();
-    }
-
-    public void SetFinalDateToNow()
-    {
-        if (FinalDate > DateTimeOffset.UtcNow)
-        {
-            FinalDate = DateTimeOffset.UtcNow;
+            Value = value;
+            Description = description;
+            StartDate = startDate;
+            ExpireDate = expireDate;
+            CreatedBy = userId;
+            CreatedAt = createdAt;
         }
 
-        Validate();
+    public void Delete()
+    {
+        if (Status == ConfigurationStatus.Expired || Status == ConfigurationStatus.Active)
+        {
+            var message = "not allowed to delete expired or active configurations";
+            AddNotification(new (nameof(ExpireDate), message, ConfigurationsErrorsCodes.ErrorOnDelete));
+            return;
+        }
+
+        IsDeleted = true;
+
+        RaiseDomainEvent(new ConfigurationDeletedDomainEvent(this));
     }
+
+    public void Update(string name , string value, string description , DateTime startDate, DateTime? expireDate)
+    {
+        var StartDateHasChanges = StartDate.Equals(startDate) is false;
+        var ExpireDateHasChanges = ExpireDate.Equals(expireDate) is false;
+        var NameHasChanges = Name.Equals(name) is false;
+        var ValueHasChanges = Value.Equals(value) is false;
+
+        if (Status.Equals(ConfigurationStatus.Expired) &&
+                (  StartDateHasChanges
+                || ExpireDateHasChanges
+                || NameHasChanges
+                || ValueHasChanges))
+        {
+            var message = "only description are allowed to change on expired configuration";
+            AddNotification(new (nameof(ExpireDate), message, ConfigurationsErrorsCodes.OnlyDescriptionAllowedToChange));
+            return;
+        }
+
+        if (Status.Equals(ConfigurationStatus.Active) && 
+            ( NameHasChanges 
+            || StartDateHasChanges
+            || ValueHasChanges))
+        {
+            var message = "it is not allowed to change name on active configuration";
+            AddNotification(new (nameof(ExpireDate), message, ConfigurationsErrorsCodes.ErrorOnChangeName));
+            return;
+        }
+        
+        SetValues(name, value, description, startDate, expireDate, CreatedBy, CreatedAt);
+
+        RaiseDomainEvent(new ConfigurationUpdatedDomainEvent(this));
+    }    
 }

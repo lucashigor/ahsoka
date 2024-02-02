@@ -19,3 +19,4 @@
 /home/lucas-de-oliveira/source/ahsoka/src/Ahsoka.Infrastructure/obj/Debug/net8.0/Ahsoka.Infrastructure.pdb
 /home/lucas-de-oliveira/source/ahsoka/src/Ahsoka.Infrastructure/obj/Debug/net8.0/Ahsoka.Infrastructure.genruntimeconfig.cache
 /home/lucas-de-oliveira/source/ahsoka/src/Ahsoka.Infrastructure/obj/Debug/net8.0/ref/Ahsoka.Infrastructure.dll
+/home/lucas-de-oliveira/source/ahsoka/src/Ahsoka.Infrastructure/obj/Debug/net8.0/Ahsoka.Infrastructure.sourcelink.json

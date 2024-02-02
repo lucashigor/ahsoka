@@ -45,17 +45,17 @@ public static class DomainValidation
         return notification;
     }
 
-    public static Notification? NotDefaultDateTime(this DateTimeOffset target,
+    public static Notification? NotDefaultDateTime(this DateTime target,
                               [CallerArgumentExpression("target")] string fieldName = "")
     {
-        DateTimeOffset? nullableTarget = target;
+        DateTime? nullableTarget = target;
 
         var notification = NotDefaultDateTime(nullableTarget, fieldName);
 
         return notification;
     }
 
-    public static Notification? NotDefaultDateTime(this DateTimeOffset? target,
+    public static Notification? NotDefaultDateTime(this DateTime? target,
                           [CallerArgumentExpression("target")] string fieldName = "")
     {
         Notification? notification = null;

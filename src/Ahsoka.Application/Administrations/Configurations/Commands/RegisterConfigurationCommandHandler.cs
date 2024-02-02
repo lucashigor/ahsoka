@@ -6,7 +6,7 @@ using MediatR;
 namespace Ahsoka.Application;
 public record RegisterConfigurationCommand : BaseConfiguration, IRequest<ConfigurationOutput?>
 {
-    public RegisterConfigurationCommand(string Name, string Value, string Description, DateTimeOffset StartDate, DateTimeOffset? FinalDate) : base(Name, Value, Description, StartDate, FinalDate)
+    public RegisterConfigurationCommand(string Name, string Value, string Description, DateTime StartDate, DateTime? FinalDate) : base(Name, Value, Description, StartDate, FinalDate)
     {
     }
 }

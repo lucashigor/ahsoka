@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Ahsoka.Kernel")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+382cffec42fbff816bceb49ec7e97b3db3f85578")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bf22fcb2194261bec732712567cf776c16f1d8b5")]
 [assembly: System.Reflection.AssemblyProductAttribute("Ahsoka.Kernel")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Ahsoka.Kernel")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

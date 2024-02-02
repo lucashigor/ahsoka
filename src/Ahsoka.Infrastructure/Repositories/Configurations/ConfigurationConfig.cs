@@ -15,5 +15,11 @@ public record ConfigurationConfig : IEntityTypeConfiguration<Configuration>
         entity.Property(k => k.Description).HasMaxLength(1000);
         entity.Ignore(k => k.Events);
         entity.Ignore(k => k.Notifications);
+
+        entity.Property(k => k.Id)
+        .HasConversion(
+            id => id!.Value,
+            value => (ConfigurationId)ConfigurationId.Load(value)
+        );
     }
 }

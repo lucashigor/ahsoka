@@ -7,4 +7,9 @@ public sealed record ConfigurationsErrorsCodes : DomainErrorCode
     }
 
     public static readonly ConfigurationsErrorsCodes Validation = new(2_000);
+    public static readonly ConfigurationsErrorsCodes ErrorOnDelete = new(2_001);
+    public static readonly ConfigurationsErrorsCodes OnlyDescriptionAllowedToChange = new(2_002);
+    public static readonly ConfigurationsErrorsCodes ErrorOnChangeName = new(2_003);
+    
+    
 }

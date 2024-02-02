@@ -15,3 +15,4 @@
 /home/lucas-de-oliveira/source/ahsoka/src/Ahsoka.Application/obj/Debug/net8.0/refint/Ahsoka.Application.dll
 /home/lucas-de-oliveira/source/ahsoka/src/Ahsoka.Application/obj/Debug/net8.0/Ahsoka.Application.pdb
 /home/lucas-de-oliveira/source/ahsoka/src/Ahsoka.Application/obj/Debug/net8.0/ref/Ahsoka.Application.dll
+/home/lucas-de-oliveira/source/ahsoka/src/Ahsoka.Application/obj/Debug/net8.0/Ahsoka.Application.sourcelink.json
