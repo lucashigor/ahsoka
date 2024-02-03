@@ -1,9 +1,15 @@
-using Ahsoka.Kernel;
-using Ahsoka.Application.Dto;
-using MediatR;
+using Ahsoka.Api.Common.Middlewares;
+using Ahsoka.Application.Administrations.Configurations.Commands;
+using Ahsoka.Application.Administrations.Configurations.Queries;
+using Ahsoka.Application.Common.Models;
+using Ahsoka.Application.Dto.Administrations.Configurations.Requests;
+using Ahsoka.Application.Dto.Common.ApplicationsErrors.Models;
+using Ahsoka.Application.Dto.Common.Requests;
+using Ahsoka.Application.Dto.Common.Responses;
+using Ahsoka.Kernel.Extensions;
 using Mapster;
-using Ahsoka.Application;
-using Ahsoka.Api;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,7 +39,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 
-app.MapPost("/api/v1/configurations", async (RegisterConfigurationInput input,
+app.MapPost("/v1/configurations", async (RegisterConfigurationInput input,
     IMediator _mediator,
     CancellationToken cancellationToken ) =>
 {
@@ -51,9 +57,58 @@ app.MapPost("/api/v1/configurations", async (RegisterConfigurationInput input,
         return Results.BadRequest(new DefaultResponse<object>());
     }
     
-    return Results.Created($"/todoitems/{output.Id}",new DefaultResponse<object>(output));
+    return Results.Created($"/v1/configurations/{output.Id}",new DefaultResponse<object>(output));
 })
 .WithName("CreateConfiguration")
+.WithOpenApi();
+
+app.MapGet("/v1/configurations/list", async (
+    [FromServices] IMediator mediator,
+    CancellationToken cancellationToken,
+    [FromQuery] int? page = null,
+    [FromQuery(Name = "per_page")] int? perPage = null,
+    [FromQuery] string? search = null,
+    [FromQuery] string? sort = null,
+    [FromQuery] SearchOrder? dir = null) =>
+{
+    var input = new ListConfigurationsQuery(
+        page ?? 0,
+        perPage ?? 10,
+        search,
+        sort,
+        dir ?? SearchOrder.Asc
+        );
+
+    var output = await mediator.Send(input, cancellationToken);
+    return Results.Ok(output);
+})
+.WithName("ListConfigurations")
+.WithOpenApi();
+
+app.MapGet("/v1/configurations/{id:guid}", async (
+    [FromRoute] Guid id,
+    [FromServices] IMediator mediator,
+    [FromServices] Notifier notifier,
+    CancellationToken cancellationToken) =>
+{
+    var output = await mediator.Send(new GetConfigurationByIdQuery(id), cancellationToken);
+
+    return Results.Ok(output);
+})
+.WithName("GetConfigurationById")
+.WithOpenApi();
+
+app.MapDelete("/v1/configurations/{id:guid}", async (
+    [FromRoute] Guid id,
+    [FromServices] IMediator mediator,
+    [FromServices] Notifier notifier,
+    CancellationToken cancellationToken) =>
+{
+    var output = await mediator.Send(new GetConfigurationByIdQuery(id), cancellationToken);
+
+    return Results.Ok(output);
+})
+.WithName("GetConfigurationById")
 .WithOpenApi();
 
 app.MapPrometheusScrapingEndpoint();

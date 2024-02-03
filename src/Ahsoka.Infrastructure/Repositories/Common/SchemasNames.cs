@@ -1,4 +1,4 @@
-﻿namespace Ahsoka.Infrastructure;
+﻿namespace Ahsoka.Infrastructure.Repositories.Common;
 
 public struct SchemasNames
 {

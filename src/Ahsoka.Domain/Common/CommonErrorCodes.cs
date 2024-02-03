@@ -1,4 +1,6 @@
-﻿namespace Ahsoka.Domain;
+﻿using Ahsoka.Domain.Common.ValuesObjects;
+
+namespace Ahsoka.Domain.Common;
 
 public sealed record CommonErrorCodes(int original) : DomainErrorCode(original)
 {

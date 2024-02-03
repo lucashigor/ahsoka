@@ -1,4 +1,4 @@
-﻿namespace Ahsoka.Application.Dto;
+﻿namespace Ahsoka.Application.Dto.Common.ApplicationsErrors.Models;
 
 public sealed record ErrorModel
 {

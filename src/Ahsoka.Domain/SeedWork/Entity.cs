@@ -1,6 +1,10 @@
-﻿using System.Collections.Immutable;
+﻿using Ahsoka.Domain.Common;
+using Ahsoka.Domain.Common.ValuesObjects;
+using Ahsoka.Domain.Exceptions;
+using Ahsoka.Domain.Validation;
+using System.Collections.Immutable;
 
-namespace Ahsoka.Domain;
+namespace Ahsoka.Domain.SeedWork;
 
 public abstract class Entity<T> where T : IEquatable<T>
 {
@@ -31,6 +35,6 @@ public abstract class Entity<T> where T : IEquatable<T>
         }
     }
     protected void AddNotification(string message, DomainErrorCode domainError)
-    => AddNotification(new (message, domainError));
+        => AddNotification(new(message, domainError));
 
 }

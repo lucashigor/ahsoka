@@ -1,4 +1,4 @@
-﻿namespace Ahsoka.Application.Dto;
+﻿namespace Ahsoka.Application.Dto.Common.Requests;
 public enum SearchOrder
 {
     Undefined,

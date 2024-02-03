@@ -1,8 +1,10 @@
-﻿namespace Ahsoka.Application;
+﻿namespace Ahsoka.Application.Common.Behaviors;
 
-using Ahsoka.Application.Dto;
+using Ahsoka.Application.Dto.Common.ApplicationsErrors;
+using Ahsoka.Application.Dto.Common.ApplicationsErrors.Models;
 using FluentValidation;
 using MediatR;
+using ValidationException = Exceptions.ValidationException;
 
 public class RequestValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>
 {

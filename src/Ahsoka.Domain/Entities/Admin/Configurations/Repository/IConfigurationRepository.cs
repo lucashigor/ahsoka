@@ -1,6 +1,9 @@
-﻿namespace Ahsoka.Domain;
+﻿using Ahsoka.Domain.SeedWork.Repository;
+using Ahsoka.Domain.SeedWork.Repository.ISearchableRepository;
 
-public interface IConfigurationRepository : IRepository<Configuration, ConfigurationId>, 
+namespace Ahsoka.Domain.Entities.Admin.Configurations.Repository;
+
+public interface IConfigurationRepository : IRepository<Configuration, ConfigurationId>,
     ISearchableRepository<Configuration, ConfigurationId, SearchInput>
 {
     Task<List<Configuration>> GetAllByNameAsync(string name,

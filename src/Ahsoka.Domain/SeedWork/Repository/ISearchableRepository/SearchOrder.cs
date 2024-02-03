@@ -1,12 +1,10 @@
-﻿namespace Ahsoka.Domain;
+﻿using Ahsoka.Domain.Common;
 
-public record SearchOrder : Enumeration<int>
+namespace Ahsoka.Domain.SeedWork.Repository.ISearchableRepository;
+
+public enum SearchOrder
 {
-    private SearchOrder(int id, string name) : base(id, name)
-    {
-    }
-
-    public static SearchOrder Undefined { get; } = new(0, nameof(Undefined));
-    public static SearchOrder Asc { get; } = new(1, nameof(Asc));
-    public static SearchOrder Desc { get; } = new(2, nameof(Desc));
+    Undefined,
+    Asc,
+    Desc
 }

@@ -1,10 +1,11 @@
-﻿namespace Ahsoka.Application;
+﻿namespace Ahsoka.Application.Common.Extensions;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.JsonPatch.Operations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Ahsoka.Application.Dto;
+using Ahsoka.Application.Dto.Common.ApplicationsErrors;
+using Ahsoka.Application.Dto.Common.ApplicationsErrors.Models;
 
 public static class JsonPatchDocumentExtensions
 {

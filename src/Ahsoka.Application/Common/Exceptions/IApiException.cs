@@ -1,7 +1,7 @@
 ﻿using System.Net;
-using Ahsoka.Application.Dto;
+using Ahsoka.Application.Dto.Common.ApplicationsErrors.Models;
 
-namespace Ahsoka.Application;
+namespace Ahsoka.Application.Common.Exceptions;
 
 public interface IApiException
 {

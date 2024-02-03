@@ -1,4 +1,6 @@
-﻿namespace Ahsoka.Application.Dto;
+﻿using Ahsoka.Application.Dto.Common.ApplicationsErrors.Models;
+
+namespace Ahsoka.Application.Dto.Common.Responses;
 
 public sealed record DefaultResponse<T> where T : class
 {
@@ -17,7 +19,7 @@ public sealed record DefaultResponse<T> where T : class
     }
 
     public DefaultResponse(T data, List<ErrorModel> errors, string traceId)
-        :this (data)
+        : this(data)
     {
         Errors.AddRange(errors);
         TraceId = traceId;

@@ -1,4 +1,5 @@
-﻿namespace Ahsoka.Application.Dto;
+﻿namespace Ahsoka.Application.Dto.Common.ApplicationsErrors.Models;
+
 using System.Net;
 using System.Net.Mime;
 public class BusinessException : Exception

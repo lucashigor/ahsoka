@@ -1,8 +1,12 @@
 ﻿using System.Linq.Expressions;
-using Ahsoka.Domain;
+using Ahsoka.Domain.Entities.Admin.Configurations;
+using Ahsoka.Domain.Entities.Admin.Configurations.Repository;
+using Ahsoka.Domain.SeedWork.Repository.ISearchableRepository;
+using Ahsoka.Infrastructure.Repositories.Common;
+using Ahsoka.Infrastructure.Repositories.Context;
 using Microsoft.EntityFrameworkCore;
 
-namespace Ahsoka.Infrastructure;
+namespace Ahsoka.Infrastructure.Repositories.Configurations;
 
 public class ConfigurationRepository : QueryHelper<Configuration, ConfigurationId>, IConfigurationRepository
 {
@@ -56,7 +60,7 @@ public class ConfigurationRepository : QueryHelper<Configuration, ConfigurationI
 
         return Task.FromResult(new SearchOutput<Configuration>(input.Page, input.PerPage, total, items!));
     }
-    
+
     public Task<List<Configuration>> GetAllByNameAsync(string name, ConfigurationStatus[] statuses, CancellationToken cancellationToken)
         => Task.FromResult(GetMany(x => x.Name.Equals(name) /*&& statuses.Contains(x.GetStatus())*/).ToList());
 
@@ -64,6 +68,6 @@ public class ConfigurationRepository : QueryHelper<Configuration, ConfigurationI
     => await _dbSet.AsNoTracking().FirstOrDefaultAsync(x => x.Name.Equals(name) &&
         /*statuses.Contains(x.GetStatus()) &&*/
         x.StartDate <= DateTime.UtcNow &&
-        (x.ExpireDate == null || (x.ExpireDate != null && x.ExpireDate >= DateTime.UtcNow)));
+        (x.ExpireDate == null || x.ExpireDate != null && x.ExpireDate >= DateTime.UtcNow));
 }
 

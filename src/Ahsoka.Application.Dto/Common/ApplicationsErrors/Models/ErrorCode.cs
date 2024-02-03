@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Ahsoka.Application.Dto;
+namespace Ahsoka.Application.Dto.Common.ApplicationsErrors.Models;
 public record ErrorCode
 {
     protected ErrorCode(int value) { Value = value; }

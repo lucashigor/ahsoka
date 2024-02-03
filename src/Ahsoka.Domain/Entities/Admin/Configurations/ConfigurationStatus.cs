@@ -1,4 +1,6 @@
-﻿namespace Ahsoka.Domain;
+﻿using Ahsoka.Domain.Common;
+
+namespace Ahsoka.Domain.Entities.Admin.Configurations;
 
 public record ConfigurationStatus : Enumeration<int>
 {

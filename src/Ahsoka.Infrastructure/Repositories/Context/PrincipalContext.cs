@@ -1,9 +1,9 @@
 ﻿using System.Reflection;
-using Ahsoka.Domain;
+using Ahsoka.Domain.Entities.Admin.Configurations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
-namespace Ahsoka.Infrastructure;
+namespace Ahsoka.Infrastructure.Repositories.Context;
 
 public class PrincipalContextFactory : IDesignTimeDbContextFactory<PrincipalContext>
 {

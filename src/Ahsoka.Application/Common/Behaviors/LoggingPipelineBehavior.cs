@@ -1,8 +1,9 @@
 ﻿using System.Reflection;
+using Ahsoka.Application.Common.Attributes;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace Ahsoka.Application;
+namespace Ahsoka.Application.Common.Behaviors;
 
 public class LoggingPipelineBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
         where TRequest : IRequest<TResponse>

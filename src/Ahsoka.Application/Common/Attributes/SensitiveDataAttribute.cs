@@ -1,4 +1,4 @@
-namespace Ahsoka.Application;
+namespace Ahsoka.Application.Common.Attributes;
 
 [AttributeUsage(AttributeTargets.Property)]
 public class SensitiveDataAttribute : Attribute

@@ -1,8 +1,8 @@
-﻿namespace Ahsoka.Application.Dto;
+﻿namespace Ahsoka.Application.Dto.Administrations.Configurations.Responses;
 
-public record ConfigurationOutput(Guid Id, 
-        string Name, 
-        string Value, 
-        string Description, 
-        DateTimeOffset StartDate, 
-        DateTimeOffset? FinalDate);
+public record ConfigurationOutput(Guid Id,
+        string Name,
+        string Value,
+        string Description,
+        DateTime StartDate,
+        DateTime? ExpireDate);

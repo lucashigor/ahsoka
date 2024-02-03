@@ -1,6 +1,8 @@
-﻿namespace Ahsoka.Infrastructure;
+﻿namespace Ahsoka.Infrastructure.Repositories.Common;
 using System.Linq.Expressions;
-using Ahsoka.Domain;
+using Ahsoka.Domain.SeedWork;
+using Ahsoka.Domain.SeedWork.Repository.ISearchableRepository;
+using Ahsoka.Infrastructure.Repositories.Context;
 using Microsoft.EntityFrameworkCore;
 
 public class QueryHelper<T, R> where T : Entity<R> where R : IEquatable<R>
@@ -14,7 +16,7 @@ public class QueryHelper<T, R> where T : Entity<R> where R : IEquatable<R>
 
     protected virtual IQueryable<T> GetMany(Expression<Func<T, bool>> where)
         => _dbSet.AsNoTracking().Where(where);
-        
+
     protected virtual IQueryable<T> GetManyPaginated(Expression<Func<T, bool>> where,
         string? orderBy,
         SearchOrder order,

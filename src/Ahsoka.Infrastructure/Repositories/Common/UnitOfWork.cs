@@ -1,8 +1,9 @@
-﻿using Ahsoka.Application;
-using Ahsoka.Domain;
+﻿using Ahsoka.Application.Common.Interfaces;
+using Ahsoka.Domain.SeedWork;
+using Ahsoka.Infrastructure.Repositories.Context;
 using Microsoft.EntityFrameworkCore;
 
-namespace Ahsoka.Infrastructure;
+namespace Ahsoka.Infrastructure.Repositories.Common;
 
 public class UnitOfWork : IUnitOfWork
 {
@@ -42,7 +43,7 @@ public class UnitOfWork : IUnitOfWork
             .ForEach(entity => entity.Entity.ClearEvents());
 
         foreach (var domainEvent in domainEvents.OrderBy(x => x.EventDateUtc))
-        {}
-            //await _mediator.Publish(domainEvent);
+        { }
+        //await _mediator.Publish(domainEvent);
     }
 }

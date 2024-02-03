@@ -1,6 +1,6 @@
 ﻿using System.Collections.Immutable;
 
-namespace Ahsoka.Domain;
+namespace Ahsoka.Domain.SeedWork;
 
 public abstract class AggregateRoot<T> : Entity<T>, IAggregateRoot where T : IEquatable<T>
 {

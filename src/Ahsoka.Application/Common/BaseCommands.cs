@@ -1,4 +1,6 @@
-﻿namespace Ahsoka.Application;
+﻿using Ahsoka.Application.Common.Models;
+
+namespace Ahsoka.Application.Common;
 
 public abstract class BaseCommands
 {

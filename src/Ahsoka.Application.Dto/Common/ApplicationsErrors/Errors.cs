@@ -1,4 +1,6 @@
-﻿namespace Ahsoka.Application.Dto;
+﻿using Ahsoka.Application.Dto.Common.ApplicationsErrors.Models;
+
+namespace Ahsoka.Application.Dto.Common.ApplicationsErrors;
 
 internal sealed record GenericErrorCodes : ErrorCode
 {
@@ -24,6 +26,6 @@ public partial record Errors
     public static ErrorModel ClientHttp() => new(GenericErrorCodes.ClientHttp, "Client Http error.");
     public static ErrorModel Validation() => new(GenericErrorCodes.Validation, "Unfortunately your request do not pass in our validation process.");
     public static ErrorModel InvalidOperationOnPatch() => new(GenericErrorCodes.InvalidOperationOnPatch, "This operation are not valid on patch.");
-    public static ErrorModel InvalidPathOnPatch() => new(GenericErrorCodes.InvalidPathOnPatch, "This path cannot be changed on patch."); 
+    public static ErrorModel InvalidPathOnPatch() => new(GenericErrorCodes.InvalidPathOnPatch, "This path cannot be changed on patch.");
     public static ErrorModel NotificationValuesError() => new(GenericErrorCodes.NotificationValuesError, "Error on creating a notification.");
 }

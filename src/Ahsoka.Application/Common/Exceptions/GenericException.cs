@@ -1,4 +1,4 @@
-﻿namespace Ahsoka.Application;
+﻿namespace Ahsoka.Application.Common.Exceptions;
 
 public class GenericException
 {

@@ -1,4 +1,6 @@
-﻿namespace Ahsoka.Application.Dto;
+﻿using Ahsoka.Application.Dto.Common.ApplicationsErrors.Models;
+
+namespace Ahsoka.Application.Dto.Administrations.Configurations.ApplicationsErrors;
 
 public sealed record ConfigurationErrorCodes : ErrorCode
 {

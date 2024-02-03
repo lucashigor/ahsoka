@@ -1,4 +1,7 @@
-﻿namespace Ahsoka.Domain;
+﻿namespace Ahsoka.Domain.Validation;
+
+using Ahsoka.Domain.Common;
+using Ahsoka.Domain.Common.ValuesObjects;
 using System.Runtime.CompilerServices;
 
 public static class DomainValidation
@@ -50,7 +53,7 @@ public static class DomainValidation
     {
         DateTime? nullableTarget = target;
 
-        var notification = NotDefaultDateTime(nullableTarget, fieldName);
+        var notification = nullableTarget.NotDefaultDateTime(fieldName);
 
         return notification;
     }
@@ -59,7 +62,7 @@ public static class DomainValidation
                           [CallerArgumentExpression("target")] string fieldName = "")
     {
         Notification? notification = null;
-        
+
         if (target.HasValue && target.Value == default)
         {
             var message = DefaultsErrorsMessages.NotDefaultDateTime.GetMessage(fieldName);

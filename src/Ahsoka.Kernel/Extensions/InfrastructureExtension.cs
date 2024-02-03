@@ -1,13 +1,16 @@
-﻿using Ahsoka.Application;
-using Ahsoka.Domain;
+﻿using Ahsoka.Application.Common.Interfaces;
+using Ahsoka.Domain.Entities.Admin.Configurations.Repository;
 using Ahsoka.Infrastructure;
+using Ahsoka.Infrastructure.Repositories.Common;
+using Ahsoka.Infrastructure.Repositories.Configurations;
+using Ahsoka.Infrastructure.Repositories.Context;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Ahsoka.Kernel;
+namespace Ahsoka.Kernel.Extensions;
 
 public static class InfrastructureExtension
 {
@@ -15,7 +18,7 @@ public static class InfrastructureExtension
     {
         var conn = builder.Configuration.GetConnectionString("PrincipalDatabase");
 
-        if(string.IsNullOrEmpty(conn) is false)
+        if (string.IsNullOrEmpty(conn) is false)
         {
             builder.Services.AddDbContext<PrincipalContext>(options =>
             {
@@ -24,13 +27,13 @@ public static class InfrastructureExtension
                 options.UseNpgsql(conn!);
             });
 
-        var serviceProvider = builder.Services.BuildServiceProvider();
-        using var scope = serviceProvider.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<PrincipalContext>();
-        db.Database.Migrate();
-        
+            var serviceProvider = builder.Services.BuildServiceProvider();
+            using var scope = serviceProvider.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<PrincipalContext>();
+            db.Database.Migrate();
+
         }
-        
+
         builder.Services.AddScoped<IConfigurationRepository, ConfigurationRepository>();
         builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 

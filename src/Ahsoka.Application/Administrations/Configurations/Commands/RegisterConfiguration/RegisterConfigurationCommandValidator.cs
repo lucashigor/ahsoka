@@ -1,6 +1,8 @@
-﻿using FluentValidation;
+﻿using Ahsoka.Application.Administrations.Configurations.Commands;
+using Ahsoka.Application.Common.Models;
+using FluentValidation;
 
-namespace Ahsoka.Application;
+namespace Ahsoka.Application.Administrations.Configurations.Commands.RegisterConfiguration;
 
 public class RegisterConfigurationCommandValidator : AbstractValidator<RegisterConfigurationCommand>
 {

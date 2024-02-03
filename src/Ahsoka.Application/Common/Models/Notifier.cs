@@ -1,6 +1,6 @@
-﻿using Ahsoka.Application.Dto;
+﻿using Ahsoka.Application.Dto.Common.ApplicationsErrors.Models;
 
-namespace Ahsoka.Application;
+namespace Ahsoka.Application.Common.Models;
 
 public record Notifier
 {

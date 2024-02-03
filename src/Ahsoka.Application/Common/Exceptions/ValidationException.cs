@@ -1,6 +1,6 @@
-﻿namespace Ahsoka.Application;
+﻿namespace Ahsoka.Application.Common.Exceptions;
 
-using Ahsoka.Application.Dto;
+using Ahsoka.Application.Dto.Common.ApplicationsErrors.Models;
 using FluentValidation.Results;
 using Newtonsoft.Json;
 using System;
@@ -29,7 +29,7 @@ public sealed class ValidationException : Exception, IApiException
     public ValidationException(string message)
         : base(message)
     {
-        Errors = [new(Dto.Errors.Validation().Code, message)];
+        Errors = [new(Dto.Common.ApplicationsErrors.Errors.Validation().Code, message)];
     }
 
     public static ValidationException Build(IEnumerable<ValidationResult> validationResults)
@@ -37,7 +37,7 @@ public sealed class ValidationException : Exception, IApiException
         var applicationErrors = validationResults
             .Where(validationResult => !validationResult.IsValid)
         .Select(error => new ErrorModel(
-            Dto.Errors.Validation().Code,
+            Dto.Common.ApplicationsErrors.Errors.Validation().Code,
             string.Join(Environment.NewLine, error.Errors.Select(er => er.ErrorMessage)))
             ).ToList();
 

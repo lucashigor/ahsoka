@@ -1,7 +1,7 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 
-namespace Ahsoka.Application;
+namespace Ahsoka.Application.Common.Models.Authorizations;
 
 public class ApplicationUser(HttpContext httpContext)
 {

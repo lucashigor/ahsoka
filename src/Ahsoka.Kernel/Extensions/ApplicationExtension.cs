@@ -1,11 +1,15 @@
 ﻿using System.Reflection;
-using Ahsoka.Application;
+using Ahsoka.Application.Administrations.Configurations.Commands.RegisterConfiguration;
+using Ahsoka.Application.Administrations.Configurations.Services;
+using Ahsoka.Application.Common.Behaviors;
+using Ahsoka.Application.Common.Models;
+using Ahsoka.Application.Common.Models.Authorizations;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Ahsoka.Kernel;
+namespace Ahsoka.Kernel.Extensions;
 
 public static class ApplicationExtension
 {
@@ -20,7 +24,7 @@ public static class ApplicationExtension
         builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestExceptionBehavior<,>));
         builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingPipelineBehavior<,>));
 
-        builder.Services.AddTransient<IDateValidationServices, DateValidationServices>();
+        builder.Services.AddTransient<IConfigurationServices, ConfigurationServices>();
         builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
         return builder;

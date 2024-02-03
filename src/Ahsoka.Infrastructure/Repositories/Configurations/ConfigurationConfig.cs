@@ -1,8 +1,9 @@
-﻿using Ahsoka.Domain;
+﻿using Ahsoka.Domain.Entities.Admin.Configurations;
+using Ahsoka.Infrastructure.Repositories.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Ahsoka.Infrastructure;
+namespace Ahsoka.Infrastructure.Repositories.Configurations;
 
 public record ConfigurationConfig : IEntityTypeConfiguration<Configuration>
 {
@@ -19,7 +20,7 @@ public record ConfigurationConfig : IEntityTypeConfiguration<Configuration>
         entity.Property(k => k.Id)
         .HasConversion(
             id => id!.Value,
-            value => (ConfigurationId)ConfigurationId.Load(value)
+            value => ConfigurationId.Load(value)
         );
     }
 }

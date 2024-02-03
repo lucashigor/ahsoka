@@ -1,7 +1,8 @@
-﻿namespace Ahsoka.Api;
+﻿namespace Ahsoka.Api.Common.Middlewares;
 
-using Ahsoka.Application;
-using Ahsoka.Application.Dto;
+using Ahsoka.Application.Common.Exceptions;
+using Ahsoka.Application.Dto.Common.ApplicationsErrors;
+using Ahsoka.Application.Dto.Common.Responses;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 using System.Diagnostics;
@@ -20,7 +21,7 @@ public class GlobalExceptionHandlerMiddleware(ILogger<GlobalExceptionHandlerMidd
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "unexpected error | {request_path}",context.Request.Path.Value);
+            _logger.LogError(ex, "unexpected error | {request_path}", context.Request.Path.Value);
             await HandleExceptionAsync(context, ex);
         }
     }
@@ -51,7 +52,7 @@ public class GlobalExceptionHandlerMiddleware(ILogger<GlobalExceptionHandlerMidd
             default:
                 statusCode = (int)HttpStatusCode.InternalServerError;
                 serialized = JsonSerializer.Serialize(
-                    new DefaultResponse<object>(null!, Errors.Generic().ChangeInnerMessage(exception.Message), traceId), 
+                    new DefaultResponse<object>(null!, Errors.Generic().ChangeInnerMessage(exception.Message), traceId),
                     jsonOptions);
                 break;
         }

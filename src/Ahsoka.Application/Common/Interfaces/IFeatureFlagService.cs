@@ -1,4 +1,6 @@
-﻿namespace Ahsoka.Application;
+﻿using Ahsoka.Application.Common.Models.FeatureFlag;
+
+namespace Ahsoka.Application.Common.Interfaces;
 
 public interface IFeatureFlagService
 {

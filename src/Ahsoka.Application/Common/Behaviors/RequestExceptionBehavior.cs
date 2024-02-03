@@ -1,7 +1,10 @@
-﻿namespace Ahsoka.Application;
+﻿namespace Ahsoka.Application.Common.Behaviors;
 
-using Ahsoka.Application.Dto;
-using Ahsoka.Domain;
+using Ahsoka.Application.Common.Exceptions;
+using Ahsoka.Application.Dto.Common.ApplicationsErrors;
+using Ahsoka.Application.Dto.Common.ApplicationsErrors.Models;
+using Ahsoka.Domain.Entities.Admin.Configurations.Errors;
+using Ahsoka.Domain.Exceptions;
 using MediatR;
 
 public class RequestExceptionBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>
@@ -41,8 +44,8 @@ public class RequestExceptionBehavior<TRequest, TResponse> : IPipelineBehavior<T
     }
 
     protected Dictionary<int, ErrorModel> GetErrors()
-        => new() { 
-            { 
+        => new() {
+            {
                 ConfigurationsErrorsCodes.Validation.Value, Errors.Validation()
             }
         };

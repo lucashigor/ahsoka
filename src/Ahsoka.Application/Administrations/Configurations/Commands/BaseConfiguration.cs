@@ -1,4 +1,4 @@
-﻿namespace Ahsoka.Application;
+﻿namespace Ahsoka.Application.Administrations.Configurations.Commands;
 
 public abstract record BaseConfiguration(string Name,
     string Value,

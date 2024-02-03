@@ -1,4 +1,4 @@
-﻿namespace Ahsoka.Domain;
+﻿namespace Ahsoka.Domain.SeedWork;
 
 public interface IAggregateRoot
 {

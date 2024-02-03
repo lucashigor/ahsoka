@@ -1,4 +1,4 @@
-﻿namespace Ahsoka.Domain;
+﻿namespace Ahsoka.Domain.Common.ValuesObjects;
 
 public sealed record Notification
 {

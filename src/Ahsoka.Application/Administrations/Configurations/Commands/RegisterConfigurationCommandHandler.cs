@@ -1,27 +1,25 @@
-﻿using Ahsoka.Application.Dto;
-using Ahsoka.Domain;
+﻿using Ahsoka.Application.Administrations.Configurations.Services;
+using Ahsoka.Application.Common;
+using Ahsoka.Application.Common.Attributes;
+using Ahsoka.Application.Common.Interfaces;
+using Ahsoka.Application.Common.Models;
+using Ahsoka.Application.Common.Models.Authorizations;
+using Ahsoka.Application.Dto.Administrations.Configurations.Responses;
+using Ahsoka.Domain.Entities.Admin.Configurations;
+using Ahsoka.Domain.Entities.Admin.Configurations.Repository;
 using Mapster;
 using MediatR;
 
-namespace Ahsoka.Application;
-public record RegisterConfigurationCommand : BaseConfiguration, IRequest<ConfigurationOutput?>
-{
-    public RegisterConfigurationCommand(string Name, string Value, string Description, DateTime StartDate, DateTime? FinalDate) : base(Name, Value, Description, StartDate, FinalDate)
-    {
-    }
-}
+namespace Ahsoka.Application.Administrations.Configurations.Commands;
+public record RegisterConfigurationCommand(string Name, string Value, string Description, DateTime StartDate, DateTime? ExpireDate)
+    : BaseConfiguration(Name, Value, Description, StartDate, ExpireDate), IRequest<ConfigurationOutput?>;
 
 public class RegisterConfigurationCommandHandler(IConfigurationRepository repository,
     IUnitOfWork unitOfWork,
     Notifier notifier,
-    IDateValidationServices configurationServices,
+    IConfigurationServices configurationServices,
     ICurrentUserService userService) : BaseCommands(notifier), IRequestHandler<RegisterConfigurationCommand, ConfigurationOutput?>
 {
-    private readonly IConfigurationRepository repository = repository;
-    private readonly IUnitOfWork unitOfWork = unitOfWork;
-    private readonly IDateValidationServices _configurationServices = configurationServices;
-    private readonly ICurrentUserService _userService = userService;
-
     [Transaction]
     [Log]
     public async Task<ConfigurationOutput?> Handle(RegisterConfigurationCommand request, CancellationToken cancellationToken)
@@ -30,15 +28,15 @@ public class RegisterConfigurationCommandHandler(IConfigurationRepository reposi
             request.Value,
             request.Description,
             request.StartDate,
-            request.FinalDate,
-            _userService.User.UserId.ToString());
+            request.ExpireDate,
+            userService.User.UserId.ToString());
 
         if (_notifier.Errors.Any())
         {
             return null;
         }
 
-        await _configurationServices.Handle(item, cancellationToken);
+        await configurationServices.Handle(item, cancellationToken);
 
         await repository.InsertAsync(item, cancellationToken);
 

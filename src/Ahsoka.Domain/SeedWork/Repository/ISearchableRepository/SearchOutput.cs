@@ -1,4 +1,4 @@
-﻿namespace Ahsoka.Domain;
+﻿namespace Ahsoka.Domain.SeedWork.Repository.ISearchableRepository;
 
 public record SearchOutput<TAggregate>(
     int CurrentPage,

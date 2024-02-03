@@ -1,4 +1,6 @@
-﻿namespace Ahsoka.Api;
+﻿using Ahsoka.Api.Common.Middlewares;
+
+namespace Ahsoka.Api.Common.Extensions;
 
 public static class GlobalExceptionHandlerMiddlewareExtension
 {

@@ -1,4 +1,4 @@
-﻿namespace Ahsoka.Kernel;
+﻿namespace Ahsoka.Kernel.Extensions;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,30 +13,30 @@ public static class AddOpenTelemetryExtension
     {
         var otel = builder.Services.AddOpenTelemetry();
 
-            otel.ConfigureResource(resource => resource.AddService(serviceName: builder.Environment.ApplicationName));
+        otel.ConfigureResource(resource => resource.AddService(serviceName: builder.Environment.ApplicationName));
 
-            otel.WithMetrics(metrics => metrics
-                .AddAspNetCoreInstrumentation()
-                .AddMeter("Microsoft.AspNetCore.Hosting")
-                .AddMeter("Microsoft.AspNetCore.Server.Kestrel")
-                .AddPrometheusExporter());
+        otel.WithMetrics(metrics => metrics
+            .AddAspNetCoreInstrumentation()
+            .AddMeter("Microsoft.AspNetCore.Hosting")
+            .AddMeter("Microsoft.AspNetCore.Server.Kestrel")
+            .AddPrometheusExporter());
 
-            otel.WithTracing(tracing =>
+        otel.WithTracing(tracing =>
+        {
+            tracing.AddAspNetCoreInstrumentation();
+            tracing.AddHttpClientInstrumentation();
+            if (string.IsNullOrEmpty(tracingOtlpEndpoint) is false)
             {
-                tracing.AddAspNetCoreInstrumentation();
-                tracing.AddHttpClientInstrumentation();
-                if (string.IsNullOrEmpty(tracingOtlpEndpoint) is false)
+                tracing.AddOtlpExporter(otlpOptions =>
                 {
-                    tracing.AddOtlpExporter(otlpOptions =>
-                    {
-                        otlpOptions.Endpoint = new Uri(tracingOtlpEndpoint);
-                    });
-                }
-                else
-                {
-                    tracing.AddConsoleExporter();
-                }
-            });
+                    otlpOptions.Endpoint = new Uri(tracingOtlpEndpoint);
+                });
+            }
+            else
+            {
+                tracing.AddConsoleExporter();
+            }
+        });
 
         return builder;
     }

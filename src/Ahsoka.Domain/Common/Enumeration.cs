@@ -1,4 +1,4 @@
-﻿namespace Ahsoka.Domain;
+﻿namespace Ahsoka.Domain.Common;
 
 using System.Data;
 using System.Reflection;
