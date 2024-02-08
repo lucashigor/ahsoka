@@ -3,7 +3,7 @@
 using Ahsoka.Application.Common.Exceptions;
 using Ahsoka.Application.Dto.Common.ApplicationsErrors;
 using Ahsoka.Application.Dto.Common.ApplicationsErrors.Models;
-using Ahsoka.Domain.Entities.Admin.Configurations.Errors;
+using Ahsoka.Domain.Common.ValuesObjects;
 using Ahsoka.Domain.Exceptions;
 using MediatR;
 
@@ -46,7 +46,7 @@ public class RequestExceptionBehavior<TRequest, TResponse> : IPipelineBehavior<T
     protected Dictionary<int, ErrorModel> GetErrors()
         => new() {
             {
-                ConfigurationsErrorsCodes.Validation.Value, Errors.Validation()
+                DomainErrorCode.Validation.Value, Errors.Validation()
             }
         };
 }

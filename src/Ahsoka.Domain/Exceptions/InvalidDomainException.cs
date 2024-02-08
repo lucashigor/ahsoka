@@ -1,8 +1,11 @@
 ﻿using Ahsoka.Domain.Common.ValuesObjects;
+using System.Collections.Immutable;
 
 namespace Ahsoka.Domain.Exceptions;
 
-public sealed class InvalidDomainException(string? message, DomainErrorCode code) : Exception(message)
+public sealed class InvalidDomainException(string? message, ICollection<Notification> notifications) : Exception(message)
 {
-    public int Code { get; init; } = code.Value;
+    private readonly ICollection<Notification> _notifications = notifications;
+
+    public IReadOnlyCollection<Notification> Notifications => _notifications.ToImmutableArray();
 }

@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using Ahsoka.Application.Administrations.Configurations.Commands.RegisterConfiguration;
+﻿using Ahsoka.Application.Administrations.Configurations.Commands.RegisterConfiguration;
 using Ahsoka.Application.Administrations.Configurations.Services;
 using Ahsoka.Application.Common.Behaviors;
 using Ahsoka.Application.Common.Models;
@@ -8,6 +7,7 @@ using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using System.Reflection;
 
 namespace Ahsoka.Kernel.Extensions;
 

@@ -7,27 +7,18 @@ using MediatR;
 namespace Ahsoka.Application.Administrations.Configurations.Queries;
 
 public record ListConfigurationsQuery
-    (int Page, int PerPage, string? Search,
-    string? Sort, SearchOrder Dir)
-    : PaginatedListInput
-    (Page, PerPage, Search,
-    Sort, Dir), 
+    (int Page, int PerPage, string? Search, string? Sort, SearchOrder Dir)
+    : PaginatedListInput(Page, PerPage, Search, Sort, Dir), 
     IRequest<ListConfigurationsOutput>;
 
-public class ListConfigurationsQueryHandler : IRequestHandler<ListConfigurationsQuery, ListConfigurationsOutput>
+public class ListConfigurationsQueryHandler(IConfigurationRepository configurationRepository) 
+    : IRequestHandler<ListConfigurationsQuery, ListConfigurationsOutput>
 {
-    private readonly IConfigurationRepository _configurationRepository;
-
-    public ListConfigurationsQueryHandler(IConfigurationRepository configurationRepository)
-    {
-        _configurationRepository = configurationRepository;
-    }
-
     public async Task<ListConfigurationsOutput> Handle(ListConfigurationsQuery request, CancellationToken cancellationToken)
     {
-        var searchOutput = await _configurationRepository.SearchAsync(
+        var searchOutput = await configurationRepository.SearchAsync(
             new(
-                request.Page,
+                request.Page,      
                 request.PerPage,
                 request.Search,
                 request.Sort,

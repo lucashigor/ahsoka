@@ -1,4 +1,5 @@
-﻿using Ahsoka.Domain.Entities.Admin.Configurations.Errors;
+﻿using Ahsoka.Domain.Common;
+using Ahsoka.Domain.Common.ValuesObjects;
 using Ahsoka.Domain.Entities.Admin.Configurations.Events;
 using Ahsoka.Domain.SeedWork;
 using Ahsoka.Domain.Validation;
@@ -25,6 +26,17 @@ public record struct ConfigurationId(Guid Value)
     public static implicit operator ConfigurationId(Guid value) => new(value);
 
     public static implicit operator Guid(ConfigurationId id) => id.Value;
+}
+public record ConfigurationStatus : Enumeration<int>
+{
+    protected ConfigurationStatus(int id, string name) : base(id, name)
+    {
+    }
+
+    public static ConfigurationStatus Undefined { get; } = new(0, nameof(Undefined));
+    public static ConfigurationStatus Awaiting { get; } = new(1, nameof(Awaiting));
+    public static ConfigurationStatus Active { get; } = new(2, nameof(Active));
+    public static ConfigurationStatus Expired { get; } = new(3, nameof(Expired));
 }
 
 public class Configuration : AggregateRoot<ConfigurationId>
@@ -73,7 +85,7 @@ public class Configuration : AggregateRoot<ConfigurationId>
         IsDeleted = false;
     }
 
-    public static Configuration New(
+    public static (Result, Configuration?) New(
         string name,
         string value,
         string description,
@@ -85,11 +97,16 @@ public class Configuration : AggregateRoot<ConfigurationId>
 
         entity.SetValues(name, value, description, startDate, expireDate, userId, DateTime.UtcNow);
 
-        entity.Validate();
+        var result = entity.Validate();
+
+        if(result.IsFailure)
+        {
+            return (result, null);
+        }
 
         entity.RaiseDomainEvent(new ConfigurationCreatedDomainEvent(entity));
 
-        return entity;
+        return (result, entity);
     }
     private void SetValues(
             string name,
@@ -103,22 +120,20 @@ public class Configuration : AggregateRoot<ConfigurationId>
 
         if (startDate < DateTimeOffset.UtcNow.AddSeconds(-5))
         {
-            AddNotification($"{nameof(StartDate)} should be greater than now", ConfigurationsErrorsCodes.Validation);
+            AddNotification(nameof(StartDate), $"{nameof(StartDate)} should be greater than now", DomainErrorCode.Validation);
         }
 
-        if (expireDate.HasValue && ExpireDate < startDate)
+        if (expireDate.HasValue && expireDate < startDate)
         {
-            AddNotification(DefaultsErrorsMessages.Date0CannotBeBeforeDate1.GetMessage(nameof(ExpireDate), nameof(StartDate)),
-                ConfigurationsErrorsCodes.Validation);
+            AddNotification(nameof(ExpireDate), DefaultsErrorsMessages.Date0CannotBeBeforeDate1.GetMessage(nameof(ExpireDate), nameof(StartDate)),
+                DomainErrorCode.Validation);
         }
 
         if (expireDate.HasValue && expireDate < DateTimeOffset.UtcNow.AddSeconds(-5))
         {
-            AddNotification($"{nameof(ExpireDate)} should be greater than now", ConfigurationsErrorsCodes.Validation);
+            AddNotification(nameof(ExpireDate), $"{nameof(ExpireDate)} should be greater than now", DomainErrorCode.Validation);
         }
 
-        AddNotification(startDate.NotDefaultDateTime());
-        AddNotification(expireDate.NotDefaultDateTime());
         AddNotification(name.NotNullOrEmptyOrWhiteSpace());
         AddNotification(name.BetweenLength(3, 100));
         AddNotification(value.NotNullOrEmptyOrWhiteSpace());
@@ -135,20 +150,6 @@ public class Configuration : AggregateRoot<ConfigurationId>
         CreatedAt = createdAt;
     }
 
-    public void Delete()
-    {
-        if (Status == ConfigurationStatus.Expired || Status == ConfigurationStatus.Active)
-        {
-            var message = "not allowed to delete expired or active configurations";
-            AddNotification(new(nameof(ExpireDate), message, ConfigurationsErrorsCodes.ErrorOnDelete));
-            return;
-        }
-
-        IsDeleted = true;
-
-        RaiseDomainEvent(new ConfigurationDeletedDomainEvent(this));
-    }
-
     public void Update(string name, string value, string description, DateTime startDate, DateTime? expireDate)
     {
         var StartDateHasChanges = StartDate.Equals(startDate) is false;
@@ -163,7 +164,7 @@ public class Configuration : AggregateRoot<ConfigurationId>
                 || ValueHasChanges))
         {
             var message = "only description are allowed to change on expired configuration";
-            AddNotification(new(nameof(ExpireDate), message, ConfigurationsErrorsCodes.OnlyDescriptionAllowedToChange));
+            AddNotification(new(nameof(ExpireDate), message, DomainErrorCode.OnlyDescriptionAllowedToChange));
             return;
         }
 
@@ -173,12 +174,45 @@ public class Configuration : AggregateRoot<ConfigurationId>
             || ValueHasChanges))
         {
             var message = "it is not allowed to change name on active configuration";
-            AddNotification(new(nameof(ExpireDate), message, ConfigurationsErrorsCodes.ErrorOnChangeName));
+            AddNotification(new(nameof(ExpireDate), message, DomainErrorCode.ErrorOnChangeName));
             return;
         }
 
         SetValues(name, value, description, startDate, expireDate, CreatedBy, CreatedAt);
 
         RaiseDomainEvent(new ConfigurationUpdatedDomainEvent(this));
+    }
+
+    public void Delete()
+    {
+        if (Status == ConfigurationStatus.Awaiting)
+        {
+            IsDeleted = true;
+
+            RaiseDomainEvent(new ConfigurationDeletedDomainEvent(this));
+
+            return;
+        }
+
+        if (Status == ConfigurationStatus.Active)
+        {
+            Update(Name, Value, Description, StartDate, DateTime.UtcNow);
+            //AddNotification()
+
+            return;
+        }
+
+        if (Status == ConfigurationStatus.Expired)
+        {
+            var message = "not allowed to delete expired configurations";
+
+            AddNotification(new(nameof(ExpireDate), message, DomainErrorCode.ErrorOnDelete));
+
+            return;
+        }
+
+        Validate();
+
+        return;
     }
 }

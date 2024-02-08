@@ -7,19 +7,21 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{1B15CC6D-6FB
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ahsoka.Api", "src\Ahsoka.Api\Ahsoka.Api.csproj", "{90896E21-0D28-437E-9AFD-1FEEED07A739}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ahsoka.Kernel", "src\Ahsoka.Kernel\Ahsoka.Kernel.csproj", "{2522746C-9921-4517-9BAA-B3F4D7092B0C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ahsoka.Kernel", "src\Ahsoka.Kernel\Ahsoka.Kernel.csproj", "{2522746C-9921-4517-9BAA-B3F4D7092B0C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ahsoka.Domain", "src\Ahsoka.Domain\Ahsoka.Domain.csproj", "{8FA3B9D5-C937-494C-AFED-7389EACABD99}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ahsoka.Domain", "src\Ahsoka.Domain\Ahsoka.Domain.csproj", "{8FA3B9D5-C937-494C-AFED-7389EACABD99}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ahsoka.Infrastructure", "src\Ahsoka.Infrastructure\Ahsoka.Infrastructure.csproj", "{7225796D-9C16-4375-996B-67295582AA65}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ahsoka.Infrastructure", "src\Ahsoka.Infrastructure\Ahsoka.Infrastructure.csproj", "{7225796D-9C16-4375-996B-67295582AA65}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ahsoka.Application", "src\Ahsoka.Application\Ahsoka.Application.csproj", "{049A1A86-30FC-448D-905E-CAF2430422DC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ahsoka.Application", "src\Ahsoka.Application\Ahsoka.Application.csproj", "{049A1A86-30FC-448D-905E-CAF2430422DC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ahsoka.Application.Dto", "src\Ahsoka.Application.Dto\Ahsoka.Application.Dto.csproj", "{1C87326A-C71B-4995-95A0-FFDA2DFE4EB6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ahsoka.Application.Dto", "src\Ahsoka.Application.Dto\Ahsoka.Application.Dto.csproj", "{1C87326A-C71B-4995-95A0-FFDA2DFE4EB6}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{EC856E7B-39C6-48C9-AE61-EEEF38BC706D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ahsoka.Unit.Tests", "src\Tests\Ahsoka.Unit.Tests\Ahsoka.Unit.Tests.csproj", "{DDCFE98E-08FB-4480-B47D-DD217DBFB942}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ahsoka.Unit.Tests", "src\Tests\Ahsoka.Unit.Tests\Ahsoka.Unit.Tests.csproj", "{DDCFE98E-08FB-4480-B47D-DD217DBFB942}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ahsoka.TestsUtil", "src\Tests\Ahsoka.TestsUtil\Ahsoka.TestsUtil.csproj", "{77924FE2-AB16-40CC-B59B-7E7047948E37}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,6 +57,10 @@ Global
 		{DDCFE98E-08FB-4480-B47D-DD217DBFB942}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DDCFE98E-08FB-4480-B47D-DD217DBFB942}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DDCFE98E-08FB-4480-B47D-DD217DBFB942}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77924FE2-AB16-40CC-B59B-7E7047948E37}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77924FE2-AB16-40CC-B59B-7E7047948E37}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77924FE2-AB16-40CC-B59B-7E7047948E37}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77924FE2-AB16-40CC-B59B-7E7047948E37}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -68,6 +74,7 @@ Global
 		{1C87326A-C71B-4995-95A0-FFDA2DFE4EB6} = {1B15CC6D-6FB6-4799-87F5-A9F8ADB597E4}
 		{EC856E7B-39C6-48C9-AE61-EEEF38BC706D} = {1B15CC6D-6FB6-4799-87F5-A9F8ADB597E4}
 		{DDCFE98E-08FB-4480-B47D-DD217DBFB942} = {EC856E7B-39C6-48C9-AE61-EEEF38BC706D}
+		{77924FE2-AB16-40CC-B59B-7E7047948E37} = {EC856E7B-39C6-48C9-AE61-EEEF38BC706D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EC52520D-997E-4E32-88E5-B00E14F64642}

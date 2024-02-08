@@ -1,6 +1,4 @@
-﻿using Ahsoka.Domain.Common;
-using Ahsoka.Domain.Common.ValuesObjects;
-using Ahsoka.Domain.Exceptions;
+﻿using Ahsoka.Domain.Common.ValuesObjects;
 using Ahsoka.Domain.Validation;
 using System.Collections.Immutable;
 
@@ -10,21 +8,26 @@ public abstract class Entity<T> where T : IEquatable<T>
 {
     public T Id { get; init; }
     private readonly ICollection<Notification> _notifications;
-    public IReadOnlyCollection<Notification> Notifications => _notifications.ToImmutableArray();
+    private IReadOnlyCollection<Notification> Notifications => _notifications.ToImmutableArray();
+    private Result Result { get; set; }
 
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     protected Entity()
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     {
         _notifications = new HashSet<Notification>();
     }
 
-    protected virtual void Validate()
+    protected virtual Result Validate()
     {
         AddNotification(Id!.NotNull());
 
-        if (Notifications.Any())
+        if (Notifications.Count != 0)
         {
-            throw new InvalidDomainException(Notifications.ToList().GetMessage(), CommonErrorCodes.Validation);
+            return Result.Failure(_notifications);
         }
+
+        return Result.Success();
     }
 
     protected void AddNotification(Notification? notification)
@@ -34,7 +37,11 @@ public abstract class Entity<T> where T : IEquatable<T>
             _notifications.Add(notification);
         }
     }
+
     protected void AddNotification(string message, DomainErrorCode domainError)
         => AddNotification(new(message, domainError));
+
+    protected void AddNotification(string fieldName, string message, DomainErrorCode domainError)
+        => AddNotification(new(fieldName, message, domainError));
 
 }

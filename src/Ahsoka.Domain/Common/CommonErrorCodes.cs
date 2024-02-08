@@ -1,10 +1,8 @@
-﻿using Ahsoka.Domain.Common.ValuesObjects;
+﻿namespace Ahsoka.Domain.Common.ValuesObjects;
 
-namespace Ahsoka.Domain.Common;
-
-public sealed record CommonErrorCodes(int original) : DomainErrorCode(original)
+public sealed partial record DomainErrorCode
 {
-    public static readonly CommonErrorCodes Validation = new(1_000);
-    public static readonly CommonErrorCodes InvalidYear = new(1_001);
-    public static readonly CommonErrorCodes InvalidMonth = new(1_002);
+    public static readonly DomainErrorCode Validation = new(1_000);
+    public static readonly DomainErrorCode InvalidYear = new(1_001);
+    public static readonly DomainErrorCode InvalidMonth = new(1_002);
 }

@@ -21,24 +21,3 @@ public sealed record Notification
 
     public override string ToString() => $"{Error.Value}: Message - {Message}";
 }
-
-
-public static class NotificationExtensions
-{
-    public static string GetMessage(this IList<Notification> list)
-    {
-        var ret = "";
-
-        foreach (Notification notification in list)
-        {
-            if (ret.Length > 0)
-            {
-                ret += ";";
-            }
-
-            ret += notification.ToString();
-        }
-
-        return ret;
-    }
-}

@@ -1,17 +1,8 @@
-﻿using Ahsoka.Domain.Common.ValuesObjects;
+﻿namespace Ahsoka.Domain.Common.ValuesObjects;
 
-namespace Ahsoka.Domain.Entities.Admin.Configurations.Errors;
-
-public sealed record ConfigurationsErrorsCodes : DomainErrorCode
+public sealed partial record DomainErrorCode
 {
-    private ConfigurationsErrorsCodes(int original) : base(original)
-    {
-    }
-
-    public static readonly ConfigurationsErrorsCodes Validation = new(2_000);
-    public static readonly ConfigurationsErrorsCodes ErrorOnDelete = new(2_001);
-    public static readonly ConfigurationsErrorsCodes OnlyDescriptionAllowedToChange = new(2_002);
-    public static readonly ConfigurationsErrorsCodes ErrorOnChangeName = new(2_003);
-
-
+    public static readonly DomainErrorCode ErrorOnDelete = new(2_001);
+    public static readonly DomainErrorCode OnlyDescriptionAllowedToChange = new(2_002);
+    public static readonly DomainErrorCode ErrorOnChangeName = new(2_003);
 }

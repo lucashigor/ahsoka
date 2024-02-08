@@ -2,11 +2,7 @@
 
 namespace Ahsoka.Application.Common;
 
-public abstract class BaseCommands
+public abstract class BaseCommands(Notifier notifier)
 {
-    public Notifier _notifier { get; private set; }
-    public BaseCommands(Notifier notifier)
-    {
-        _notifier = notifier;
-    }
+    protected Notifier _notifier = notifier;
 }

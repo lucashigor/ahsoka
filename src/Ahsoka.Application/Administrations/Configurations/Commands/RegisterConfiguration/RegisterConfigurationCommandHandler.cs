@@ -9,10 +9,11 @@ using Ahsoka.Domain.Entities.Admin.Configurations;
 using Ahsoka.Domain.Entities.Admin.Configurations.Repository;
 using Mapster;
 using MediatR;
+using _dto = Ahsoka.Application.Dto.Administrations.Configurations.Requests;
 
-namespace Ahsoka.Application.Administrations.Configurations.Commands;
-public record RegisterConfigurationCommand(string Name, string Value, string Description, DateTime StartDate, DateTime? ExpireDate)
-    : BaseConfiguration(Name, Value, Description, StartDate, ExpireDate), IRequest<ConfigurationOutput?>;
+namespace Ahsoka.Application.Administrations.Configurations.Commands.RegisterConfiguration;
+public record RegisterConfigurationCommand(_dto.BaseConfiguration BaseConfiguration)
+    : BaseConfiguration(BaseConfiguration), IRequest<ConfigurationOutput?>;
 
 public class RegisterConfigurationCommandHandler(IConfigurationRepository repository,
     IUnitOfWork unitOfWork,
@@ -24,24 +25,24 @@ public class RegisterConfigurationCommandHandler(IConfigurationRepository reposi
     [Log]
     public async Task<ConfigurationOutput?> Handle(RegisterConfigurationCommand request, CancellationToken cancellationToken)
     {
-        var item = Configuration.New(request.Name,
+        var (result, config) = Configuration.New(request.Name,
             request.Value,
             request.Description,
             request.StartDate,
             request.ExpireDate,
             userService.User.UserId.ToString());
 
-        if (_notifier.Errors.Any())
+        if (result.IsFailure || config is null)
         {
             return null;
         }
 
-        await configurationServices.Handle(item, cancellationToken);
+        await configurationServices.Handle(config!, cancellationToken);
 
-        await repository.InsertAsync(item, cancellationToken);
+        await repository.InsertAsync(config!, cancellationToken);
 
         await unitOfWork.CommitAsync(cancellationToken);
 
-        return item.Adapt<ConfigurationOutput>();
+        return config!.Adapt<ConfigurationOutput>();
     }
 }

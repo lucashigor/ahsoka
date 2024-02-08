@@ -1,6 +1,10 @@
 using Ahsoka.Api.Common.Middlewares;
-using Ahsoka.Application.Administrations.Configurations.Commands;
+using Ahsoka.Application.Administrations.Configurations.Commands.ChangeConfiguration;
+using Ahsoka.Application.Administrations.Configurations.Commands.ModifyConfiguration;
+using Ahsoka.Application.Administrations.Configurations.Commands.RegisterConfiguration;
+using Ahsoka.Application.Administrations.Configurations.Commands.RemoveConfiguration;
 using Ahsoka.Application.Administrations.Configurations.Queries;
+using Ahsoka.Application.Common.Extensions;
 using Ahsoka.Application.Common.Models;
 using Ahsoka.Application.Dto.Administrations.Configurations.Requests;
 using Ahsoka.Application.Dto.Common.ApplicationsErrors.Models;
@@ -9,12 +13,12 @@ using Ahsoka.Application.Dto.Common.Responses;
 using Ahsoka.Kernel.Extensions;
 using Mapster;
 using MediatR;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using _application = Ahsoka.Application.Administrations.Configurations.Commands;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -39,7 +43,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 
-app.MapPost("/v1/configurations", async (RegisterConfigurationInput input,
+app.MapPost("/v1/configurations", async (BaseConfiguration input,
     IMediator _mediator,
     CancellationToken cancellationToken ) =>
 {
@@ -48,9 +52,9 @@ app.MapPost("/v1/configurations", async (RegisterConfigurationInput input,
         return Results.UnprocessableEntity(new DefaultResponse<object>());
     }
     
-    var entity = input.Adapt<RegisterConfigurationCommand>();
+    var command = new RegisterConfigurationCommand(input);
 
-    var output = await _mediator.Send(entity, cancellationToken);
+    var output = await _mediator.Send(command, cancellationToken);
 
     if(output is null)
     {    
@@ -62,7 +66,7 @@ app.MapPost("/v1/configurations", async (RegisterConfigurationInput input,
 .WithName("CreateConfiguration")
 .WithOpenApi();
 
-app.MapGet("/v1/configurations/list", async (
+app.MapGet("/v1/configurations", async (
     [FromServices] IMediator mediator,
     CancellationToken cancellationToken,
     [FromQuery] int? page = null,
@@ -104,11 +108,45 @@ app.MapDelete("/v1/configurations/{id:guid}", async (
     [FromServices] Notifier notifier,
     CancellationToken cancellationToken) =>
 {
-    var output = await mediator.Send(new GetConfigurationByIdQuery(id), cancellationToken);
+    await mediator.Send(new RemoveConfigurationCommand(id), cancellationToken);
+
+    return Results.NoContent();
+})
+.WithName("DeleteConfiguration")
+.WithOpenApi();
+
+app.MapPut("/v1/configurations/{id:guid}", async (
+    [FromRoute] Guid id,
+    [FromBody] BaseConfiguration request,
+    [FromServices] IMediator mediator,
+    [FromServices] Notifier notifier,
+    CancellationToken cancellationToken) =>
+{
+    var command = new ChangeConfigurationCommand(id, request);
+
+    var output = await mediator.Send(command, cancellationToken); ;
 
     return Results.Ok(output);
 })
-.WithName("GetConfigurationById")
+.WithName("UpdateConfiguration")
+.WithOpenApi();
+
+app.MapPatch("/v1/configurations/{id:guid}", async (
+    [FromRoute] Guid id,
+    [FromBody] JsonPatchDocument<BaseConfiguration> request,
+    [FromServices] IMediator mediator,
+    [FromServices] Notifier notifier,
+    CancellationToken cancellationToken) =>
+{
+    var input = request.MapPatchInputToPatchCommand<BaseConfiguration, _application.BaseConfiguration>();
+
+    var command = new ModifyConfigurationCommand(id, input);
+
+    var output = await mediator.Send(command, cancellationToken);
+
+    return Results.Ok(output);
+})
+.WithName("PatchConfiguration")
 .WithOpenApi();
 
 app.MapPrometheusScrapingEndpoint();

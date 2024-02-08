@@ -1,6 +1,5 @@
 ﻿namespace Ahsoka.Domain.Validation;
 
-using Ahsoka.Domain.Common;
 using Ahsoka.Domain.Common.ValuesObjects;
 using System.Runtime.CompilerServices;
 
@@ -14,7 +13,7 @@ public static class DomainValidation
         if (target is null)
         {
             var message = DefaultsErrorsMessages.NotNull.GetMessage(fieldName);
-            notification = new Notification(fieldName, message, CommonErrorCodes.Validation);
+            notification = new Notification(fieldName, message, DomainErrorCode.Validation);
         }
 
         return notification;
@@ -28,7 +27,7 @@ public static class DomainValidation
         if (target == Guid.Empty)
         {
             var message = DefaultsErrorsMessages.NotNull.GetMessage(fieldName);
-            notification = new Notification(fieldName, message, CommonErrorCodes.Validation);
+            notification = new Notification(fieldName, message, DomainErrorCode.Validation);
         }
 
         return notification;
@@ -42,7 +41,7 @@ public static class DomainValidation
         if (string.IsNullOrWhiteSpace(target) || string.IsNullOrEmpty(target))
         {
             var message = DefaultsErrorsMessages.NotNull.GetMessage(fieldName);
-            notification = new Notification(fieldName, message, CommonErrorCodes.Validation);
+            notification = new Notification(fieldName, message, DomainErrorCode.Validation);
         }
 
         return notification;
@@ -66,7 +65,7 @@ public static class DomainValidation
         if (target.HasValue && target.Value == default)
         {
             var message = DefaultsErrorsMessages.NotDefaultDateTime.GetMessage(fieldName);
-            notification = new Notification(fieldName, message, CommonErrorCodes.Validation);
+            notification = new Notification(fieldName, message, DomainErrorCode.Validation);
         }
 
         return notification;
@@ -80,7 +79,7 @@ public static class DomainValidation
         if (!string.IsNullOrEmpty(target) && (target.Length < minLength || target.Length > maxLength))
         {
             var message = DefaultsErrorsMessages.BetweenLength.GetMessage(fieldName, minLength, maxLength);
-            notification = new Notification(fieldName, message, CommonErrorCodes.Validation);
+            notification = new Notification(fieldName, message, DomainErrorCode.Validation);
         }
 
         return notification;
@@ -94,7 +93,7 @@ public static class DomainValidation
         if (!string.IsNullOrEmpty(target) && !Uri.TryCreate(target, UriKind.Absolute, out _))
         {
             var message = DefaultsErrorsMessages.InvalidUrl.GetMessage(fieldName);
-            notification = new Notification(fieldName, message, CommonErrorCodes.Validation);
+            notification = new Notification(fieldName, message, DomainErrorCode.Validation);
         }
 
         return notification;
