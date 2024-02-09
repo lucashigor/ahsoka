@@ -7,9 +7,8 @@ namespace Ahsoka.Domain.SeedWork;
 public abstract class Entity<T> where T : IEquatable<T>
 {
     public T Id { get; init; }
-    private readonly ICollection<Notification> _notifications;
-    private IReadOnlyCollection<Notification> Notifications => _notifications.ToImmutableArray();
-    private Result Result { get; set; }
+    protected readonly ICollection<Notification> _notifications;
+    protected IReadOnlyCollection<Notification> Notifications => _notifications.ToImmutableArray();
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     protected Entity()

@@ -33,10 +33,10 @@ public record ConfigurationStatus : Enumeration<int>
     {
     }
 
-    public static ConfigurationStatus Undefined { get; } = new(0, nameof(Undefined));
-    public static ConfigurationStatus Awaiting { get; } = new(1, nameof(Awaiting));
-    public static ConfigurationStatus Active { get; } = new(2, nameof(Active));
-    public static ConfigurationStatus Expired { get; } = new(3, nameof(Expired));
+    public static readonly ConfigurationStatus Undefined = new(0, nameof(Undefined));
+    public static readonly ConfigurationStatus Awaiting = new(1, nameof(Awaiting));
+    public static readonly ConfigurationStatus Active = new(2, nameof(Active));
+    public static readonly ConfigurationStatus Expired = new(3, nameof(Expired));
 }
 
 public class Configuration : AggregateRoot<ConfigurationId>
@@ -95,6 +95,22 @@ public class Configuration : AggregateRoot<ConfigurationId>
     {
         var entity = new Configuration();
 
+        if (startDate < DateTimeOffset.UtcNow.AddSeconds(-5))
+        {
+            entity.AddNotification(nameof(StartDate), $"{nameof(StartDate)} should be greater than now", DomainErrorCode.Validation);
+        }
+
+        if (expireDate.HasValue && expireDate < startDate)
+        {
+            entity.AddNotification(nameof(ExpireDate), DefaultsErrorsMessages.Date0CannotBeBeforeDate1.GetMessage(nameof(ExpireDate), nameof(StartDate)),
+                DomainErrorCode.Validation);
+        }
+
+        if (expireDate.HasValue && expireDate < DateTimeOffset.UtcNow.AddSeconds(-5))
+        {
+            entity.AddNotification(nameof(ExpireDate), $"{nameof(ExpireDate)} should be greater than now", DomainErrorCode.Validation);
+        }
+
         entity.SetValues(name, value, description, startDate, expireDate, userId, DateTime.UtcNow);
 
         var result = entity.Validate();
@@ -117,29 +133,19 @@ public class Configuration : AggregateRoot<ConfigurationId>
             string userId,
             DateTime createdAt)
     {
-
-        if (startDate < DateTimeOffset.UtcNow.AddSeconds(-5))
-        {
-            AddNotification(nameof(StartDate), $"{nameof(StartDate)} should be greater than now", DomainErrorCode.Validation);
-        }
-
-        if (expireDate.HasValue && expireDate < startDate)
-        {
-            AddNotification(nameof(ExpireDate), DefaultsErrorsMessages.Date0CannotBeBeforeDate1.GetMessage(nameof(ExpireDate), nameof(StartDate)),
-                DomainErrorCode.Validation);
-        }
-
-        if (expireDate.HasValue && expireDate < DateTimeOffset.UtcNow.AddSeconds(-5))
-        {
-            AddNotification(nameof(ExpireDate), $"{nameof(ExpireDate)} should be greater than now", DomainErrorCode.Validation);
-        }
-
+        AddNotification(startDate.NotDefaultDateTime());
+        AddNotification(expireDate.NotDefaultDateTime());
         AddNotification(name.NotNullOrEmptyOrWhiteSpace());
         AddNotification(name.BetweenLength(3, 100));
         AddNotification(value.NotNullOrEmptyOrWhiteSpace());
         AddNotification(value.BetweenLength(1, 2500));
         AddNotification(description.NotNullOrEmptyOrWhiteSpace());
         AddNotification(description.BetweenLength(3, 1000));
+
+        if(Notifications.Count != 0)
+        {
+            return;
+        }
 
         Name = name;
         Value = value;
@@ -150,7 +156,8 @@ public class Configuration : AggregateRoot<ConfigurationId>
         CreatedAt = createdAt;
     }
 
-    public void Update(string name, string value, string description, DateTime startDate, DateTime? expireDate)
+    #region Update
+    public Result Update(string name, string value, string description, DateTime startDate, DateTime? expireDate)
     {
         var StartDateHasChanges = StartDate.Equals(startDate) is false;
         var ExpireDateHasChanges = ExpireDate.Equals(expireDate) is false;
@@ -165,7 +172,8 @@ public class Configuration : AggregateRoot<ConfigurationId>
         {
             var message = "only description are allowed to change on expired configuration";
             AddNotification(new(nameof(ExpireDate), message, DomainErrorCode.OnlyDescriptionAllowedToChange));
-            return;
+
+            return Validate();
         }
 
         if (Status.Equals(ConfigurationStatus.Active) &&
@@ -175,13 +183,25 @@ public class Configuration : AggregateRoot<ConfigurationId>
         {
             var message = "it is not allowed to change name on active configuration";
             AddNotification(new(nameof(ExpireDate), message, DomainErrorCode.ErrorOnChangeName));
-            return;
+
+            return Validate();
         }
 
         SetValues(name, value, description, startDate, expireDate, CreatedBy, CreatedAt);
 
+        var result = Validate();
+
+        if (result.IsFailure)
+        {
+            return result;
+        }
+
         RaiseDomainEvent(new ConfigurationUpdatedDomainEvent(this));
+
+        return result;
     }
+
+    #endregion
 
     public void Delete()
     {
