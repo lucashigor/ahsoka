@@ -3,7 +3,7 @@ using Ahsoka.Application.Common;
 using Ahsoka.Application.Common.Extensions;
 using Ahsoka.Application.Common.Interfaces;
 using Ahsoka.Application.Common.Models;
-using Ahsoka.Application.Dto.Administrations.Configurations.ApplicationsErrors;
+using Ahsoka.Application.Dto.Common.ApplicationsErrors;
 using Ahsoka.Application.Dto.Administrations.Configurations.Responses;
 using Ahsoka.Application.Dto.Common.ApplicationsErrors.Models;
 using Ahsoka.Domain.Entities.Admin.Configurations;
@@ -46,7 +46,7 @@ public class ModifyConfigurationCommandHandler(IConfigurationRepository reposito
 
         if (entity == null)
         {
-            notifier.Errors.Add(ConfigurationErrors.ConfigurationNotFound());
+            notifier.Errors.Add(Ahsoka.Application.Dto.Common.ApplicationsErrors.Errors.ConfigurationNotFound());
             return null!;
         }
 

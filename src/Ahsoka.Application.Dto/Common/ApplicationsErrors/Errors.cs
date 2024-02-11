@@ -2,7 +2,7 @@
 
 namespace Ahsoka.Application.Dto.Common.ApplicationsErrors;
 
-internal sealed record GenericErrorCodes : ErrorCode
+internal sealed record GenericErrorCodes : ApplicationErrorCode
 {
     private GenericErrorCodes(int original) : base(original)
     {
@@ -23,7 +23,7 @@ public partial record Errors
     public static ErrorModel Generic() => new(GenericErrorCodes.Generic, "Unfortunately an error occurred during the processing.");
     public static ErrorModel GenericDataBaseError() => new(GenericErrorCodes.DataBaseError, "Unfortunately an error occurred during the processing.");
     public static ErrorModel UnavailableFeatureFlag() => new(GenericErrorCodes.UnavailableFeatureFlag, "Unavailable FeatureFlag.");
-    public static ErrorModel ClientHttp() => new(GenericErrorCodes.ClientHttp, "Client Http error.");
+    public static ErrorModel ClientHttp() => new(GenericErrorCodes.ClientHttp, "Client HTTP error.");
     public static ErrorModel Validation() => new(GenericErrorCodes.Validation, "Unfortunately your request do not pass in our validation process.");
     public static ErrorModel InvalidOperationOnPatch() => new(GenericErrorCodes.InvalidOperationOnPatch, "This operation are not valid on patch.");
     public static ErrorModel InvalidPathOnPatch() => new(GenericErrorCodes.InvalidPathOnPatch, "This path cannot be changed on patch.");

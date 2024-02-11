@@ -1,9 +1,9 @@
-﻿using Ahsoka.Application.Administrations.Configurations.Services;
+﻿using Ahsoka.Application.Administrations.Configurations.Errors;
+using Ahsoka.Application.Administrations.Configurations.Services;
 using Ahsoka.Application.Common;
 using Ahsoka.Application.Common.Attributes;
 using Ahsoka.Application.Common.Interfaces;
 using Ahsoka.Application.Common.Models;
-using Ahsoka.Application.Dto.Administrations.Configurations.ApplicationsErrors;
 using Ahsoka.Application.Dto.Administrations.Configurations.Responses;
 using Ahsoka.Domain.Entities.Admin.Configurations;
 using Ahsoka.Domain.Entities.Admin.Configurations.Repository;
@@ -29,17 +29,28 @@ public class ChangeConfigurationCommandHandler(IConfigurationRepository reposito
 
         if (entity is null)
         {
-            _notifier.Warnings.Add(ConfigurationErrors.ConfigurationNotFound());
+            _notifier.Errors.Add(Dto.Common.ApplicationsErrors.Errors.ConfigurationNotFound());
             return null;
         }
-
-        entity.Update(request.Name,
+        
+        var result = entity.Update(request.Name,
             request.Value,
             request.Description,
             request.StartDate,
             request.ExpireDate);
-
+        
+        if (result.IsFailure)
+        {
+            HandleConfigurationResult.HandleResultConfiguration(result, notifier);
+            return null;
+        }
+        
         await configurationServices.Handle(entity, cancellationToken);
+
+        if (_notifier.Errors.Count > 0)
+        {
+            return null;
+        }
 
         await repository.UpdateAsync(entity, cancellationToken);
 

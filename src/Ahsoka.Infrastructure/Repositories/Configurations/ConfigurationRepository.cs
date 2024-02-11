@@ -45,10 +45,10 @@ public class ConfigurationRepository : QueryHelper<Configuration, ConfigurationI
 
     public Task<SearchOutput<Configuration>> SearchAsync(SearchInput input, CancellationToken cancellationToken)
     {
-        Expression<Func<Configuration, bool>> where = x => true;
+        Expression<Func<Configuration, bool>> where = x => x.IsDeleted == false;
 
         if (!string.IsNullOrWhiteSpace(input.Search))
-            where = x => x.Name.ToLower().Contains(input.Search.ToLower());
+            where = x => x.IsDeleted == false && x.Name.ToLower().Contains(input.Search.ToLower());
 
         var items = GetManyPaginated(where,
             input.OrderBy,
@@ -62,7 +62,7 @@ public class ConfigurationRepository : QueryHelper<Configuration, ConfigurationI
     }
 
     public Task<List<Configuration>> GetAllByNameAsync(string name, ConfigurationStatus[] statuses, CancellationToken cancellationToken)
-        => Task.FromResult(GetMany(x => x.Name.Equals(name) /*&& statuses.Contains(x.GetStatus())*/).ToList());
+        => Task.FromResult(GetMany(x => x.Name.Equals(name) && x.IsDeleted == false/*&& statuses.Contains(x.GetStatus())*/).ToList());
 
     public async Task<Configuration?> GetByNameAsync(string name, ConfigurationStatus[] statuses, CancellationToken cancellationToken)
     => await _dbSet.AsNoTracking().FirstOrDefaultAsync(x => x.Name.Equals(name) &&

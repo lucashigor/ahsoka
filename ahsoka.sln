@@ -21,7 +21,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{EC856E7B
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ahsoka.Unit.Tests", "src\Tests\Ahsoka.Unit.Tests\Ahsoka.Unit.Tests.csproj", "{DDCFE98E-08FB-4480-B47D-DD217DBFB942}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ahsoka.TestsUtil", "src\Tests\Ahsoka.TestsUtil\Ahsoka.TestsUtil.csproj", "{77924FE2-AB16-40CC-B59B-7E7047948E37}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ahsoka.TestsUtil", "src\Tests\Ahsoka.TestsUtil\Ahsoka.TestsUtil.csproj", "{77924FE2-AB16-40CC-B59B-7E7047948E37}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

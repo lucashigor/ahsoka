@@ -10,6 +10,7 @@ using Ahsoka.Domain.Entities.Admin.Configurations.Repository;
 using Mapster;
 using MediatR;
 using _dto = Ahsoka.Application.Dto.Administrations.Configurations.Requests;
+using Ahsoka.Application.Administrations.Configurations.Errors;
 
 namespace Ahsoka.Application.Administrations.Configurations.Commands.RegisterConfiguration;
 public record RegisterConfigurationCommand(_dto.BaseConfiguration BaseConfiguration)
@@ -21,6 +22,11 @@ public class RegisterConfigurationCommandHandler(IConfigurationRepository reposi
     IConfigurationServices configurationServices,
     ICurrentUserService userService) : BaseCommands(notifier), IRequestHandler<RegisterConfigurationCommand, ConfigurationOutput?>
 {
+    private readonly IConfigurationRepository _configurationRepository = repository;
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly IConfigurationServices _configurationServices = configurationServices;
+    private readonly ICurrentUserService _userService = userService;
+
     [Transaction]
     [Log]
     public async Task<ConfigurationOutput?> Handle(RegisterConfigurationCommand request, CancellationToken cancellationToken)
@@ -30,18 +36,24 @@ public class RegisterConfigurationCommandHandler(IConfigurationRepository reposi
             request.Description,
             request.StartDate,
             request.ExpireDate,
-            userService.User.UserId.ToString());
+            _userService.User.UserId.ToString());
 
         if (result.IsFailure || config is null)
+        {
+            HandleConfigurationResult.HandleResultConfiguration(result, notifier);
+            return null;
+        }
+
+        await _configurationServices.Handle(config!, cancellationToken);
+
+        if (_notifier.Errors.Count > 0)
         {
             return null;
         }
 
-        await configurationServices.Handle(config!, cancellationToken);
+        await _configurationRepository.InsertAsync(config!, cancellationToken);
 
-        await repository.InsertAsync(config!, cancellationToken);
-
-        await unitOfWork.CommitAsync(cancellationToken);
+        await _unitOfWork.CommitAsync(cancellationToken);
 
         return config!.Adapt<ConfigurationOutput>();
     }

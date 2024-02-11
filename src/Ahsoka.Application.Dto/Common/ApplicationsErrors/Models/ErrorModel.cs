@@ -2,18 +2,18 @@
 
 public sealed record ErrorModel
 {
-    public ErrorCode Code { get; init; }
+    public ApplicationErrorCode Code { get; init; }
     public string Message { get; init; }
     public string InnerMessage { get; private set; }
 
-    public ErrorModel(ErrorCode code, string message)
+    public ErrorModel(ApplicationErrorCode code, string message)
     {
         Code = code;
         Message = message;
         InnerMessage = string.Empty;
     }
 
-    public ErrorModel(ErrorCode code, string message, string innerMessage)
+    public ErrorModel(ApplicationErrorCode code, string message, string innerMessage)
     {
         Code = code;
         Message = message;

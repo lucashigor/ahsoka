@@ -47,8 +47,7 @@ public static class JwtAuthenticationMiddleware
     }
 
     public static IServiceCollection ConfigureJWT(this IServiceCollection services,
-        IConfiguration configuration,
-        bool IsDevelopment, IHostEnvironment environment)
+        IConfiguration configuration)
     {
         services.AddTransient<IClaimsTransformation, ClaimsTransformer>();
 
@@ -56,26 +55,12 @@ public static class JwtAuthenticationMiddleware
 
         services.AddAuthorization(o =>
         {
-            if (environment.IsDevelopment())
-            {
-                o.FallbackPolicy = new AuthorizationPolicyBuilder()
-                                    .RequireAssertion(p => environment.IsDevelopment())
-                                .Build();
+            o.FallbackPolicy = new AuthorizationPolicyBuilder()
+            .RequireAuthenticatedUser()
+                            .Build();
 
-                o.DefaultPolicy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme)
-                    .RequireAssertion(p => environment.IsDevelopment())
-                    .Build();
-            }
-            else
-            {
-                o.FallbackPolicy = new AuthorizationPolicyBuilder()
-                .RequireAuthenticatedUser()
-                                .Build();
-
-                o.DefaultPolicy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme).RequireAuthenticatedUser()
-                    .Build();
-            }
-
+            o.DefaultPolicy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme).RequireAuthenticatedUser()
+                .Build();
         });
 
         services.AddAuthentication(options =>
@@ -104,9 +89,7 @@ public static class JwtAuthenticationMiddleware
                     c.Response.StatusCode = 401;
                     c.Response.ContentType = "text/plain";
 
-                    if (IsDevelopment) return c.Response.WriteAsync(c.Exception.ToString());
-
-                    return c.Response.WriteAsync("An error occured processing your authentication.");
+                    return c.Response.WriteAsync("An error occurred processing your authentication.");
                 }
             };
         });

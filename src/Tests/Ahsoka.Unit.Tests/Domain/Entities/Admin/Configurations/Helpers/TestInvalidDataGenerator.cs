@@ -6,24 +6,131 @@ using System.Collections;
 
 namespace Ahsoka.Unit.Tests.Domain.Entities.Admin.Configurations.Helpers;
 
-
+public record UpdateWithError
+{
+    public ConfigurationStatus ConfigurationStatus { get; set; }
+    public string? Name { get; set; }
+    public string? Value { get; set; }
+    public string? Description { get; set; }
+    public DateTime? StartDate { get; set; }
+    public DateTime? ExpireDate { get; set; }
+    public DomainErrorCode Error { get; set; } = DomainErrorCode.Validation;
+    public string FieldName { get; set; } = "";
+    public string Because { get; set; } = "";
+}
 public class TestInvalidDataGenerator : IEnumerable<object[]>
 {
-    /*
-        string? Name,
-        string? Value,
-        string? Description,
-        DateTime? StartDate,
-        DateTime? ExpireDate,
-        DomainErrorCode error, 
-        string fieldName
-     */
     public static IEnumerable<object[]> UpdateWithErrorOnExpiredConfig()
     {
-        yield return new object[] { ConfigurationFixture.GetValidName(), null!, null!, null!, DomainErrorCode.OnlyDescriptionAllowedToChange, nameof(Configuration.ExpireDate) };
-        yield return new object[] { null!, ConfigurationFixture.GetValidValue(), null!, null!, DomainErrorCode.OnlyDescriptionAllowedToChange, nameof(Configuration.ExpireDate) };
-        yield return new object[] { null!, null!, ConfigurationFixture.GetValidStartDate(ConfigurationStatus.Awaiting), null!, DomainErrorCode.OnlyDescriptionAllowedToChange, nameof(Configuration.ExpireDate) };
-        yield return new object[] { null!, null!, null!, ConfigurationFixture.GetValidExpireDate(ConfigurationStatus.Awaiting), DomainErrorCode.OnlyDescriptionAllowedToChange, nameof(Configuration.ExpireDate) };
+        yield return new object[] {
+            new UpdateWithError()
+            {
+                ConfigurationStatus = ConfigurationStatus.Expired,
+                Name = ConfigurationFixture.GetValidName(),
+                Error = DomainErrorCode.OnlyDescriptionAllowedToChange,
+                FieldName = nameof(Configuration.ExpireDate),
+                Because = "Not possible to change Name on expired config"
+            }
+        };
+
+        yield return new object[] {
+            new UpdateWithError()
+            {
+                ConfigurationStatus = ConfigurationStatus.Expired,
+                Value = ConfigurationFixture.GetValidValue(),
+                Error = DomainErrorCode.OnlyDescriptionAllowedToChange,
+                FieldName = nameof(Configuration.ExpireDate),
+                Because = "Not possible to change Value on expired config"
+            }
+        };
+
+        yield return new object[] {
+            new UpdateWithError()
+            {
+                ConfigurationStatus = ConfigurationStatus.Expired,
+                StartDate = ConfigurationFixture.GetValidStartDate(ConfigurationStatus.Awaiting),
+                Error = DomainErrorCode.OnlyDescriptionAllowedToChange,
+                FieldName = nameof(Configuration.ExpireDate),
+                Because = "Not possible to change StartDate on expired config"
+            }
+        };
+
+        yield return new object[] {
+            new UpdateWithError()
+            {
+                ConfigurationStatus = ConfigurationStatus.Expired,
+                ExpireDate = ConfigurationFixture.GetValidExpireDate(ConfigurationStatus.Awaiting),
+                Error = DomainErrorCode.OnlyDescriptionAllowedToChange,
+                FieldName = nameof(Configuration.ExpireDate),
+                Because = "Not possible to change ExpireDate on expired config"
+            }
+        };
+
+        yield return new object[] {
+            new UpdateWithError()
+            {
+                ConfigurationStatus = ConfigurationStatus.Active,
+                Name = ConfigurationFixture.GetValidName(),
+                Error = DomainErrorCode.ErrorOnChangeName,
+                FieldName = nameof(Configuration.StartDate),
+                Because = "Not possible to change Name on Active config"
+            }
+        };
+
+        yield return new object[] {
+            new UpdateWithError()
+            {
+                ConfigurationStatus = ConfigurationStatus.Active,
+                StartDate = ConfigurationFixture.GetValidStartDate(ConfigurationStatus.Awaiting),
+                Error = DomainErrorCode.ErrorOnChangeName,
+                FieldName = nameof(Configuration.StartDate),
+                Because = "Not possible to change StartDate on Active config"
+            }
+        };
+
+        yield return new object[] {
+            new UpdateWithError()
+            {
+                ConfigurationStatus = ConfigurationStatus.Active,
+                Value = ConfigurationFixture.GetValidValue(),
+                Error = DomainErrorCode.ErrorOnChangeName,
+                FieldName = nameof(Configuration.StartDate),
+                Because = "Not possible to change Value on Active config"
+            }
+        };
+
+        yield return new object[] {
+            new UpdateWithError()
+            {
+                ConfigurationStatus = ConfigurationStatus.Awaiting,
+                Name = "",
+                Error = DomainErrorCode.Validation,
+                FieldName = nameof(Configuration.Name),
+                Because = "Not possible to change name to empty on Awaiting config"
+            }
+        };
+
+        yield return new object[] {
+            new UpdateWithError()
+            {
+                ConfigurationStatus = ConfigurationStatus.Awaiting,
+                Value = "",
+                Error = DomainErrorCode.Validation,
+                FieldName = nameof(Configuration.Value),
+                Because = "Not possible to change Value to empty on Awaiting config"
+            }
+        };
+
+        yield return new object[] {
+            new UpdateWithError()
+            {
+                ConfigurationStatus = ConfigurationStatus.Awaiting,
+                Description = "",
+                Error = DomainErrorCode.Validation,
+                FieldName = nameof(Configuration.Description),
+                Because = "Not possible to change Description to empty on Awaiting config"
+            }
+        };
     }
 
     public static IEnumerable<object[]> ValidConfigurationStatusTestData()

@@ -1,8 +1,8 @@
-﻿using Ahsoka.Application.Common;
+﻿using Ahsoka.Application.Administrations.Configurations.Errors;
+using Ahsoka.Application.Common;
 using Ahsoka.Application.Common.Attributes;
 using Ahsoka.Application.Common.Interfaces;
 using Ahsoka.Application.Common.Models;
-using Ahsoka.Application.Dto.Administrations.Configurations.ApplicationsErrors;
 using Ahsoka.Domain.Entities.Admin.Configurations;
 using Ahsoka.Domain.Entities.Admin.Configurations.Repository;
 using MediatR;
@@ -25,11 +25,18 @@ public class RemoveConfigurationCommandHandler(IConfigurationRepository reposito
 
         if (entity is null)
         {
-            _notifier.Warnings.Add(ConfigurationErrors.ConfigurationNotFound());
+            _notifier.Warnings.Add(Ahsoka.Application.Dto.Common.ApplicationsErrors.Errors.ConfigurationNotFound());
             return;
         }
 
-        entity.Delete();
+        var result = entity.Delete();
+
+        HandleConfigurationResult.HandleResultConfiguration(result, notifier);
+
+        if (_notifier.Errors.Count > 0)
+        {
+            return;
+        }
 
         await repository.UpdateAsync(entity, cancellationToken);
 

@@ -5,7 +5,6 @@ using Ahsoka.Domain.Entities.Admin.Configurations.Events;
 using Ahsoka.TestsUtil;
 using Ahsoka.Unit.Tests.Domain.Entities.Admin.Configurations.Helpers;
 using FluentAssertions;
-using Xunit;
 
 namespace Ahsoka.Unit.Tests.Domain.Entities.Admin.Configurations;
 
@@ -30,7 +29,8 @@ public class ConfigurationTests(ConfigurationTestFixture Fixture)
         config.Should().NotBeNull();
 
         // Assert
-        config!.Events.Should().Contain(x => x.EventName == nameof(ConfigurationCreatedDomainEvent), "New configuration should raise Created Domain Event");
+        config!.Events.Should().Contain(x => x.EventName == nameof(ConfigurationCreatedDomainEvent), 
+            "New configuration should raise Created Domain Event");
     }
 
     [Theory(DisplayName = nameof(ValidConfigurationStatus))]
@@ -61,7 +61,13 @@ public class ConfigurationTests(ConfigurationTestFixture Fixture)
     [MemberData(nameof(TestInvalidDataGenerator.GetPersonFromDataGenerator), MemberType = typeof(TestInvalidDataGenerator))]
     public void ValidationErrorsOnNewConfiguration(BaseConfiguration inputConfig, DomainErrorCode error, string fieldName)
     {
-        var (result, config) = Configuration.New(inputConfig.Name, inputConfig.Value, inputConfig.Description, inputConfig.StartDate, inputConfig.ExpireDate, Guid.NewGuid().ToString());
+        var (result, config) = Configuration.New(
+            name: inputConfig.Name, 
+            value: inputConfig.Value, 
+            description: inputConfig.Description, 
+            startDate: inputConfig.StartDate, 
+            expireDate: inputConfig.ExpireDate, 
+            Guid.NewGuid().ToString());
 
         result.IsFailure.Should().BeTrue();
 
@@ -75,33 +81,88 @@ public class ConfigurationTests(ConfigurationTestFixture Fixture)
     [Trait("Domain", "Configuration - Validation")]
     [MemberData(nameof(TestInvalidDataGenerator.UpdateWithErrorOnExpiredConfig), MemberType = typeof(TestInvalidDataGenerator))]
     public void NotPossibleToChangeDataToExpiredConfiguration(
-        string? Name,
-        string? Value,
-        DateTime? StartDate,
-        DateTime? ExpireDate,
-        DomainErrorCode error, 
-        string fieldName)
+        UpdateWithError updateWithError)
     {
-        var config = ConfigurationFixture.LoadConfiguration(ConfigurationStatus.Expired);
+        var config = ConfigurationFixture.LoadConfiguration(updateWithError.ConfigurationStatus);
 
-        config.Status.Should().Be(ConfigurationStatus.Expired);
+        config.Status.Should().Be(updateWithError.ConfigurationStatus);
 
         // Act
         var result = config.Update(
-            name: Name ?? config.Name,
-            value: Value ?? config.Value,
-            description: config.Description,
-            startDate: StartDate ?? config.StartDate,
-            expireDate: ExpireDate ?? config.ExpireDate
+            name: updateWithError.Name ?? config.Name,
+            value: updateWithError.Value ?? config.Value,
+            description: updateWithError.Description ?? config.Description,
+            startDate: updateWithError.StartDate ?? config.StartDate,
+            expireDate: updateWithError.ExpireDate ?? config.ExpireDate
         );
 
-
-        result!.Errors.Should().Contain(x => x.Error == error);
-        result!.Errors.Should().Contain(x => x.FieldName.Equals(fieldName, StringComparison.InvariantCultureIgnoreCase));
+        result!.Errors.Should().Contain(x => x.Error == updateWithError.Error, updateWithError.Because);
+        result!.Errors.Should().Contain(x => x.FieldName.Equals(updateWithError.FieldName, 
+            StringComparison.InvariantCultureIgnoreCase), updateWithError.Because);
 
         // Assert
         config!.Events.Should().NotContain(x => x.EventName == nameof(ConfigurationUpdatedDomainEvent),
             "Update with error should not publish event");
     }
 
+    [Fact(DisplayName = nameof(DeleteConfigurationInAwaiting))]
+    [Trait("Domain", "Configuration - Validation")]
+    public void DeleteConfigurationInAwaiting()
+    {
+        // Arrange
+        var config = ConfigurationFixture.LoadConfiguration(ConfigurationStatus.Awaiting);
+
+        config.Status.Should().Be(ConfigurationStatus.Awaiting);
+
+        config.Should().NotBeNull();
+
+        // Act
+        var result = config.Delete();
+
+        // Assert
+        config.IsDeleted.Should().BeTrue();
+        result!.Errors.Should().BeEmpty();
+        config!.Events.Should().Contain(x => x.EventName == nameof(ConfigurationDeletedDomainEvent));
+        result!.IsFailure.Should().BeFalse();
+    }
+
+    [Fact(DisplayName = nameof(DeleteConfigurationInActive))]
+    [Trait("Domain", "Configuration - Validation")]
+    public void DeleteConfigurationInActive()
+    {
+        // Arrange
+        var config = ConfigurationFixture.LoadConfiguration(ConfigurationStatus.Active);
+
+        config.Status.Should().Be(ConfigurationStatus.Active);
+
+        config.Should().NotBeNull();
+
+        // Act
+        var result = config.Delete();
+
+        // Assert
+        config.IsDeleted.Should().BeFalse();
+        result!.Errors.Should().Contain(x => x.Error == DomainErrorCode.SetExpireDateToToday);
+        result!.IsFailure.Should().BeTrue();
+    }
+
+    [Fact(DisplayName = nameof(DeleteConfigurationInExpired))]
+    [Trait("Domain", "Configuration - Validation")]
+    public void DeleteConfigurationInExpired()
+    {
+        // Arrange
+        var config = ConfigurationFixture.LoadConfiguration(ConfigurationStatus.Expired);
+
+        config.Status.Should().Be(ConfigurationStatus.Expired);
+
+        config.Should().NotBeNull();
+
+        // Act
+        var result = config.Delete();
+
+        // Assert
+        config.IsDeleted.Should().BeFalse();
+        result!.Errors.Should().Contain(x => x.Error == DomainErrorCode.ErrorOnDelete);
+        result!.IsFailure.Should().BeTrue();
+    }
 }

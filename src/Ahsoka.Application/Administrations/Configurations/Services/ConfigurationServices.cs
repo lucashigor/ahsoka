@@ -15,12 +15,12 @@ public class ConfigurationServices(IConfigurationRepository configurationReposit
         {
             if (listWithSameName.Exists(x => x.StartDate < entity.StartDate && x.ExpireDate > entity.StartDate && x.Id != entity.Id))
             {
-                notifier.Errors.Add(ConfigurationErrors.ThereWillCurrentConfigurationStartDate());
+                notifier.Errors.Add(Ahsoka.Application.Dto.Common.ApplicationsErrors.Errors.ThereWillCurrentConfigurationStartDate());
             }
 
             if (listWithSameName.Exists(x => x.StartDate < entity.ExpireDate && x.ExpireDate > entity.ExpireDate && x.Id != entity.Id))
             {
-                notifier.Errors.Add(ConfigurationErrors.ThereWillCurrentConfigurationEndDate());
+                notifier.Errors.Add(Ahsoka.Application.Dto.Common.ApplicationsErrors.Errors.ThereWillCurrentConfigurationEndDate());
             }
         }
     }

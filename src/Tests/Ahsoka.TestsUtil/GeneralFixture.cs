@@ -1,17 +1,26 @@
-﻿using System.Net.Mime;
-using System.Net;
+﻿using Ahsoka.Application.Common.Models.Authorizations;
 using Bogus;
-using WireMock.Server;
+using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
+using NSubstitute;
+using System.Net;
+using System.Net.Mime;
+using WireMock.Matchers;
 using WireMock.RequestBuilders;
 using WireMock.ResponseBuilders;
-using Newtonsoft.Json;
-using WireMock.Matchers;
+using WireMock.Server;
 
 namespace Ahsoka.TestsUtil;
 
 public static class GeneralFixture
 {
     public static Faker Faker { get; set; } = new Faker();
+    public static ICurrentUserService GetUserService()
+    {
+        ICurrentUserService service = new CurrentUserService(Substitute.For<IHttpContextAccessor>());
+
+        return service;
+    }
 
     public static string GetStringRightSize(int minLength, int maxLength)
     {

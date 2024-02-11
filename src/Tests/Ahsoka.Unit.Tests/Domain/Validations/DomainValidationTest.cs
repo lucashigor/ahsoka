@@ -1,6 +1,5 @@
 ﻿using Ahsoka.Domain.Validation;
 using FluentAssertions;
-using Xunit;
 
 namespace Ahsoka.Unit.Tests.Domain.Validations;
 

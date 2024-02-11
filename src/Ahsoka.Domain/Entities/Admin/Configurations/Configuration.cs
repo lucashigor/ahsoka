@@ -29,7 +29,7 @@ public record struct ConfigurationId(Guid Value)
 }
 public record ConfigurationStatus : Enumeration<int>
 {
-    protected ConfigurationStatus(int id, string name) : base(id, name)
+    private ConfigurationStatus(int id, string name) : base(id, name)
     {
     }
 
@@ -54,6 +54,11 @@ public class Configuration : AggregateRoot<ConfigurationId>
     {
         get
         {
+            if(IsDeleted)
+            {
+                return ConfigurationStatus.Undefined;
+            }
+
             if (StartDate > DateTime.UtcNow)
             {
                 return ConfigurationStatus.Awaiting;
@@ -182,7 +187,7 @@ public class Configuration : AggregateRoot<ConfigurationId>
             || ValueHasChanges))
         {
             var message = "it is not allowed to change name on active configuration";
-            AddNotification(new(nameof(ExpireDate), message, DomainErrorCode.ErrorOnChangeName));
+            AddNotification(new(nameof(StartDate), message, DomainErrorCode.ErrorOnChangeName));
 
             return Validate();
         }
@@ -203,36 +208,32 @@ public class Configuration : AggregateRoot<ConfigurationId>
 
     #endregion
 
-    public void Delete()
+    public Result Delete()
     {
-        if (Status == ConfigurationStatus.Awaiting)
+        if (Status == ConfigurationStatus.Expired)
         {
-            IsDeleted = true;
-
-            RaiseDomainEvent(new ConfigurationDeletedDomainEvent(this));
-
-            return;
+            AddNotification(nameof(ExpireDate),
+                "not allowed to delete expired configurations",
+                DomainErrorCode.ErrorOnDelete);
         }
 
         if (Status == ConfigurationStatus.Active)
         {
             Update(Name, Value, Description, StartDate, DateTime.UtcNow);
-            //AddNotification()
-
-            return;
+            AddWarning(nameof(ExpireDate),
+                "expire date set to today",
+                DomainErrorCode.SetExpireDateToToday);
         }
 
-        if (Status == ConfigurationStatus.Expired)
+        if (Status == ConfigurationStatus.Awaiting)
         {
-            var message = "not allowed to delete expired configurations";
+            IsDeleted = true;
 
-            AddNotification(new(nameof(ExpireDate), message, DomainErrorCode.ErrorOnDelete));
-
-            return;
+            RaiseDomainEvent(new ConfigurationDeletedDomainEvent(this));
         }
 
-        Validate();
+        var result = Validate();
 
-        return;
+        return result;
     }
 }
