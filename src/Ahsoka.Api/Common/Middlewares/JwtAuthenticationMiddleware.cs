@@ -1,10 +1,10 @@
-﻿using System.Security.Claims;
-using System.Security.Cryptography;
-using Ahsoka.Application.Common;
+﻿using Ahsoka.Application.Common;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
+using System.Security.Cryptography;
 
 namespace Ahsoka.Api.Common.Middlewares;
 

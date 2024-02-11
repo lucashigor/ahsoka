@@ -1,7 +1,7 @@
-﻿using System.Reflection;
-using Ahsoka.Application.Common.Attributes;
+﻿using Ahsoka.Application.Common.Attributes;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using System.Reflection;
 
 namespace Ahsoka.Application.Common.Behaviors;
 

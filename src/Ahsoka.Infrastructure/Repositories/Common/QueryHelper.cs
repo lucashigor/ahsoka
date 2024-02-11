@@ -1,9 +1,9 @@
 ﻿namespace Ahsoka.Infrastructure.Repositories.Common;
-using System.Linq.Expressions;
 using Ahsoka.Domain.SeedWork;
 using Ahsoka.Domain.SeedWork.Repository.ISearchableRepository;
 using Ahsoka.Infrastructure.Repositories.Context;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 public class QueryHelper<T, R> where T : Entity<R> where R : IEquatable<R>
 {

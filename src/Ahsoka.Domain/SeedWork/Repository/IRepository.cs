@@ -1,6 +1,4 @@
-﻿using Ahsoka.Domain.SeedWork;
-
-namespace Ahsoka.Domain.SeedWork.Repository;
+﻿namespace Ahsoka.Domain.SeedWork.Repository;
 
 public interface IRepository<T, R> where T : Entity<R> where R : IEquatable<R>
 {

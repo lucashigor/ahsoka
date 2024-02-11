@@ -1,14 +1,12 @@
 ﻿using Ahsoka.Application.Administrations.Configurations.Commands;
 using Ahsoka.Application.Administrations.Configurations.Services;
 using Ahsoka.Application.Common.Models;
-using Ahsoka.Application.Dto.Administrations.Configurations.ApplicationsErrors;
 using Ahsoka.Domain.Entities.Admin.Configurations;
 using Ahsoka.Domain.Entities.Admin.Configurations.Repository;
 using Ahsoka.TestsUtil;
 using Ahsoka.Unit.Tests.Domain.Entities.Admin.Configurations;
 using FluentAssertions;
 using NSubstitute;
-using Xunit;
 
 namespace Ahsoka.Unit.Tests.Application.Administrations.Configurations.Services;
 
@@ -84,7 +82,7 @@ public class ConfigurationServicesTests
     public async Task HandleDatesWithSameNameOpeningDuringDatabaseAsync()
     {
         var validData = ConfigurationFixture.GetValidConfiguration();
-                
+
         var beforeConfig = ConfigurationFixture.LoadConfiguration(new BaseConfiguration(
             Name: validData.Name,
             Value: validData.Value,

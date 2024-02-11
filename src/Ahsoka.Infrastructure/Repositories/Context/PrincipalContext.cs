@@ -1,7 +1,7 @@
-﻿using System.Reflection;
-using Ahsoka.Domain.Entities.Admin.Configurations;
+﻿using Ahsoka.Domain.Entities.Admin.Configurations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using System.Reflection;
 
 namespace Ahsoka.Infrastructure.Repositories.Context;
 

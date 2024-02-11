@@ -8,17 +8,17 @@ namespace Ahsoka.Application.Administrations.Configurations.Queries;
 
 public record ListConfigurationsQuery
     (int Page, int PerPage, string? Search, string? Sort, SearchOrder Dir)
-    : PaginatedListInput(Page, PerPage, Search, Sort, Dir), 
+    : PaginatedListInput(Page, PerPage, Search, Sort, Dir),
     IRequest<ListConfigurationsOutput>;
 
-public class ListConfigurationsQueryHandler(IConfigurationRepository configurationRepository) 
+public class ListConfigurationsQueryHandler(IConfigurationRepository configurationRepository)
     : IRequestHandler<ListConfigurationsQuery, ListConfigurationsOutput>
 {
     public async Task<ListConfigurationsOutput> Handle(ListConfigurationsQuery request, CancellationToken cancellationToken)
     {
         var searchOutput = await configurationRepository.SearchAsync(
             new(
-                request.Page,      
+                request.Page,
                 request.PerPage,
                 request.Search,
                 request.Sort,

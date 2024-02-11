@@ -2,8 +2,8 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: ahsoka-adasit
-  name: ahsoka-adasit-svc
+    app: andor-familybudget
+  name: andor-familybudget-svc
 spec:
   ports:
     - port: 80

@@ -14,7 +14,7 @@ public record RemoveConfigurationCommand(ConfigurationId Id) : IRequest;
 public class RemoveConfigurationCommandHandler(IConfigurationRepository repository,
     IUnitOfWork unitOfWork,
     Notifier notifier)
-    : BaseCommands(notifier),  IRequestHandler<RemoveConfigurationCommand>
+    : BaseCommands(notifier), IRequestHandler<RemoveConfigurationCommand>
 {
 
     [Transaction]
@@ -25,7 +25,7 @@ public class RemoveConfigurationCommandHandler(IConfigurationRepository reposito
 
         if (entity is null)
         {
-            _notifier.Warnings.Add(Ahsoka.Application.Dto.Common.ApplicationsErrors.Errors.ConfigurationNotFound());
+            _notifier.Warnings.Add(Dto.Common.ApplicationsErrors.Errors.ConfigurationNotFound());
             return;
         }
 

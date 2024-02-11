@@ -1,6 +1,4 @@
-﻿using Ahsoka.Domain.Common;
-
-namespace Ahsoka.Domain.SeedWork.Repository.ISearchableRepository;
+﻿namespace Ahsoka.Domain.SeedWork.Repository.ISearchableRepository;
 
 public enum SearchOrder
 {

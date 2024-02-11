@@ -1,5 +1,5 @@
-﻿using System.Net;
-using Ahsoka.Application.Dto.Common.ApplicationsErrors.Models;
+﻿using Ahsoka.Application.Dto.Common.ApplicationsErrors.Models;
+using System.Net;
 
 namespace Ahsoka.Application.Common.Exceptions;
 

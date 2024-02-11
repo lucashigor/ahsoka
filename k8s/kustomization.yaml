@@ -1,11 +1,11 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - namespace.yaml
-  - deployment.yaml
-  - service.yaml
+- namespace.yaml
+- deployment.yaml
+- service.yaml
 namespace: prod
 images:
-  - name: ahsoka-adasit
-    newName: adasit/ahsoka-adasit
-    newTag: aee100e4059b489782263cc14b01e9cb99e2bc36
+- name: andor-familybudget
+  newName: adasit/andor-familybudget
+  newTag: cfac3a4e74ba32367a7d4f9f6d3e6f88ac460f7f

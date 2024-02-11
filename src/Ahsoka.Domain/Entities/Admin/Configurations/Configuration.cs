@@ -54,7 +54,7 @@ public class Configuration : AggregateRoot<ConfigurationId>
     {
         get
         {
-            if(IsDeleted)
+            if (IsDeleted)
             {
                 return ConfigurationStatus.Undefined;
             }
@@ -120,7 +120,7 @@ public class Configuration : AggregateRoot<ConfigurationId>
 
         var result = entity.Validate();
 
-        if(result.IsFailure)
+        if (result.IsFailure)
         {
             return (result, null);
         }
@@ -147,7 +147,7 @@ public class Configuration : AggregateRoot<ConfigurationId>
         AddNotification(description.NotNullOrEmptyOrWhiteSpace());
         AddNotification(description.BetweenLength(3, 1000));
 
-        if(Notifications.Count != 0)
+        if (Notifications.Count != 0)
         {
             return;
         }

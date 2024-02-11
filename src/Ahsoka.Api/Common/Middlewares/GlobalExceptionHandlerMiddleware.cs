@@ -2,12 +2,15 @@
 
 using Ahsoka.Application.Common.Exceptions;
 using Ahsoka.Application.Dto.Common.ApplicationsErrors;
+using Ahsoka.Application.Dto.Common.ApplicationsErrors.Models;
 using Ahsoka.Application.Dto.Common.Responses;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Data;
 using System.Diagnostics;
 using System.Net;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 public class GlobalExceptionHandlerMiddleware(ILogger<GlobalExceptionHandlerMiddleware> logger) : IMiddleware
 {
@@ -27,7 +30,11 @@ public class GlobalExceptionHandlerMiddleware(ILogger<GlobalExceptionHandlerMidd
     }
     private static async Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
-        JsonSerializerOptions jsonOptions = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+        JsonSerializerOptions jsonOptions = new() {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        };
+
+        jsonOptions.Converters.Add(new ErrorCodeConverter());
 
         var traceId = Activity.Current?.TraceId.ToString() ?? string.Empty;
         string serialized;

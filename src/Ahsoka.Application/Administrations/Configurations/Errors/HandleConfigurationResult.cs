@@ -2,7 +2,6 @@
 using Ahsoka.Application.Dto.Administrations.Configurations.ApplicationsErrors;
 using Ahsoka.Application.Dto.Common.ApplicationsErrors.Models;
 using Ahsoka.Domain.Common.ValuesObjects;
-using FluentValidation.Internal;
 
 namespace Ahsoka.Application.Administrations.Configurations.Errors;
 
@@ -19,7 +18,7 @@ public static class HandleConfigurationResult
         {
             errorsMapping.TryGetValue(error.Error, out var value);
 
-            if(value != null)
+            if (value != null)
             {
                 notifier.Errors.Add(Dto.Common.ApplicationsErrors.Errors.ConfigurationValidation()
                     .ChangeInnerMessage(error.Message ?? string.Empty));

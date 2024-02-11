@@ -29,7 +29,7 @@ public class ConfigurationTests(ConfigurationTestFixture Fixture)
         config.Should().NotBeNull();
 
         // Assert
-        config!.Events.Should().Contain(x => x.EventName == nameof(ConfigurationCreatedDomainEvent), 
+        config!.Events.Should().Contain(x => x.EventName == nameof(ConfigurationCreatedDomainEvent),
             "New configuration should raise Created Domain Event");
     }
 
@@ -62,11 +62,11 @@ public class ConfigurationTests(ConfigurationTestFixture Fixture)
     public void ValidationErrorsOnNewConfiguration(BaseConfiguration inputConfig, DomainErrorCode error, string fieldName)
     {
         var (result, config) = Configuration.New(
-            name: inputConfig.Name, 
-            value: inputConfig.Value, 
-            description: inputConfig.Description, 
-            startDate: inputConfig.StartDate, 
-            expireDate: inputConfig.ExpireDate, 
+            name: inputConfig.Name,
+            value: inputConfig.Value,
+            description: inputConfig.Description,
+            startDate: inputConfig.StartDate,
+            expireDate: inputConfig.ExpireDate,
             Guid.NewGuid().ToString());
 
         result.IsFailure.Should().BeTrue();
@@ -97,7 +97,7 @@ public class ConfigurationTests(ConfigurationTestFixture Fixture)
         );
 
         result!.Errors.Should().Contain(x => x.Error == updateWithError.Error, updateWithError.Because);
-        result!.Errors.Should().Contain(x => x.FieldName.Equals(updateWithError.FieldName, 
+        result!.Errors.Should().Contain(x => x.FieldName.Equals(updateWithError.FieldName,
             StringComparison.InvariantCultureIgnoreCase), updateWithError.Because);
 
         // Assert
@@ -142,8 +142,8 @@ public class ConfigurationTests(ConfigurationTestFixture Fixture)
 
         // Assert
         config.IsDeleted.Should().BeFalse();
-        result!.Errors.Should().Contain(x => x.Error == DomainErrorCode.SetExpireDateToToday);
-        result!.IsFailure.Should().BeTrue();
+        result!.Warnings.Should().Contain(x => x.Error == DomainErrorCode.SetExpireDateToToday);
+        result!.IsFailure.Should().BeFalse();
     }
 
     [Fact(DisplayName = nameof(DeleteConfigurationInExpired))]

@@ -1,10 +1,10 @@
-﻿using System.Linq.Expressions;
-using Ahsoka.Domain.Entities.Admin.Configurations;
+﻿using Ahsoka.Domain.Entities.Admin.Configurations;
 using Ahsoka.Domain.Entities.Admin.Configurations.Repository;
 using Ahsoka.Domain.SeedWork.Repository.ISearchableRepository;
 using Ahsoka.Infrastructure.Repositories.Common;
 using Ahsoka.Infrastructure.Repositories.Context;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Ahsoka.Infrastructure.Repositories.Configurations;
 

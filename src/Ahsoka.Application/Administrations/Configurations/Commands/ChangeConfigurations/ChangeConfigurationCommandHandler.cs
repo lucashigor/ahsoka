@@ -32,19 +32,19 @@ public class ChangeConfigurationCommandHandler(IConfigurationRepository reposito
             _notifier.Errors.Add(Dto.Common.ApplicationsErrors.Errors.ConfigurationNotFound());
             return null;
         }
-        
+
         var result = entity.Update(request.Name,
             request.Value,
             request.Description,
             request.StartDate,
             request.ExpireDate);
-        
+
         if (result.IsFailure)
         {
             HandleConfigurationResult.HandleResultConfiguration(result, notifier);
             return null;
         }
-        
+
         await configurationServices.Handle(entity, cancellationToken);
 
         if (_notifier.Errors.Count > 0)

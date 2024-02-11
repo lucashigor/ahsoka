@@ -4,5 +4,5 @@ namespace Ahsoka.Application.Administrations.Configurations.Errors;
 
 public static class ConfigurationApplicationError
 {
-    public static ErrorModel Validation = new (1000, "");
+    public static ErrorModel Validation = new(1000, "");
 }

@@ -10,7 +10,6 @@ using Ahsoka.Application.Dto.Administrations.Configurations.Responses;
 using Ahsoka.Application.Dto.Common.Requests;
 using Ahsoka.Application.Dto.Common.Responses;
 using Asp.Versioning;
-using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
@@ -23,10 +22,10 @@ namespace Ahsoka.Api.Controllers.Administrations.Configurations.v1;
 [ApiController]
 [ApiVersion("1.0")]
 [Authorize(AuthenticationSchemes = "Bearer")]
-[Route("api/v{version:apiVersion}/[controller]")]
+[Route("v{version:apiVersion}/[controller]")]
 [Produces(MediaTypeNames.Application.Json)]
 [Consumes(MediaTypeNames.Application.Json)]
-public class ConfigurationController(Notifier notifier, IMediator mediator) : BaseController(notifier)
+public class ConfigurationsController(Notifier notifier, IMediator mediator) : BaseController(notifier)
 {
     private readonly IMediator _mediator = mediator;
 
@@ -75,9 +74,7 @@ public class ConfigurationController(Notifier notifier, IMediator mediator) : Ba
             return Result<ConfigurationOutput>(null!);
         }
 
-        var input = request.MapPatchInputToPatchCommand<BaseConfiguration, _application.BaseConfiguration>();
-
-        var command = new ModifyConfigurationCommand(id, input);
+        var command = new ModifyConfigurationCommand(id, request);
 
         var output = await _mediator.Send(command, cancellationToken);
 

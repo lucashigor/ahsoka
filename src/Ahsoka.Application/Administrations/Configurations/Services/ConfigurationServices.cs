@@ -1,5 +1,4 @@
 ﻿using Ahsoka.Application.Common.Models;
-using Ahsoka.Application.Dto.Administrations.Configurations.ApplicationsErrors;
 using Ahsoka.Domain.Entities.Admin.Configurations;
 using Ahsoka.Domain.Entities.Admin.Configurations.Repository;
 

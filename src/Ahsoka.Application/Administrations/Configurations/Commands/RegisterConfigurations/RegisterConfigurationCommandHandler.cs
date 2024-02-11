@@ -1,4 +1,5 @@
-﻿using Ahsoka.Application.Administrations.Configurations.Services;
+﻿using Ahsoka.Application.Administrations.Configurations.Errors;
+using Ahsoka.Application.Administrations.Configurations.Services;
 using Ahsoka.Application.Common;
 using Ahsoka.Application.Common.Attributes;
 using Ahsoka.Application.Common.Interfaces;
@@ -10,7 +11,6 @@ using Ahsoka.Domain.Entities.Admin.Configurations.Repository;
 using Mapster;
 using MediatR;
 using _dto = Ahsoka.Application.Dto.Administrations.Configurations.Requests;
-using Ahsoka.Application.Administrations.Configurations.Errors;
 
 namespace Ahsoka.Application.Administrations.Configurations.Commands.RegisterConfiguration;
 public record RegisterConfigurationCommand(_dto.BaseConfiguration BaseConfiguration)
