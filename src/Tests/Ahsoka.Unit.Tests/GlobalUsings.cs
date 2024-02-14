@@ -1,1 +1,1 @@
-﻿global using global::Xunit;
+﻿global using Xunit;

@@ -1,5 +1,7 @@
 ﻿using Ahsoka.Application.Administrations.Configurations.Commands;
 using Ahsoka.Domain.Entities.Admin.Configurations;
+using Ahsoka.Infrastructure.Repositories.Context;
+using Microsoft.EntityFrameworkCore;
 
 namespace Ahsoka.TestsUtil;
 
@@ -32,6 +34,21 @@ public static class ConfigurationFixture
         }
 
         return GeneralFixture.CreateInstanceAndSetProperties<Configuration>(propertyValues);
+    }
+
+    public static Configuration GetValidConfigurationAtDatabase(DbContextOptions<PrincipalContext> dbOptions, 
+        ConfigurationStatus Status,
+        Guid UserId)
+    {
+        var item = GetValidConfiguration(UserId, Status);
+
+        using (var ctx = new PrincipalContext(dbOptions))
+        {
+            ctx.Configuration.Add(item);
+            ctx.SaveChanges();
+        }
+
+        return item;
     }
 
     public static Configuration GetValidConfiguration()
