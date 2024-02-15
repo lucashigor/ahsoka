@@ -8,7 +8,7 @@ public class RepositoryTestGeneric<TEntity, TEntityId, TRepository>(DbContextOpt
     where TRepository : ICommandRepository<TEntity, TEntityId>
 {
 
-    public async Task CreateEntityAsync(Func<TEntity> GetEntity)
+    public async Task<bool> CreateEntityAsync(Func<TEntity> GetEntity)
     {
         //Arrange
         using PrincipalContext context = new(_dbOptions);
@@ -35,9 +35,11 @@ public class RepositoryTestGeneric<TEntity, TEntityId, TRepository>(DbContextOpt
             var database = context2.Set<TEntity>().Find(item.Id);
             database.Should().NotBeNull("should not affect before unit of work commit");
         }
+
+        return true;
     }
 
-    public async Task GetEntityByIdAsync(Func<TEntity> GetEntityFromDatabase)
+    public async Task<bool> GetEntityByIdAsync(Func<TEntity> GetEntityFromDatabase)
     {
         //Arrange
         using PrincipalContext context = new(_dbOptions);
@@ -51,9 +53,11 @@ public class RepositoryTestGeneric<TEntity, TEntityId, TRepository>(DbContextOpt
 
         //Assert
         database.Should().NotBeNull();
+
+        return true;
     }
 
-    public async Task DeleteEntityAsync(Func<TEntity> GetEntityFromDatabase)
+    public async Task<bool> DeleteEntityAsync(Func<TEntity> GetEntityFromDatabase)
     {
         //Arrange
         var item = GetEntityFromDatabase.Invoke();
@@ -79,5 +83,7 @@ public class RepositoryTestGeneric<TEntity, TEntityId, TRepository>(DbContextOpt
             var database = context2.Set<TEntity>().Find(item.Id);
             database.Should().BeNull("should not affect before unit of work commit");
         }
+
+        return true;
     }
 }

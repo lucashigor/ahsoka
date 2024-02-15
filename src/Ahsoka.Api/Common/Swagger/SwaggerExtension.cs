@@ -1,4 +1,6 @@
-﻿using Ahsoka.Api.Common.Swagger.OperationFilter;
+﻿// Ignore Spelling: app
+
+using Ahsoka.Api.Common.Swagger.OperationFilter;
 using Ahsoka.Application.Common;
 using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
@@ -14,7 +16,7 @@ public static class SwaggerExtension
     {
         var authOptions = configuration.GetSection("IdentityProvider").Get<IdentityProvider>() ?? new IdentityProvider();
 
-        var scopes = authOptions.Scopes is not null ? authOptions.Scopes.ToDictionary(scope => scope) : null;
+        var scopes = authOptions.Scopes?.ToDictionary(scope => scope);
 
         services.AddSwaggerGen(options =>
         {
@@ -46,15 +48,16 @@ public static class SwaggerExtension
 
     public static IApplicationBuilder UseCustomSwagger(this IApplicationBuilder app,
         IOptions<ApplicationSettings> configuration,
-        IApiVersionDescriptionProvider apiVersionDescriptionProvider)
+        IApiVersionDescriptionProvider versionDescription)
     {
         app.UseSwagger();
         app.UseSwaggerUI(o =>
         {
-            foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions)
+            foreach (var description in
+                versionDescription.ApiVersionDescriptions.Select(x => x.GroupName))
             {
-                o.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json",
-                    $"Ahsoka - {description.GroupName.ToUpper()}");
+                o.SwaggerEndpoint($"/swagger/{description}/swagger.json",
+                    $"Ahsoka - {description.ToUpper()}");
 
                 o.RoutePrefix = string.Empty;
 

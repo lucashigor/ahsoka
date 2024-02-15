@@ -1,13 +1,12 @@
 ﻿namespace Ahsoka.Application.Common.Extensions;
 using Ahsoka.Application.Dto.Common.ApplicationsErrors;
-using Ahsoka.Application.Dto.Common.ApplicationsErrors.Models;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.JsonPatch.Operations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-public static class JsonPatchDocumentExtensions
+public static class JSonPatchDocumentExtensions
 {
     public static void Validate<T>(
         this JsonPatchDocument<T> payload,
@@ -29,9 +28,9 @@ public static class JsonPatchDocumentExtensions
                 op += $"{item},";
             }
 
-            err.ChangeInnerMessage(op ?? "");
+            err.ChangeInnerMessage(op);
 
-            throw new BusinessException(err);
+            throw new Exception(err.Message);
         }
 
         if (operations.Any(x => !acceptedPaths.Contains(x.path, StringComparer.OrdinalIgnoreCase)))
@@ -50,9 +49,9 @@ public static class JsonPatchDocumentExtensions
                 op += $"{item},";
             }
 
-            err.ChangeInnerMessage(op ?? "");
+            err.ChangeInnerMessage(op);
 
-            throw new BusinessException(err);
+            throw new Exception(err.Message);
         };
     }
 

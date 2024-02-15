@@ -11,7 +11,10 @@ public class ConfigurationRepositoryTests(ConfigurationTestFixture fixture)
     {
         var (_, repository) = GetGenericRepositoryTest();
 
-        await repository.CreateEntityAsync(() => ConfigurationFixture.GetValidConfiguration());
+        var result = await repository.CreateEntityAsync(() => 
+            ConfigurationFixture.GetValidConfiguration());
+
+        result.Should().BeTrue();
     }
 
     [Fact(DisplayName = nameof(GetByIdConfigurationAsync))]
@@ -20,10 +23,13 @@ public class ConfigurationRepositoryTests(ConfigurationTestFixture fixture)
     {
         var (config, repository) = GetGenericRepositoryTest();
 
-        await repository.GetEntityByIdAsync(() => ConfigurationFixture.GetValidConfigurationAtDatabase(
-            config,
-            ConfigurationState.Awaiting,
-            Guid.NewGuid()));
+        var result = await repository.GetEntityByIdAsync(() => 
+            ConfigurationFixture.GetValidConfigurationAtDatabase(
+                config,
+                ConfigurationState.Awaiting,
+                Guid.NewGuid()));
+
+        result.Should().BeTrue();
     }
 
     [Fact(DisplayName = nameof(DeleteConfigurationAsync))]
@@ -32,10 +38,13 @@ public class ConfigurationRepositoryTests(ConfigurationTestFixture fixture)
     {
         var (config, repository) = GetGenericRepositoryTest();
 
-        await repository.DeleteEntityAsync(() => ConfigurationFixture.GetValidConfigurationAtDatabase(
-            config,
-            ConfigurationState.Awaiting,
-            Guid.NewGuid()));
+        var result = await repository.DeleteEntityAsync(() => 
+            ConfigurationFixture.GetValidConfigurationAtDatabase(
+                config,
+                ConfigurationState.Awaiting,
+                Guid.NewGuid()));
+
+        result.Should().BeTrue();
     }
 
     [Fact(DisplayName = nameof(UpdateConfigurationAsync))]
