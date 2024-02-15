@@ -9,7 +9,7 @@ using FluentAssertions;
 namespace Ahsoka.Unit.Tests.Domain.Entities.Admin.Configurations;
 
 [Collection(nameof(ConfigurationTestFixture))]
-public class ConfigurationTests(ConfigurationTestFixture Fixture)
+public class ConfigurationTests()
 {
     [Fact(DisplayName = nameof(NewConfigurationValidInputShouldNotHaveNotifications))]
     [Trait("Domain", "Configuration - Validation")]
@@ -20,8 +20,8 @@ public class ConfigurationTests(ConfigurationTestFixture Fixture)
                 name: ConfigurationFixture.GetValidName(),
                 value: ConfigurationFixture.GetValidValue(),
                 description: ConfigurationFixture.GetValidDescription(),
-                startDate: ConfigurationFixture.GetValidStartDate(ConfigurationStatus.Awaiting),
-                expireDate: ConfigurationFixture.GetValidExpireDate(ConfigurationStatus.Awaiting),
+                startDate: ConfigurationFixture.GetValidStartDate(ConfigurationState.Awaiting),
+                expireDate: ConfigurationFixture.GetValidExpireDate(ConfigurationState.Awaiting),
                 userId: Guid.NewGuid().ToString());
 
         result.IsSuccess.Should().BeTrue();
@@ -36,7 +36,7 @@ public class ConfigurationTests(ConfigurationTestFixture Fixture)
     [Theory(DisplayName = nameof(ValidConfigurationStatus))]
     [Trait("Domain", "Configuration - Validation")]
     [MemberData(nameof(TestInvalidDataGenerator.ValidConfigurationStatusTestData), MemberType = typeof(TestInvalidDataGenerator))]
-    public void ValidConfigurationStatus(int startOffsetMonths, int? expireOffsetMonths, ConfigurationStatus expectedStatus)
+    public void ValidConfigurationStatus(int startOffsetMonths, int? expireOffsetMonths, ConfigurationState expectedStatus)
     {
         // Arrange
         DateTime startDate = DateTime.UtcNow.AddMonths(startOffsetMonths);
@@ -53,7 +53,7 @@ public class ConfigurationTests(ConfigurationTestFixture Fixture)
             ));
 
         // Assert
-        configuration.Status.Should().Be(expectedStatus);
+        configuration.State.Should().Be(expectedStatus);
     }
 
     [Theory(DisplayName = nameof(ValidationErrorsOnNewConfiguration))]
@@ -85,7 +85,7 @@ public class ConfigurationTests(ConfigurationTestFixture Fixture)
     {
         var config = ConfigurationFixture.LoadConfiguration(updateWithError.ConfigurationStatus);
 
-        config.Status.Should().Be(updateWithError.ConfigurationStatus);
+        config.State.Should().Be(updateWithError.ConfigurationStatus);
 
         // Act
         var result = config.Update(
@@ -110,9 +110,9 @@ public class ConfigurationTests(ConfigurationTestFixture Fixture)
     public void DeleteConfigurationInAwaiting()
     {
         // Arrange
-        var config = ConfigurationFixture.LoadConfiguration(ConfigurationStatus.Awaiting);
+        var config = ConfigurationFixture.LoadConfiguration(ConfigurationState.Awaiting);
 
-        config.Status.Should().Be(ConfigurationStatus.Awaiting);
+        config.State.Should().Be(ConfigurationState.Awaiting);
 
         config.Should().NotBeNull();
 
@@ -131,9 +131,9 @@ public class ConfigurationTests(ConfigurationTestFixture Fixture)
     public void DeleteConfigurationInActive()
     {
         // Arrange
-        var config = ConfigurationFixture.LoadConfiguration(ConfigurationStatus.Active);
+        var config = ConfigurationFixture.LoadConfiguration(ConfigurationState.Active);
 
-        config.Status.Should().Be(ConfigurationStatus.Active);
+        config.State.Should().Be(ConfigurationState.Active);
 
         config.Should().NotBeNull();
 
@@ -151,9 +151,9 @@ public class ConfigurationTests(ConfigurationTestFixture Fixture)
     public void DeleteConfigurationInExpired()
     {
         // Arrange
-        var config = ConfigurationFixture.LoadConfiguration(ConfigurationStatus.Expired);
+        var config = ConfigurationFixture.LoadConfiguration(ConfigurationState.Expired);
 
-        config.Status.Should().Be(ConfigurationStatus.Expired);
+        config.State.Should().Be(ConfigurationState.Expired);
 
         config.Should().NotBeNull();
 

@@ -23,9 +23,7 @@ public class IntegrationsTestsFixture : IAsyncLifetime
     {
         await _dbContainer.StartAsync();
 
-        using (var context = new PrincipalContext(CreateDatabase()))
-        {
-            context.Database.Migrate();
-        }
+        using var context = new PrincipalContext(CreateDatabase());
+        context.Database.Migrate();
     }
 }

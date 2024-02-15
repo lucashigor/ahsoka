@@ -6,7 +6,6 @@ using Ahsoka.Application.Common.Interfaces;
 using Ahsoka.Application.Common.Models;
 using Ahsoka.Application.Dto.Administrations.Configurations.Responses;
 using Ahsoka.Application.Dto.Common.ApplicationsErrors.Models;
-using Ahsoka.Domain.Common.ValuesObjects;
 using Ahsoka.Domain.Entities.Admin.Configurations;
 using Ahsoka.Domain.Entities.Admin.Configurations.Repository;
 using Mapster;
@@ -19,7 +18,7 @@ namespace Ahsoka.Application.Administrations.Configurations.Commands.ModifyConfi
 public record ModifyConfigurationCommand(ConfigurationId Id,
     JsonPatchDocument<Dto.Administrations.Configurations.Requests.BaseConfiguration> PatchDocument) : IRequest<ConfigurationOutput?>;
 
-public class ModifyConfigurationCommandHandler(IConfigurationRepository repository,
+public class ModifyConfigurationCommandHandler(ICommandsConfigurationRepository repository,
     IUnitOfWork unitOfWork,
     Notifier notifier,
     IConfigurationServices configurationServices) : BaseCommands(notifier), IRequestHandler<ModifyConfigurationCommand, ConfigurationOutput?>
@@ -30,11 +29,11 @@ public class ModifyConfigurationCommandHandler(IConfigurationRepository reposito
         {
             request.PatchDocument.Validate(
                    OperationType.Replace,
-                   new List<string> { $"/{nameof(Configuration.Name)}",
+                   [ $"/{nameof(Configuration.Name)}",
                     $"/{nameof(Configuration.Value)}",
                     $"/{nameof(Configuration.Description)}",
                     $"/{nameof(Configuration.StartDate)}",
-                    $"/{nameof(Configuration.ExpireDate)}" }
+                    $"/{nameof(Configuration.ExpireDate)}" ]
                    );
         }
         catch (BusinessException ex)
@@ -47,7 +46,7 @@ public class ModifyConfigurationCommandHandler(IConfigurationRepository reposito
 
         if (entity == null)
         {
-            notifier.Errors.Add(Dto.Common.ApplicationsErrors.Errors.ConfigurationNotFound());
+            _notifier.Errors.Add(Dto.Common.ApplicationsErrors.Errors.ConfigurationNotFound());
             return null!;
         }
 
@@ -69,7 +68,7 @@ public class ModifyConfigurationCommandHandler(IConfigurationRepository reposito
 
         if (result.IsFailure)
         {
-            HandleConfigurationResult.HandleResultConfiguration(result, notifier);
+            HandleConfigurationResult.HandleResultConfiguration(result, _notifier);
             return null;
         }
 

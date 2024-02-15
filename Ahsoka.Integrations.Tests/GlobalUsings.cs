@@ -1,1 +1,10 @@
 global using Xunit;
+global using FluentAssertions;
+global using Microsoft.EntityFrameworkCore;
+global using Ahsoka.Domain.SeedWork;
+global using Ahsoka.Domain.SeedWork.Repository;
+global using Ahsoka.Infrastructure.Repositories.Common;
+global using Ahsoka.Infrastructure.Repositories.Context;
+global using Ahsoka.Domain.Entities.Admin.Configurations;
+global using Ahsoka.Infrastructure.Repositories.Configurations;
+global using Ahsoka.TestsUtil;

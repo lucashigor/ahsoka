@@ -5,15 +5,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Ahsoka.Infrastructure.Repositories.Common;
 
-public class UnitOfWork : IUnitOfWork
+public class UnitOfWork(PrincipalContext _context) : IUnitOfWork
 {
-    private readonly PrincipalContext _context;
-
-    public UnitOfWork(PrincipalContext context)
-    {
-        _context = context;
-    }
-
     public async Task CommitAsync(CancellationToken cancellationToken)
     {
         await _context.SaveChangesAsync(cancellationToken);
@@ -29,7 +22,7 @@ public class UnitOfWork : IUnitOfWork
         return Task.CompletedTask;
     }
 
-    private async Task DispatchDomainEventsAsync()
+    private Task DispatchDomainEventsAsync()
     {
         var domainEntities = _context.ChangeTracker
             .Entries<IAggregateRoot>()
@@ -44,6 +37,9 @@ public class UnitOfWork : IUnitOfWork
 
         foreach (var domainEvent in domainEvents.OrderBy(x => x.EventDateUtc))
         { }
+
+        return Task.CompletedTask;
+
         //await _mediator.Publish(domainEvent);
     }
 }

@@ -11,7 +11,7 @@ namespace Ahsoka.Application.Administrations.Configurations.Commands.RemoveConfi
 
 public record RemoveConfigurationCommand(ConfigurationId Id) : IRequest;
 
-public class RemoveConfigurationCommandHandler(IConfigurationRepository repository,
+public class RemoveConfigurationCommandHandler(ICommandsConfigurationRepository repository,
     IUnitOfWork unitOfWork,
     Notifier notifier)
     : BaseCommands(notifier), IRequestHandler<RemoveConfigurationCommand>
@@ -31,7 +31,7 @@ public class RemoveConfigurationCommandHandler(IConfigurationRepository reposito
 
         var result = entity.Delete();
 
-        HandleConfigurationResult.HandleResultConfiguration(result, notifier);
+        HandleConfigurationResult.HandleResultConfiguration(result, _notifier);
 
         if (_notifier.Errors.Count > 0)
         {

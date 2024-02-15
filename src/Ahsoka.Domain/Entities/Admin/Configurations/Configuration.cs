@@ -27,16 +27,16 @@ public record struct ConfigurationId(Guid Value)
 
     public static implicit operator Guid(ConfigurationId id) => id.Value;
 }
-public record ConfigurationStatus : Enumeration<int>
+public record ConfigurationState : Enumeration<int>
 {
-    private ConfigurationStatus(int id, string name) : base(id, name)
+    private ConfigurationState(int id, string name) : base(id, name)
     {
     }
 
-    public static readonly ConfigurationStatus Undefined = new(0, nameof(Undefined));
-    public static readonly ConfigurationStatus Awaiting = new(1, nameof(Awaiting));
-    public static readonly ConfigurationStatus Active = new(2, nameof(Active));
-    public static readonly ConfigurationStatus Expired = new(3, nameof(Expired));
+    public static readonly ConfigurationState Undefined = new(0, nameof(Undefined));
+    public static readonly ConfigurationState Awaiting = new(1, nameof(Awaiting));
+    public static readonly ConfigurationState Active = new(2, nameof(Active));
+    public static readonly ConfigurationState Expired = new(3, nameof(Expired));
 }
 
 public class Configuration : AggregateRoot<ConfigurationId>
@@ -50,31 +50,31 @@ public class Configuration : AggregateRoot<ConfigurationId>
     public DateTime CreatedAt { get; private set; }
     public bool IsDeleted { get; private set; }
 
-    public ConfigurationStatus Status
+    public ConfigurationState State
     {
         get
         {
             if (IsDeleted)
             {
-                return ConfigurationStatus.Undefined;
+                return ConfigurationState.Undefined;
             }
 
             if (StartDate > DateTime.UtcNow)
             {
-                return ConfigurationStatus.Awaiting;
+                return ConfigurationState.Awaiting;
             }
 
             if (ExpireDate.HasValue is false || ExpireDate.Value > DateTime.UtcNow)
             {
-                return ConfigurationStatus.Active;
+                return ConfigurationState.Active;
             }
 
             if (ExpireDate.HasValue && ExpireDate.Value < DateTime.UtcNow)
             {
-                return ConfigurationStatus.Expired;
+                return ConfigurationState.Expired;
             }
 
-            return ConfigurationStatus.Undefined;
+            return ConfigurationState.Undefined;
         }
     }
 
@@ -169,7 +169,7 @@ public class Configuration : AggregateRoot<ConfigurationId>
         var NameHasChanges = Name.Equals(name) is false;
         var ValueHasChanges = Value.Equals(value) is false;
 
-        if (Status.Equals(ConfigurationStatus.Expired) &&
+        if (State.Equals(ConfigurationState.Expired) &&
                 (StartDateHasChanges
                 || ExpireDateHasChanges
                 || NameHasChanges
@@ -181,7 +181,7 @@ public class Configuration : AggregateRoot<ConfigurationId>
             return Validate();
         }
 
-        if (Status.Equals(ConfigurationStatus.Active) &&
+        if (State.Equals(ConfigurationState.Active) &&
             (NameHasChanges
             || StartDateHasChanges
             || ValueHasChanges))
@@ -210,14 +210,14 @@ public class Configuration : AggregateRoot<ConfigurationId>
 
     public Result Delete()
     {
-        if (Status == ConfigurationStatus.Expired)
+        if (State == ConfigurationState.Expired)
         {
             AddNotification(nameof(ExpireDate),
                 "not allowed to delete expired configurations",
                 DomainErrorCode.ErrorOnDelete);
         }
 
-        if (Status == ConfigurationStatus.Active)
+        if (State == ConfigurationState.Active)
         {
             Update(Name, Value, Description, StartDate, DateTime.UtcNow);
             AddWarning(nameof(ExpireDate),
@@ -225,7 +225,7 @@ public class Configuration : AggregateRoot<ConfigurationId>
                 DomainErrorCode.SetExpireDateToToday);
         }
 
-        if (Status == ConfigurationStatus.Awaiting)
+        if (State == ConfigurationState.Awaiting)
         {
             IsDeleted = true;
 

@@ -13,12 +13,12 @@ namespace Ahsoka.Unit.Tests.Application.Administrations.Configurations.Services;
 [Collection(nameof(ConfigurationTestFixture))]
 public class ConfigurationServicesTests
 {
-    private readonly IConfigurationRepository _configurationRepository;
+    private readonly IQueriesConfigurationRepository _configurationRepository;
     private readonly Notifier _notifier;
 
-    public ConfigurationServicesTests(ConfigurationTestFixture fixture)
+    public ConfigurationServicesTests()
     {
-        _configurationRepository = Substitute.For<IConfigurationRepository>();
+        _configurationRepository = Substitute.For<IQueriesConfigurationRepository>();
         _notifier = new Notifier();
     }
 
@@ -42,8 +42,8 @@ public class ConfigurationServicesTests
         var validData = ConfigurationFixture.GetValidConfiguration();
 
         _configurationRepository.GetAllByNameAsync(Arg.Is<string>(name => name == validData.Name),
-            Arg.Is<ConfigurationStatus[]>(statuses => statuses.Contains(ConfigurationStatus.Active) || statuses.Contains(ConfigurationStatus.Awaiting)),
-            Arg.Any<CancellationToken>()).Returns(new List<Configuration>());
+            Arg.Is<ConfigurationState[]>(statuses => statuses.Contains(ConfigurationState.Active) || statuses.Contains(ConfigurationState.Awaiting)),
+            Arg.Any<CancellationToken>()).Returns([]);
 
         var app = new ConfigurationServices(_configurationRepository, _notifier);
 
@@ -67,8 +67,8 @@ public class ConfigurationServicesTests
         ));
 
         _configurationRepository.GetAllByNameAsync(Arg.Is<string>(name => name == validData.Name),
-            Arg.Is<ConfigurationStatus[]>(statuses => statuses.Contains(ConfigurationStatus.Active) || statuses.Contains(ConfigurationStatus.Awaiting)),
-            Arg.Any<CancellationToken>()).Returns(new List<Configuration>() { beforeConfig });
+            Arg.Is<ConfigurationState[]>(statuses => statuses.Contains(ConfigurationState.Active) || statuses.Contains(ConfigurationState.Awaiting)),
+            Arg.Any<CancellationToken>()).Returns([beforeConfig]);
 
         var app = new ConfigurationServices(_configurationRepository, _notifier);
 
@@ -92,8 +92,8 @@ public class ConfigurationServicesTests
         ));
 
         _configurationRepository.GetAllByNameAsync(Arg.Is<string>(name => name == validData.Name),
-            Arg.Is<ConfigurationStatus[]>(statuses => statuses.Contains(ConfigurationStatus.Active) || statuses.Contains(ConfigurationStatus.Awaiting)),
-            Arg.Any<CancellationToken>()).Returns(new List<Configuration>() { beforeConfig });
+            Arg.Is<ConfigurationState[]>(statuses => statuses.Contains(ConfigurationState.Active) || statuses.Contains(ConfigurationState.Awaiting)),
+            Arg.Any<CancellationToken>()).Returns([beforeConfig]);
 
 
         var app = new ConfigurationServices(_configurationRepository, _notifier);
@@ -119,8 +119,8 @@ public class ConfigurationServicesTests
         ));
 
         _configurationRepository.GetAllByNameAsync(Arg.Is<string>(name => name == validData.Name),
-            Arg.Is<ConfigurationStatus[]>(statuses => statuses.Contains(ConfigurationStatus.Active) || statuses.Contains(ConfigurationStatus.Awaiting)),
-            Arg.Any<CancellationToken>()).Returns(new List<Configuration>() { beforeConfig });
+            Arg.Is<ConfigurationState[]>(statuses => statuses.Contains(ConfigurationState.Active) || statuses.Contains(ConfigurationState.Awaiting)),
+            Arg.Any<CancellationToken>()).Returns([beforeConfig]);
 
 
         var app = new ConfigurationServices(_configurationRepository, _notifier);
@@ -146,8 +146,8 @@ public class ConfigurationServicesTests
         ));
 
         _configurationRepository.GetAllByNameAsync(Arg.Is<string>(name => name == validData.Name),
-            Arg.Is<ConfigurationStatus[]>(statuses => statuses.Contains(ConfigurationStatus.Active) || statuses.Contains(ConfigurationStatus.Awaiting)),
-            Arg.Any<CancellationToken>()).Returns(new List<Configuration>() { beforeConfig });
+            Arg.Is<ConfigurationState[]>(statuses => statuses.Contains(ConfigurationState.Active) || statuses.Contains(ConfigurationState.Awaiting)),
+            Arg.Any<CancellationToken>()).Returns([beforeConfig]);
 
 
         var app = new ConfigurationServices(_configurationRepository, _notifier);

@@ -11,7 +11,7 @@ public record ListConfigurationsQuery
     : PaginatedListInput(Page, PerPage, Search, Sort, Dir),
     IRequest<ListConfigurationsOutput>;
 
-public class ListConfigurationsQueryHandler(IConfigurationRepository configurationRepository)
+public class ListConfigurationsQueryHandler(IQueriesConfigurationRepository configurationRepository)
     : IRequestHandler<ListConfigurationsQuery, ListConfigurationsOutput>
 {
     public async Task<ListConfigurationsOutput> Handle(ListConfigurationsQuery request, CancellationToken cancellationToken)

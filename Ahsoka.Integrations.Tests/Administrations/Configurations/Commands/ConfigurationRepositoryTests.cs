@@ -1,50 +1,41 @@
-﻿using Ahsoka.Domain.Entities.Admin.Configurations;
-using Ahsoka.Infrastructure.Repositories.Common;
-using Ahsoka.Infrastructure.Repositories.Configurations;
-using Ahsoka.Infrastructure.Repositories.Context;
-using Ahsoka.TestsUtil;
-using FluentAssertions;
-
-namespace Ahsoka.Integrations.Tests.Administrations.Configurations.Commands;
+﻿namespace Ahsoka.Integrations.Tests.Administrations.Configurations.Commands;
 
 [Collection(nameof(ConfigurationTestFixture))]
-public class ConfigurationRepositoryTests
+public class ConfigurationRepositoryTests(ConfigurationTestFixture fixture)
 {
-    private readonly ConfigurationTestFixture _fixture;
-
-    public ConfigurationRepositoryTests(ConfigurationTestFixture fixture)
-    {
-        _fixture = fixture;
-    }
+    private readonly ConfigurationTestFixture _fixture = fixture;
 
     [Fact(DisplayName = nameof(InsertNewConfigurationAsync))]
     [Trait("Integration", "Configuration - ConfigurationRepository")]
     public async void InsertNewConfigurationAsync()
     {
-        //Arrange
-        var dbOptions = _fixture.CreateDatabase();
+        var (_, repository) = GetGenericRepositoryTest();
 
-        using PrincipalContext context = new(dbOptions);
-        var app = new ConfigurationRepository(context);
-        var item = ConfigurationFixture.GetValidConfiguration();
+        await repository.CreateEntityAsync(() => ConfigurationFixture.GetValidConfiguration());
+    }
 
-        //Act
-        await app.InsertAsync(item, CancellationToken.None);
+    [Fact(DisplayName = nameof(GetByIdConfigurationAsync))]
+    [Trait("Integration", "Configuration - ConfigurationRepository")]
+    public async void GetByIdConfigurationAsync()
+    {
+        var (config, repository) = GetGenericRepositoryTest();
 
-        //Assert
-        using var context2 = new PrincipalContext(dbOptions);
+        await repository.GetEntityByIdAsync(() => ConfigurationFixture.GetValidConfigurationAtDatabase(
+            config,
+            ConfigurationState.Awaiting,
+            Guid.NewGuid()));
+    }
 
-        var database = context2.Configuration.Find(item.Id);
+    [Fact(DisplayName = nameof(DeleteConfigurationAsync))]
+    [Trait("Integration", "Configuration - ConfigurationRepository")]
+    public async void DeleteConfigurationAsync()
+    {
+        var (config, repository) = GetGenericRepositoryTest();
 
-        database.Should().BeNull("should not affect before unit of work commit");
-
-        var unit = new UnitOfWork(context);
-
-        await unit.CommitAsync(CancellationToken.None);
-
-        database = context2.Configuration.Find(item.Id);
-
-        database.Should().NotBeNull();
+        await repository.DeleteEntityAsync(() => ConfigurationFixture.GetValidConfigurationAtDatabase(
+            config,
+            ConfigurationState.Awaiting,
+            Guid.NewGuid()));
     }
 
     [Fact(DisplayName = nameof(UpdateConfigurationAsync))]
@@ -54,13 +45,13 @@ public class ConfigurationRepositoryTests
         //Arrange
         var dbOptions = _fixture.CreateDatabase();
 
-        var item = ConfigurationFixture.GetValidConfigurationAtDatabase(dbOptions, 
-            ConfigurationStatus.Awaiting, 
+        var item = ConfigurationFixture.GetValidConfigurationAtDatabase(dbOptions,
+            ConfigurationState.Awaiting,
             Guid.NewGuid());
 
         var context = new PrincipalContext(dbOptions);
 
-        var app = new ConfigurationRepository(context);
+        var app = new CommandsConfigurationRepository(context);
         var unitWork = new UnitOfWork(context);
 
         var oldDescription = item.Description;
@@ -93,54 +84,12 @@ public class ConfigurationRepositoryTests
         }
     }
 
-    [Fact(DisplayName = nameof(DeleteConfigurationAsync))]
-    [Trait("Integration", "Configuration - ConfigurationRepository")]
-    public async void DeleteConfigurationAsync()
+    private (DbContextOptions<PrincipalContext>, RepositoryTestGeneric<Configuration, ConfigurationId, CommandsConfigurationRepository>)
+        GetGenericRepositoryTest()
     {
-        //Arrange
         var dbOptions = _fixture.CreateDatabase();
 
-        var item = ConfigurationFixture.GetValidConfigurationAtDatabase(dbOptions,
-            ConfigurationStatus.Awaiting,
-            Guid.NewGuid());
-
-        using var context = new PrincipalContext(dbOptions);
-        var app = new ConfigurationRepository(context);
-        var unitWork = new UnitOfWork(context);
-
-        //Act
-        await app.DeleteAsync(item.Id, CancellationToken.None);
-
-        //Assert
-        var database = context.Configuration.Find(item.Id);
-
-        database.Should().NotBeNull("should not affect before unit of work commit");
-
-        await unitWork.CommitAsync(CancellationToken.None);
-
-        database = context.Configuration.Find(item.Id);
-
-        database.Should().BeNull();
-    }
-
-    [Fact(DisplayName = nameof(GetByIdConfigurationAsync))]
-    [Trait("Integration", "Configuration - ConfigurationRepository")]
-    public async void GetByIdConfigurationAsync()
-    {
-        //Arrange
-        var dbOptions = _fixture.CreateDatabase();
-
-        var item = ConfigurationFixture.GetValidConfigurationAtDatabase(dbOptions,
-            ConfigurationStatus.Awaiting,
-            Guid.NewGuid());
-
-        using var context = new PrincipalContext(dbOptions);
-        var app = new ConfigurationRepository(context);
-
-        //Act
-        var database = await app.GetByIdAsync(item.Id, CancellationToken.None);
-
-        //Assert
-        database.Should().NotBeNull();
+        var repository = new RepositoryTestGeneric<Configuration, ConfigurationId, CommandsConfigurationRepository>(dbOptions);
+        return (dbOptions, repository);
     }
 }

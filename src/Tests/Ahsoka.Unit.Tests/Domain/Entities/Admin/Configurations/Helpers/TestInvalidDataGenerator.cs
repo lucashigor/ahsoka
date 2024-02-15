@@ -8,7 +8,7 @@ namespace Ahsoka.Unit.Tests.Domain.Entities.Admin.Configurations.Helpers;
 
 public record UpdateWithError
 {
-    public ConfigurationStatus ConfigurationStatus { get; set; }
+    public ConfigurationState ConfigurationStatus { get; set; }
     public string? Name { get; set; }
     public string? Value { get; set; }
     public string? Description { get; set; }
@@ -25,7 +25,7 @@ public class TestInvalidDataGenerator : IEnumerable<object[]>
         yield return new object[] {
             new UpdateWithError()
             {
-                ConfigurationStatus = ConfigurationStatus.Expired,
+                ConfigurationStatus = ConfigurationState.Expired,
                 Name = ConfigurationFixture.GetValidName(),
                 Error = DomainErrorCode.OnlyDescriptionAllowedToChange,
                 FieldName = nameof(Configuration.ExpireDate),
@@ -36,7 +36,7 @@ public class TestInvalidDataGenerator : IEnumerable<object[]>
         yield return new object[] {
             new UpdateWithError()
             {
-                ConfigurationStatus = ConfigurationStatus.Expired,
+                ConfigurationStatus = ConfigurationState.Expired,
                 Value = ConfigurationFixture.GetValidValue(),
                 Error = DomainErrorCode.OnlyDescriptionAllowedToChange,
                 FieldName = nameof(Configuration.ExpireDate),
@@ -47,8 +47,8 @@ public class TestInvalidDataGenerator : IEnumerable<object[]>
         yield return new object[] {
             new UpdateWithError()
             {
-                ConfigurationStatus = ConfigurationStatus.Expired,
-                StartDate = ConfigurationFixture.GetValidStartDate(ConfigurationStatus.Awaiting),
+                ConfigurationStatus = ConfigurationState.Expired,
+                StartDate = ConfigurationFixture.GetValidStartDate(ConfigurationState.Awaiting),
                 Error = DomainErrorCode.OnlyDescriptionAllowedToChange,
                 FieldName = nameof(Configuration.ExpireDate),
                 Because = "Not possible to change StartDate on expired config"
@@ -58,8 +58,8 @@ public class TestInvalidDataGenerator : IEnumerable<object[]>
         yield return new object[] {
             new UpdateWithError()
             {
-                ConfigurationStatus = ConfigurationStatus.Expired,
-                ExpireDate = ConfigurationFixture.GetValidExpireDate(ConfigurationStatus.Awaiting),
+                ConfigurationStatus = ConfigurationState.Expired,
+                ExpireDate = ConfigurationFixture.GetValidExpireDate(ConfigurationState.Awaiting),
                 Error = DomainErrorCode.OnlyDescriptionAllowedToChange,
                 FieldName = nameof(Configuration.ExpireDate),
                 Because = "Not possible to change ExpireDate on expired config"
@@ -69,7 +69,7 @@ public class TestInvalidDataGenerator : IEnumerable<object[]>
         yield return new object[] {
             new UpdateWithError()
             {
-                ConfigurationStatus = ConfigurationStatus.Active,
+                ConfigurationStatus = ConfigurationState.Active,
                 Name = ConfigurationFixture.GetValidName(),
                 Error = DomainErrorCode.ErrorOnChangeName,
                 FieldName = nameof(Configuration.StartDate),
@@ -80,8 +80,8 @@ public class TestInvalidDataGenerator : IEnumerable<object[]>
         yield return new object[] {
             new UpdateWithError()
             {
-                ConfigurationStatus = ConfigurationStatus.Active,
-                StartDate = ConfigurationFixture.GetValidStartDate(ConfigurationStatus.Awaiting),
+                ConfigurationStatus = ConfigurationState.Active,
+                StartDate = ConfigurationFixture.GetValidStartDate(ConfigurationState.Awaiting),
                 Error = DomainErrorCode.ErrorOnChangeName,
                 FieldName = nameof(Configuration.StartDate),
                 Because = "Not possible to change StartDate on Active config"
@@ -91,7 +91,7 @@ public class TestInvalidDataGenerator : IEnumerable<object[]>
         yield return new object[] {
             new UpdateWithError()
             {
-                ConfigurationStatus = ConfigurationStatus.Active,
+                ConfigurationStatus = ConfigurationState.Active,
                 Value = ConfigurationFixture.GetValidValue(),
                 Error = DomainErrorCode.ErrorOnChangeName,
                 FieldName = nameof(Configuration.StartDate),
@@ -102,7 +102,7 @@ public class TestInvalidDataGenerator : IEnumerable<object[]>
         yield return new object[] {
             new UpdateWithError()
             {
-                ConfigurationStatus = ConfigurationStatus.Awaiting,
+                ConfigurationStatus = ConfigurationState.Awaiting,
                 Name = "",
                 Error = DomainErrorCode.Validation,
                 FieldName = nameof(Configuration.Name),
@@ -113,7 +113,7 @@ public class TestInvalidDataGenerator : IEnumerable<object[]>
         yield return new object[] {
             new UpdateWithError()
             {
-                ConfigurationStatus = ConfigurationStatus.Awaiting,
+                ConfigurationStatus = ConfigurationState.Awaiting,
                 Value = "",
                 Error = DomainErrorCode.Validation,
                 FieldName = nameof(Configuration.Value),
@@ -124,7 +124,7 @@ public class TestInvalidDataGenerator : IEnumerable<object[]>
         yield return new object[] {
             new UpdateWithError()
             {
-                ConfigurationStatus = ConfigurationStatus.Awaiting,
+                ConfigurationStatus = ConfigurationState.Awaiting,
                 Description = "",
                 Error = DomainErrorCode.Validation,
                 FieldName = nameof(Configuration.Description),
@@ -135,10 +135,10 @@ public class TestInvalidDataGenerator : IEnumerable<object[]>
 
     public static IEnumerable<object[]> ValidConfigurationStatusTestData()
     {
-        yield return new object[] { -2, -1, ConfigurationStatus.Expired };
-        yield return new object[] { -2, null!, ConfigurationStatus.Active };
-        yield return new object[] { -2, 1, ConfigurationStatus.Active };
-        yield return new object[] { 1, 2, ConfigurationStatus.Awaiting };
+        yield return new object[] { -2, -1, ConfigurationState.Expired };
+        yield return new object[] { -2, null!, ConfigurationState.Active };
+        yield return new object[] { -2, 1, ConfigurationState.Active };
+        yield return new object[] { 1, 2, ConfigurationState.Awaiting };
     }
 
     public static IEnumerable<object[]> GetPersonFromDataGenerator()
@@ -149,8 +149,8 @@ public class TestInvalidDataGenerator : IEnumerable<object[]>
                 Name: string.Empty,
                 Value: ConfigurationFixture.GetValidValue(),
                 Description: ConfigurationFixture.GetValidDescription(),
-                StartDate: ConfigurationFixture.GetValidStartDate(ConfigurationStatus.Awaiting),
-                ExpireDate: ConfigurationFixture.GetValidExpireDate(ConfigurationStatus.Awaiting)),
+                StartDate: ConfigurationFixture.GetValidStartDate(ConfigurationState.Awaiting),
+                ExpireDate: ConfigurationFixture.GetValidExpireDate(ConfigurationState.Awaiting)),
             DomainErrorCode.Validation,
             nameof(Configuration.Name)
         };
@@ -161,8 +161,8 @@ public class TestInvalidDataGenerator : IEnumerable<object[]>
                 Name:ConfigurationFixture.GetValidName(),
                 Value: string.Empty,
                 Description: ConfigurationFixture.GetValidDescription(),
-                StartDate: ConfigurationFixture.GetValidStartDate(ConfigurationStatus.Awaiting),
-                ExpireDate: ConfigurationFixture.GetValidExpireDate(ConfigurationStatus.Awaiting)),
+                StartDate: ConfigurationFixture.GetValidStartDate(ConfigurationState.Awaiting),
+                ExpireDate: ConfigurationFixture.GetValidExpireDate(ConfigurationState.Awaiting)),
             DomainErrorCode.Validation,
             nameof(Configuration.Value)
         };
@@ -173,8 +173,8 @@ public class TestInvalidDataGenerator : IEnumerable<object[]>
                 Name:ConfigurationFixture.GetValidName(),
                 Value: ConfigurationFixture.GetValidValue(),
                 Description: string.Empty,
-                StartDate: ConfigurationFixture.GetValidStartDate(ConfigurationStatus.Awaiting),
-                ExpireDate: ConfigurationFixture.GetValidExpireDate(ConfigurationStatus.Awaiting)),
+                StartDate: ConfigurationFixture.GetValidStartDate(ConfigurationState.Awaiting),
+                ExpireDate: ConfigurationFixture.GetValidExpireDate(ConfigurationState.Awaiting)),
             DomainErrorCode.Validation,
             nameof(Configuration.Description)
         };
@@ -186,7 +186,7 @@ public class TestInvalidDataGenerator : IEnumerable<object[]>
                 Value: ConfigurationFixture.GetValidValue(),
                 Description: ConfigurationFixture.GetValidDescription(),
                 StartDate: DateTime.UtcNow.AddSeconds(-10),
-                ExpireDate: ConfigurationFixture.GetValidExpireDate(ConfigurationStatus.Awaiting)),
+                ExpireDate: ConfigurationFixture.GetValidExpireDate(ConfigurationState.Awaiting)),
             DomainErrorCode.Validation,
             nameof(Configuration.StartDate)
         };
@@ -197,8 +197,8 @@ public class TestInvalidDataGenerator : IEnumerable<object[]>
                 Name:ConfigurationFixture.GetValidName(),
                 Value: ConfigurationFixture.GetValidValue(),
                 Description: ConfigurationFixture.GetValidDescription(),
-                StartDate: ConfigurationFixture.GetValidStartDate(ConfigurationStatus.Awaiting),
-                ExpireDate: ConfigurationFixture.GetValidStartDate(ConfigurationStatus.Awaiting).AddSeconds(-10)),
+                StartDate: ConfigurationFixture.GetValidStartDate(ConfigurationState.Awaiting),
+                ExpireDate: ConfigurationFixture.GetValidStartDate(ConfigurationState.Awaiting).AddSeconds(-10)),
             DomainErrorCode.Validation,
             nameof(Configuration.ExpireDate)
         };
@@ -209,7 +209,7 @@ public class TestInvalidDataGenerator : IEnumerable<object[]>
                 Name:ConfigurationFixture.GetValidName(),
                 Value: ConfigurationFixture.GetValidValue(),
                 Description: ConfigurationFixture.GetValidDescription(),
-                StartDate: ConfigurationFixture.GetValidStartDate(ConfigurationStatus.Awaiting),
+                StartDate: ConfigurationFixture.GetValidStartDate(ConfigurationState.Awaiting),
                 ExpireDate: DateTime.UtcNow.AddSeconds(-10)),
             DomainErrorCode.Validation,
             nameof(Configuration.ExpireDate)

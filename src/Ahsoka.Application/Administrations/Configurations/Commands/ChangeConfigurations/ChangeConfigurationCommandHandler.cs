@@ -16,7 +16,7 @@ namespace Ahsoka.Application.Administrations.Configurations.Commands.ChangeConfi
 public record ChangeConfigurationCommand(ConfigurationId Id, _dto.BaseConfiguration BaseConfiguration)
     : BaseConfiguration(BaseConfiguration), IRequest<ConfigurationOutput?>;
 
-public class ChangeConfigurationCommandHandler(IConfigurationRepository repository,
+public class ChangeConfigurationCommandHandler(ICommandsConfigurationRepository repository,
     IUnitOfWork unitOfWork,
     Notifier notifier,
     IConfigurationServices configurationServices) : BaseCommands(notifier), IRequestHandler<ChangeConfigurationCommand, ConfigurationOutput?>
@@ -41,7 +41,7 @@ public class ChangeConfigurationCommandHandler(IConfigurationRepository reposito
 
         if (result.IsFailure)
         {
-            HandleConfigurationResult.HandleResultConfiguration(result, notifier);
+            HandleConfigurationResult.HandleResultConfiguration(result, _notifier);
             return null;
         }
 

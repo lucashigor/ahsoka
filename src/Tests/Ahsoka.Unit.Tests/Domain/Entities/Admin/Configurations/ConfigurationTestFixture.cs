@@ -19,8 +19,8 @@ public class ConfigurationTestFixture
             Name: name ?? ConfigurationFixture.GetValidName(),
             Value: value ?? ConfigurationFixture.GetValidValue(),
             Description: description ?? ConfigurationFixture.GetValidDescription(),
-            StartDate: startDate ?? ConfigurationFixture.GetValidStartDate(ConfigurationStatus.Awaiting),
-            ExpireDate: expireDate ?? ConfigurationFixture.GetValidExpireDate(ConfigurationStatus.Awaiting)
+            StartDate: startDate ?? ConfigurationFixture.GetValidStartDate(ConfigurationState.Awaiting),
+            ExpireDate: expireDate ?? ConfigurationFixture.GetValidExpireDate(ConfigurationState.Awaiting)
                 );
 
     [CollectionDefinition(nameof(ConfigurationTestFixture))]

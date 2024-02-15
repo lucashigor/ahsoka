@@ -16,13 +16,13 @@ namespace Ahsoka.Application.Administrations.Configurations.Commands.RegisterCon
 public record RegisterConfigurationCommand(_dto.BaseConfiguration BaseConfiguration)
     : BaseConfiguration(BaseConfiguration), IRequest<ConfigurationOutput?>;
 
-public class RegisterConfigurationCommandHandler(IConfigurationRepository repository,
+public class RegisterConfigurationCommandHandler(ICommandsConfigurationRepository repository,
     IUnitOfWork unitOfWork,
     Notifier notifier,
     IConfigurationServices configurationServices,
     ICurrentUserService userService) : BaseCommands(notifier), IRequestHandler<RegisterConfigurationCommand, ConfigurationOutput?>
 {
-    private readonly IConfigurationRepository _configurationRepository = repository;
+    private readonly ICommandsConfigurationRepository _configurationRepository = repository;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly IConfigurationServices _configurationServices = configurationServices;
     private readonly ICurrentUserService _userService = userService;
@@ -40,7 +40,7 @@ public class RegisterConfigurationCommandHandler(IConfigurationRepository reposi
 
         if (result.IsFailure || config is null)
         {
-            HandleConfigurationResult.HandleResultConfiguration(result, notifier);
+            HandleConfigurationResult.HandleResultConfiguration(result, _notifier);
             return null;
         }
 

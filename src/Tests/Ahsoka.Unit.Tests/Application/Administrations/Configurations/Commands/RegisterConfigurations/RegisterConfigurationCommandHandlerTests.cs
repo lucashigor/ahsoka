@@ -16,7 +16,7 @@ using Xunit;
 [Collection(nameof(ConfigurationTestFixture))]
 public class RegisterConfigurationCommandHandlerTests
 {
-    private readonly IConfigurationRepository _configurationRepository;
+    private readonly ICommandsConfigurationRepository _configurationRepository;
     private readonly Notifier _notifier;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IConfigurationServices _configurationServices;
@@ -24,7 +24,7 @@ public class RegisterConfigurationCommandHandlerTests
 
     public RegisterConfigurationCommandHandlerTests(ConfigurationTestFixture fixture)
     {
-        _configurationRepository = Substitute.For<IConfigurationRepository>();
+        _configurationRepository = Substitute.For<ICommandsConfigurationRepository>();
         _unitOfWork = Substitute.For<IUnitOfWork>();
         _configurationServices = Substitute.For<IConfigurationServices>();
         _notifier = new Notifier();

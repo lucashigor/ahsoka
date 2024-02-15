@@ -17,7 +17,7 @@ namespace Ahsoka.Unit.Tests.Application.Administrations.Configurations.Commands.
 [Collection(nameof(ConfigurationTestFixture))]
 public class ModifyConfigurationCommandHandlerTests
 {
-    private readonly IConfigurationRepository _configurationRepository;
+    private readonly ICommandsConfigurationRepository _configurationRepository;
     private readonly Notifier _notifier;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IConfigurationServices _configurationServices;
@@ -25,7 +25,7 @@ public class ModifyConfigurationCommandHandlerTests
 
     public ModifyConfigurationCommandHandlerTests(ConfigurationTestFixture fixture)
     {
-        _configurationRepository = Substitute.For<IConfigurationRepository>();
+        _configurationRepository = Substitute.For<ICommandsConfigurationRepository>();
         _unitOfWork = Substitute.For<IUnitOfWork>();
         _configurationServices = Substitute.For<IConfigurationServices>();
         _notifier = new Notifier();
@@ -38,7 +38,7 @@ public class ModifyConfigurationCommandHandlerTests
     {
         //Arrange
 
-        var newConfig = ConfigurationFixture.GetValidConfiguration(ConfigurationStatus.Awaiting);
+        var newConfig = ConfigurationFixture.GetValidConfiguration(ConfigurationState.Awaiting);
 
         var configurationPatch = new JsonPatchDocument<Ahsoka.Application.Dto.Administrations.Configurations.Requests.BaseConfiguration>();
         configurationPatch.Replace(x => x.Name, newConfig.Name);
@@ -49,7 +49,7 @@ public class ModifyConfigurationCommandHandlerTests
 
         var app = GetApp();
 
-        var config = ConfigurationFixture.GetValidConfiguration(ConfigurationStatus.Awaiting);
+        var config = ConfigurationFixture.GetValidConfiguration(ConfigurationState.Awaiting);
 
         _configurationRepository.GetByIdAsync(Arg.Is<ConfigurationId>(id => id == config.Id),
             Arg.Any<CancellationToken>()).Returns(config);
@@ -77,7 +77,7 @@ public class ModifyConfigurationCommandHandlerTests
     {
         var app = GetApp();
 
-        var config = ConfigurationFixture.GetValidConfiguration(ConfigurationStatus.Awaiting);
+        var config = ConfigurationFixture.GetValidConfiguration(ConfigurationState.Awaiting);
 
         var newName = ConfigurationFixture.GetValidName();
 
@@ -99,7 +99,7 @@ public class ModifyConfigurationCommandHandlerTests
     {
         var app = GetApp();
 
-        var config = ConfigurationFixture.GetValidConfiguration(ConfigurationStatus.Awaiting);
+        var config = ConfigurationFixture.GetValidConfiguration(ConfigurationState.Awaiting);
 
         _configurationRepository.GetByIdAsync(Arg.Is<ConfigurationId>(id => id == config.Id),
             Arg.Any<CancellationToken>()).Returns(config);

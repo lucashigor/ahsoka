@@ -34,7 +34,8 @@ public static class InfrastructureExtension
 
         }
 
-        builder.Services.AddScoped<IConfigurationRepository, ConfigurationRepository>();
+        builder.Services.AddScoped<ICommandsConfigurationRepository, CommandsConfigurationRepository>();
+        builder.Services.AddScoped<IQueriesConfigurationRepository, QueriesConfigurationRepository>();
         builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(TransactionBehavior<,>));

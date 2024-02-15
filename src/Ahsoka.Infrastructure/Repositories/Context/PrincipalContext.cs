@@ -1,4 +1,6 @@
-﻿using Ahsoka.Domain.Entities.Admin.Configurations;
+﻿// Ignore Spelling: Upsert
+
+using Ahsoka.Domain.Entities.Admin.Configurations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using System.Reflection;

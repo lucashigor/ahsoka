@@ -13,13 +13,13 @@ namespace Ahsoka.Unit.Tests.Application.Administrations.Configurations.Commands.
 [Collection(nameof(ConfigurationTestFixture))]
 public class RemoveConfigurationCommandHandlerTests
 {
-    private readonly IConfigurationRepository _configurationRepository;
+    private readonly ICommandsConfigurationRepository _configurationRepository;
     private readonly Notifier _notifier;
     private readonly IUnitOfWork _unitOfWork;
 
     public RemoveConfigurationCommandHandlerTests(ConfigurationTestFixture fixture)
     {
-        _configurationRepository = Substitute.For<IConfigurationRepository>();
+        _configurationRepository = Substitute.For<ICommandsConfigurationRepository>();
         _unitOfWork = Substitute.For<IUnitOfWork>();
         _notifier = new Notifier();
     }

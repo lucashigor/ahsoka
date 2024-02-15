@@ -3,12 +3,12 @@ using Ahsoka.Domain.Entities.Admin.Configurations;
 using Ahsoka.Domain.Entities.Admin.Configurations.Repository;
 
 namespace Ahsoka.Application.Administrations.Configurations.Services;
-public class ConfigurationServices(IConfigurationRepository configurationRepository,
+public class ConfigurationServices(IQueriesConfigurationRepository configurationRepository,
     Notifier notifier) : IConfigurationServices
 {
     public async Task Handle(Configuration entity, CancellationToken cancellationToken)
     {
-        var listWithSameName = await configurationRepository.GetAllByNameAsync(entity.Name, [ConfigurationStatus.Active, ConfigurationStatus.Awaiting], cancellationToken);
+        var listWithSameName = await configurationRepository.GetAllByNameAsync(entity.Name, [ConfigurationState.Active, ConfigurationState.Awaiting], cancellationToken);
 
         if (listWithSameName is not null && listWithSameName.Exists(x => x.Id != entity.Id))
         {

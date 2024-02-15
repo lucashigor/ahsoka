@@ -5,19 +5,16 @@ using Ahsoka.Infrastructure.Repositories.Context;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
-public class QueryHelper<T, R> where T : Entity<R> where R : IEquatable<R>
+public class QueryHelper<TEntity, TEntityId>(PrincipalContext context) 
+    where TEntity : Entity<TEntityId> 
+    where TEntityId : IEquatable<TEntityId>
 {
-    protected readonly DbSet<T> _dbSet;
+    protected readonly DbSet<TEntity> _dbSet = context.Set<TEntity>();
 
-    public QueryHelper(PrincipalContext context)
-    {
-        _dbSet = context.Set<T>();
-    }
-
-    protected virtual IQueryable<T> GetMany(Expression<Func<T, bool>> where)
+    protected virtual IQueryable<TEntity> GetMany(Expression<Func<TEntity, bool>> where)
         => _dbSet.AsNoTracking().Where(where);
 
-    protected virtual IQueryable<T> GetManyPaginated(Expression<Func<T, bool>> where,
+    protected virtual IQueryable<TEntity> GetManyPaginated(Expression<Func<TEntity, bool>> where,
         string? orderBy,
         SearchOrder order,
         int page,
@@ -25,12 +22,12 @@ public class QueryHelper<T, R> where T : Entity<R> where R : IEquatable<R>
         out int totalPages)
         => GetManyPaginated(where, orderBy, order, page, perPage, null!, out totalPages);
 
-    protected virtual IQueryable<T> GetManyPaginated(Expression<Func<T, bool>> where,
+    protected virtual IQueryable<TEntity> GetManyPaginated(Expression<Func<TEntity, bool>> where,
         string? orderBy,
         SearchOrder order,
         int page,
         int perPage,
-        Expression<Func<T, object>> include,
+        Expression<Func<TEntity, object>> include,
         out int totalPages)
     {
         var query = _dbSet.AsNoTracking();
@@ -44,7 +41,7 @@ public class QueryHelper<T, R> where T : Entity<R> where R : IEquatable<R>
 
         if (string.IsNullOrEmpty(orderBy) is false)
         {
-            var field = typeof(T).GetProperties()
+            var field = typeof(TEntity).GetProperties()
                 .ToList()
                 .FirstOrDefault(x => x.Name.ToLower()
                 .Equals(orderBy.ToLower()));
@@ -52,10 +49,10 @@ public class QueryHelper<T, R> where T : Entity<R> where R : IEquatable<R>
             if (field != null)
             {
                 if (order == SearchOrder.Asc)
-                    query = query.OrderBy(ToLambda<T>(field.Name));
+                    query = query.OrderBy(ToLambda<TEntity>(field.Name));
 
                 if (order == SearchOrder.Desc)
-                    query = query.OrderByDescending(ToLambda<T>(field.Name));
+                    query = query.OrderByDescending(ToLambda<TEntity>(field.Name));
             }
         }
         else
@@ -71,13 +68,13 @@ public class QueryHelper<T, R> where T : Entity<R> where R : IEquatable<R>
         return query.Skip(page * perPage).Take(perPage);
     }
 
-    private static Expression<Func<R, object>> ToLambda<R>(string propertyName)
+    private static Expression<Func<TProp, object>> ToLambda<TProp>(string propertyName)
     {
-        var parameter = Expression.Parameter(typeof(T));
+        var parameter = Expression.Parameter(typeof(TEntity));
         var property = Expression.Property(parameter, propertyName);
         var propAsObject = Expression.Convert(property, typeof(object));
 
-        return Expression.Lambda<Func<R, object>>(propAsObject, parameter);
+        return Expression.Lambda<Func<TProp, object>>(propAsObject, parameter);
     }
 }
 

@@ -8,36 +8,8 @@ using System.Linq.Expressions;
 
 namespace Ahsoka.Infrastructure.Repositories.Configurations;
 
-public class ConfigurationRepository : QueryHelper<Configuration, ConfigurationId>, IConfigurationRepository
+public class QueriesConfigurationRepository(PrincipalContext context) : QueryHelper<Configuration, ConfigurationId>(context), IQueriesConfigurationRepository
 {
-    public ConfigurationRepository(PrincipalContext context) : base(context)
-    {
-    }
-    public async Task InsertAsync(Configuration entity, CancellationToken cancellationToken)
-        => await _dbSet.AddAsync(entity, cancellationToken);
-
-    public Task UpdateAsync(Configuration entity, CancellationToken cancellationToken)
-    {
-        _dbSet.Attach(entity);
-        _dbSet.Update(entity);
-
-        return Task.CompletedTask;
-    }
-
-    public Task DeleteAsync(Configuration entity, CancellationToken cancellationToken)
-        => Task.FromResult(_dbSet.Remove(entity));
-
-    public async Task DeleteAsync(ConfigurationId id, CancellationToken cancellationToken)
-    {
-        var ids = new object[] { id };
-        var item = await _dbSet.FindAsync(ids, cancellationToken);
-
-        if (item != null)
-        {
-            _dbSet.Remove(item);
-        }
-    }
-
     public async Task<Configuration?> GetByIdAsync(ConfigurationId id, CancellationToken cancellationToken)
     => await _dbSet
         .AsNoTracking()
@@ -48,7 +20,7 @@ public class ConfigurationRepository : QueryHelper<Configuration, ConfigurationI
         Expression<Func<Configuration, bool>> where = x => x.IsDeleted == false;
 
         if (!string.IsNullOrWhiteSpace(input.Search))
-            where = x => x.IsDeleted == false && x.Name.ToLower().Contains(input.Search.ToLower());
+            where = x => x.IsDeleted == false && x.Name.Contains(input.Search, StringComparison.CurrentCultureIgnoreCase);
 
         var items = GetManyPaginated(where,
             input.OrderBy,
@@ -61,13 +33,13 @@ public class ConfigurationRepository : QueryHelper<Configuration, ConfigurationI
         return Task.FromResult(new SearchOutput<Configuration>(input.Page, input.PerPage, total, items!));
     }
 
-    public Task<List<Configuration>> GetAllByNameAsync(string name, ConfigurationStatus[] statuses, CancellationToken cancellationToken)
+    public Task<List<Configuration>> GetAllByNameAsync(string name, ConfigurationState[] statuses, CancellationToken cancellationToken)
         => Task.FromResult(GetMany(x => x.Name.Equals(name) && x.IsDeleted == false/*&& statuses.Contains(x.GetStatus())*/).ToList());
 
-    public async Task<Configuration?> GetByNameAsync(string name, ConfigurationStatus[] statuses, CancellationToken cancellationToken)
+    public async Task<Configuration?> GetByNameAsync(string name, ConfigurationState[] statuses, CancellationToken cancellationToken)
     => await _dbSet.AsNoTracking().FirstOrDefaultAsync(x => x.Name.Equals(name) &&
         /*statuses.Contains(x.GetStatus()) &&*/
         x.StartDate <= DateTime.UtcNow &&
-        (x.ExpireDate == null || x.ExpireDate != null && x.ExpireDate >= DateTime.UtcNow));
+        (x.ExpireDate == null || x.ExpireDate != null && x.ExpireDate >= DateTime.UtcNow), cancellationToken);
 }
 

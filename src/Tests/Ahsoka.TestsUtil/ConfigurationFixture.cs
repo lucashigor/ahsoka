@@ -7,10 +7,10 @@ namespace Ahsoka.TestsUtil;
 
 public static class ConfigurationFixture
 {
-    public static Configuration LoadConfiguration(ConfigurationStatus configurationStatus)
+    public static Configuration LoadConfiguration(ConfigurationState configurationStatus)
         => LoadConfiguration(GetValidBaseConfiguration(configurationStatus), Guid.NewGuid());
 
-    public static Configuration LoadConfiguration(Guid userId, ConfigurationStatus configurationStatus)
+    public static Configuration LoadConfiguration(Guid userId, ConfigurationState configurationStatus)
         => LoadConfiguration(GetValidBaseConfiguration(configurationStatus), userId);
 
     public static Configuration LoadConfiguration(BaseConfiguration @base)
@@ -37,7 +37,7 @@ public static class ConfigurationFixture
     }
 
     public static Configuration GetValidConfigurationAtDatabase(DbContextOptions<PrincipalContext> dbOptions, 
-        ConfigurationStatus Status,
+        ConfigurationState Status,
         Guid UserId)
     {
         var item = GetValidConfiguration(UserId, Status);
@@ -52,15 +52,15 @@ public static class ConfigurationFixture
     }
 
     public static Configuration GetValidConfiguration()
-        => GetValidConfiguration(Guid.NewGuid(), ConfigurationStatus.Awaiting);
+        => GetValidConfiguration(Guid.NewGuid(), ConfigurationState.Awaiting);
 
-    public static Configuration GetValidConfiguration(ConfigurationStatus configurationStatus)
+    public static Configuration GetValidConfiguration(ConfigurationState configurationStatus)
         => GetValidConfiguration(Guid.NewGuid(), configurationStatus);
 
     public static Configuration GetValidConfiguration(Guid userId)
-        => GetValidConfiguration(userId, ConfigurationStatus.Awaiting);
+        => GetValidConfiguration(userId, ConfigurationState.Awaiting);
 
-    public static Configuration GetValidConfiguration(Guid userId, ConfigurationStatus configurationStatus)
+    public static Configuration GetValidConfiguration(Guid userId, ConfigurationState configurationStatus)
     {
         return LoadConfiguration(
             new BaseConfiguration(
@@ -80,33 +80,33 @@ public static class ConfigurationFixture
     public static string GetValidDescription()
         => GeneralFixture.GetStringRightSize(3, 1000);
 
-    public static DateTime GetValidStartDate(ConfigurationStatus configuration)
+    public static DateTime GetValidStartDate(ConfigurationState state)
     {
         DateTime currentTime = DateTime.UtcNow;
 
-        if (configuration == ConfigurationStatus.Awaiting)
+        if (state == ConfigurationState.Awaiting)
         {
             return currentTime.AddDays(1);
         }
-        else if (configuration == ConfigurationStatus.Active || configuration == ConfigurationStatus.Expired)
+        else if (state == ConfigurationState.Active || state == ConfigurationState.Expired)
         {
             return currentTime.AddMonths(-2);
         }
         else
         {
-            throw new ArgumentOutOfRangeException();
+            throw new ArgumentOutOfRangeException("Not state mapped");
         }
     }
 
-    public static DateTime GetValidExpireDate(ConfigurationStatus configuration)
+    public static DateTime GetValidExpireDate(ConfigurationState configuration)
     {
         DateTime currentTime = DateTime.UtcNow;
 
-        if (configuration == ConfigurationStatus.Awaiting || configuration == ConfigurationStatus.Active)
+        if (configuration == ConfigurationState.Awaiting || configuration == ConfigurationState.Active)
         {
             return currentTime.AddMonths(1);
         }
-        else if (configuration == ConfigurationStatus.Expired)
+        else if (configuration == ConfigurationState.Expired)
         {
             return currentTime.AddMonths(-1);
         }
@@ -116,7 +116,7 @@ public static class ConfigurationFixture
         }
     }
 
-    private static BaseConfiguration GetValidBaseConfiguration(ConfigurationStatus configurationStatus)
+    private static BaseConfiguration GetValidBaseConfiguration(ConfigurationState configurationStatus)
     {
         return new BaseConfiguration(
                         Name: GetValidName(),
