@@ -1,11 +1,9 @@
 ﻿using Ahsoka.Application.Administrations.Configurations.Errors;
 using Ahsoka.Application.Administrations.Configurations.Services;
-using Ahsoka.Application.Common;
 using Ahsoka.Application.Common.Extensions;
 using Ahsoka.Application.Common.Interfaces;
 using Ahsoka.Application.Common.Models;
 using Ahsoka.Application.Dto.Administrations.Configurations.Responses;
-using Ahsoka.Application.Dto.Common.ApplicationsErrors.Models;
 using Ahsoka.Domain.Entities.Admin.Configurations;
 using Ahsoka.Domain.Entities.Admin.Configurations.Repository;
 using Mapster;
@@ -20,8 +18,8 @@ public record ModifyConfigurationCommand(ConfigurationId Id,
 
 public class ModifyConfigurationCommandHandler(ICommandsConfigurationRepository repository,
     IUnitOfWork unitOfWork,
-    Notifier notifier,
-    IConfigurationServices configurationServices) : BaseCommands(notifier), IRequestHandler<ModifyConfigurationCommand, ConfigurationOutput?>
+    Notifier _notifier,
+    IConfigurationServices configurationServices) : IRequestHandler<ModifyConfigurationCommand, ConfigurationOutput?>
 {
     public async Task<ConfigurationOutput?> Handle(ModifyConfigurationCommand request, CancellationToken cancellationToken)
     {
@@ -36,9 +34,9 @@ public class ModifyConfigurationCommandHandler(ICommandsConfigurationRepository 
                     $"/{nameof(Configuration.ExpireDate)}" ]
                    );
         }
-        catch (BusinessException ex)
+        catch (Exception ex)
         {
-            _notifier.Errors.Add(ex.ErrorCode);
+            //_notifier.Errors.Add(ex.ErrorCode);
             return null!;
         }
 

@@ -1,4 +1,6 @@
-﻿using Ahsoka.Application.Administrations.Configurations.Commands.RegisterConfiguration;
+﻿// Ignore Spelling: Validator
+
+using Ahsoka.Application.Administrations.Configurations.Commands.RegisterConfiguration;
 using Ahsoka.TestsUtil;
 using Ahsoka.Unit.Tests.Domain.Entities.Admin.Configurations;
 using FluentAssertions;
@@ -7,16 +9,10 @@ using FluentValidation.TestHelper;
 namespace Ahsoka.Unit.Tests.Application.Administrations.Configurations.Commands.RegisterConfigurations;
 
 [Collection(nameof(ConfigurationTestFixture))]
-public class RegisterConfigurationCommandValidatorTests
+public class RegisterConfigurationCommandValidatorTests(ConfigurationTestFixture fixture)
 {
-    private readonly RegisterConfigurationCommandValidator _validator;
-    private readonly ConfigurationTestFixture _fixture;
-
-    public RegisterConfigurationCommandValidatorTests(ConfigurationTestFixture fixture)
-    {
-        _validator = new RegisterConfigurationCommandValidator();
-        _fixture = fixture;
-    }
+    private readonly RegisterConfigurationCommandValidator _validator = new();
+    private readonly ConfigurationTestFixture _fixture = fixture;
 
     [Fact]
     public void Name_ShouldHaveError_WhenNameIsEmpty()
@@ -44,6 +40,6 @@ public class RegisterConfigurationCommandValidatorTests
         result.IsValid.Should().BeTrue();
     }
 
-    private RegisterConfigurationCommand GetCommand(string? name, string? value)
-        => new(_fixture.GetDtoBaseConfiguration(name, value));
+    private static RegisterConfigurationCommand GetCommand(string? name, string? value)
+        => new(ConfigurationTestFixture.GetBaseConfiguration(name, value));
 }

@@ -1,4 +1,4 @@
-﻿namespace Ahsoka.Integrations.Tests.Administrations.Configurations.Commands;
+﻿namespace Ahsoka.Integrations.Tests.Administrations.Configurations;
 
 public class ConfigurationTestFixture : IntegrationsTestsFixture
 {

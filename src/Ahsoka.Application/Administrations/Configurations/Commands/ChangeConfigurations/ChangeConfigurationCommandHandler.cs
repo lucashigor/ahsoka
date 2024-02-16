@@ -1,6 +1,5 @@
 ﻿using Ahsoka.Application.Administrations.Configurations.Errors;
 using Ahsoka.Application.Administrations.Configurations.Services;
-using Ahsoka.Application.Common;
 using Ahsoka.Application.Common.Attributes;
 using Ahsoka.Application.Common.Interfaces;
 using Ahsoka.Application.Common.Models;
@@ -18,8 +17,8 @@ public record ChangeConfigurationCommand(ConfigurationId Id, _dto.BaseConfigurat
 
 public class ChangeConfigurationCommandHandler(ICommandsConfigurationRepository repository,
     IUnitOfWork unitOfWork,
-    Notifier notifier,
-    IConfigurationServices configurationServices) : BaseCommands(notifier), IRequestHandler<ChangeConfigurationCommand, ConfigurationOutput?>
+    Notifier _notifier,
+    IConfigurationServices configurationServices) : IRequestHandler<ChangeConfigurationCommand, ConfigurationOutput?>
 {
     [Transaction]
     [Log]

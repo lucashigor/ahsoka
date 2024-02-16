@@ -6,11 +6,11 @@ namespace Ahsoka.Unit.Tests.Domain.Entities.Admin.Configurations;
 
 public class ConfigurationTestFixture
 {
-    public BaseConfiguration GetDtoBaseConfiguration(string? name)
-        => GetDtoBaseConfiguration(name, null!, null!, null!, null!);
-    public BaseConfiguration GetDtoBaseConfiguration(string? name, string? value)
-        => GetDtoBaseConfiguration(name, value, null!, null!, null!);
-    public BaseConfiguration GetDtoBaseConfiguration(string? name, 
+    public static BaseConfiguration GetBaseConfiguration(string? name)
+        => GetBaseConfiguration(name, null!, null!, null!, null!);
+    public static BaseConfiguration GetBaseConfiguration(string? name, string? value)
+        => GetBaseConfiguration(name, value, null!, null!, null!);
+    public static BaseConfiguration GetBaseConfiguration(string? name, 
         string? value,
         string? description,
         DateTime? startDate,
@@ -21,7 +21,7 @@ public class ConfigurationTestFixture
             Description: description ?? ConfigurationFixture.GetValidDescription(),
             StartDate: startDate ?? ConfigurationFixture.GetValidStartDate(ConfigurationState.Awaiting),
             ExpireDate: expireDate ?? ConfigurationFixture.GetValidExpireDate(ConfigurationState.Awaiting)
-                );
+        );
 
     [CollectionDefinition(nameof(ConfigurationTestFixture))]
     public class ConfigurationTestFixtureCollection : ICollectionFixture<ConfigurationTestFixture>

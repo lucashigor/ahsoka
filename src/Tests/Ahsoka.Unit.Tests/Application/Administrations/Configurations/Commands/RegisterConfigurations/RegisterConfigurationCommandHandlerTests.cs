@@ -14,22 +14,13 @@ using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(ConfigurationTestFixture))]
-public class RegisterConfigurationCommandHandlerTests
+public class RegisterConfigurationCommandHandlerTests(ConfigurationTestFixture fixture)
 {
-    private readonly ICommandsConfigurationRepository _configurationRepository;
-    private readonly Notifier _notifier;
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly IConfigurationServices _configurationServices;
-    private readonly ConfigurationTestFixture _fixture;
-
-    public RegisterConfigurationCommandHandlerTests(ConfigurationTestFixture fixture)
-    {
-        _configurationRepository = Substitute.For<ICommandsConfigurationRepository>();
-        _unitOfWork = Substitute.For<IUnitOfWork>();
-        _configurationServices = Substitute.For<IConfigurationServices>();
-        _notifier = new Notifier();
-        _fixture = fixture;
-    }
+    private readonly ICommandsConfigurationRepository _configurationRepository = Substitute.For<ICommandsConfigurationRepository>();
+    private readonly Notifier _notifier = new();
+    private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
+    private readonly IConfigurationServices _configurationServices = Substitute.For<IConfigurationServices>();
+    private readonly ConfigurationTestFixture _fixture = fixture;
 
     [Fact(DisplayName = nameof(HandleRegisterConfigurationAsync))]
     [Trait("Domain", "Configuration - RegisterConfigurationCommandHandler")]
@@ -63,8 +54,8 @@ public class RegisterConfigurationCommandHandlerTests
         await _configurationRepository.Received(0).InsertAsync(Arg.Any<Configuration>(), Arg.Any<CancellationToken>());
     }
 
-    private RegisterConfigurationCommand GetCommand(string? name)
-        => new(_fixture.GetDtoBaseConfiguration(name));
+    private static RegisterConfigurationCommand GetCommand(string? name)
+        => new(ConfigurationTestFixture.GetBaseConfiguration(name));
 
     private RegisterConfigurationCommandHandler GetApp()
         => new(_configurationRepository,

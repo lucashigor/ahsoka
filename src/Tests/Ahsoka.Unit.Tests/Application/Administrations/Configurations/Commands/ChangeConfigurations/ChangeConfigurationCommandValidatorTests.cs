@@ -1,4 +1,6 @@
-﻿using Ahsoka.Application.Administrations.Configurations.Commands.ChangeConfiguration;
+﻿// Ignore Spelling: Validator
+
+using Ahsoka.Application.Administrations.Configurations.Commands.ChangeConfiguration;
 using Ahsoka.Application.Administrations.Configurations.Commands.ModifyConfiguration;
 using Ahsoka.Domain.Entities.Admin.Configurations;
 using Ahsoka.TestsUtil;
@@ -9,16 +11,10 @@ using FluentValidation.TestHelper;
 namespace Ahsoka.Unit.Tests.Application.Administrations.Configurations.Commands.ChangeConfigurations;
 
 [Collection(nameof(ConfigurationTestFixture))]
-public class ChangeConfigurationCommandValidatorTests
+public class ChangeConfigurationCommandValidatorTests(ConfigurationTestFixture fixture)
 {
-    private readonly ChangeConfigurationCommandValidator _validator;
-    private readonly ConfigurationTestFixture _fixture;
-
-    public ChangeConfigurationCommandValidatorTests(ConfigurationTestFixture fixture)
-    {
-        _validator = new ChangeConfigurationCommandValidator();
-        _fixture = fixture;
-    }
+    private readonly ChangeConfigurationCommandValidator _validator = new();
+    private readonly ConfigurationTestFixture _fixture = fixture;
 
     [Fact]
     public void Name_ShouldHaveError_WhenNameIsEmpty()
@@ -55,6 +51,6 @@ public class ChangeConfigurationCommandValidatorTests
         result.ShouldHaveValidationErrorFor(config => config.Id);
     }
 
-    private ChangeConfigurationCommand GetCommand(ConfigurationId Id, string? name, string? value)
-        => new(Id, _fixture.GetDtoBaseConfiguration(name, value));
+    private static ChangeConfigurationCommand GetCommand(ConfigurationId Id, string? name, string? value)
+        => new(Id, ConfigurationTestFixture.GetBaseConfiguration(name, value));
 }

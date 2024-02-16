@@ -13,22 +13,13 @@ using NSubstitute;
 namespace Ahsoka.Unit.Tests.Application.Administrations.Configurations.Commands.ChangeConfigurations;
 
 [Collection(nameof(ConfigurationTestFixture))]
-public class ChangeConfigurationCommandHandlerTests
+public class ChangeConfigurationCommandHandlerTests(ConfigurationTestFixture fixture)
 {
-    private readonly ICommandsConfigurationRepository _configurationRepository;
-    private readonly Notifier _notifier;
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly IConfigurationServices _configurationServices;
-    private readonly ConfigurationTestFixture _fixture;
-
-    public ChangeConfigurationCommandHandlerTests(ConfigurationTestFixture fixture)
-    {
-        _configurationRepository = Substitute.For<ICommandsConfigurationRepository>();
-        _unitOfWork = Substitute.For<IUnitOfWork>();
-        _configurationServices = Substitute.For<IConfigurationServices>();
-        _notifier = new Notifier();
-        _fixture = fixture;
-    }
+    private readonly ICommandsConfigurationRepository _configurationRepository = Substitute.For<ICommandsConfigurationRepository>();
+    private readonly Notifier _notifier = new();
+    private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
+    private readonly IConfigurationServices _configurationServices = Substitute.For<IConfigurationServices>();
+    private readonly ConfigurationTestFixture _fixture = fixture;
 
     [Fact(DisplayName = nameof(HandleChangeConfigurationCommandHandlerAsync))]
     [Trait("Domain", "Configuration - ChangeConfigurationCommandHandler")]
@@ -97,8 +88,8 @@ public class ChangeConfigurationCommandHandlerTests
         await _configurationRepository.Received(0).UpdateAsync(Arg.Any<Configuration>(), Arg.Any<CancellationToken>());
     }
 
-    private ChangeConfigurationCommand GetCommand(ConfigurationId Id, string? name)
-        => new(Id, _fixture.GetDtoBaseConfiguration(name));
+    private static ChangeConfigurationCommand GetCommand(ConfigurationId Id, string? name)
+        => new(Id, ConfigurationTestFixture.GetBaseConfiguration(name));
 
     private ChangeConfigurationCommandHandler GetApp()
         => new(_configurationRepository,

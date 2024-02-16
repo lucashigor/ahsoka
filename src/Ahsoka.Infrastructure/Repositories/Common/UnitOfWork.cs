@@ -35,7 +35,7 @@ public class UnitOfWork(PrincipalContext _context) : IUnitOfWork
         domainEntities.ToList()
             .ForEach(entity => entity.Entity.ClearEvents());
 
-        foreach (var domainEvent in domainEvents.OrderBy(x => x.EventDateUtc))
+        foreach (var domainEvent in domainEvents.OrderBy(x => x.EventDateUTC))
         { }
 
         return Task.CompletedTask;

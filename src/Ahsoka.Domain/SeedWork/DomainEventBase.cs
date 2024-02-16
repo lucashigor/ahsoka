@@ -3,13 +3,13 @@
 public abstract record DomainEventBase
 {
     public Guid EventId { get; }
-    public DateTime EventDateUtc { get; }
+    public DateTime EventDateUTC { get; }
     public string EventName { get; set; }
 
     public DomainEventBase(string eventName)
     {
         EventId = Guid.NewGuid();
-        EventDateUtc = DateTime.UtcNow;
+        EventDateUTC = DateTime.UtcNow;
         EventName = eventName;
     }
 }

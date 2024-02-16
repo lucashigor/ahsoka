@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 
-public class Result
+public sealed class Result
 {
     public bool IsSuccess { get; private set; }
     public bool IsFailure => !IsSuccess;
@@ -13,7 +13,7 @@ public class Result
     private readonly ICollection<Notification> _warnings;
     public IReadOnlyCollection<Notification> Warnings => _warnings.ToImmutableArray();
 
-    public Result(bool isSuccess,
+    private Result(bool isSuccess,
         ICollection<Notification>? warnings,
         ICollection<Notification>? errors)
     {

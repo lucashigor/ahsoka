@@ -49,33 +49,31 @@ public class Configuration : AggregateRoot<ConfigurationId>
     public string CreatedBy { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public bool IsDeleted { get; private set; }
+    public ConfigurationState State => GetStatus(IsDeleted, StartDate, ExpireDate);
 
-    public ConfigurationState State
+    public static ConfigurationState GetStatus(bool _isDeleted, DateTime _startDate, DateTime? _expireDate)
     {
-        get
+        if (_isDeleted)
         {
-            if (IsDeleted)
-            {
-                return ConfigurationState.Undefined;
-            }
-
-            if (StartDate > DateTime.UtcNow)
-            {
-                return ConfigurationState.Awaiting;
-            }
-
-            if (ExpireDate.HasValue is false || ExpireDate.Value > DateTime.UtcNow)
-            {
-                return ConfigurationState.Active;
-            }
-
-            if (ExpireDate.HasValue && ExpireDate.Value < DateTime.UtcNow)
-            {
-                return ConfigurationState.Expired;
-            }
-
             return ConfigurationState.Undefined;
         }
+
+        if (_startDate > DateTime.UtcNow)
+        {
+            return ConfigurationState.Awaiting;
+        }
+
+        if (_expireDate.HasValue is false || _expireDate.Value > DateTime.UtcNow)
+        {
+            return ConfigurationState.Active;
+        }
+
+        if (_expireDate.HasValue && _expireDate.Value < DateTime.UtcNow)
+        {
+            return ConfigurationState.Expired;
+        }
+
+        return ConfigurationState.Undefined;
     }
 
     private Configuration()

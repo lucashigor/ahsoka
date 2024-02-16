@@ -1,7 +1,7 @@
 ﻿namespace Ahsoka.Integrations.Tests.Administrations.Configurations.Commands;
 
 [Collection(nameof(ConfigurationTestFixture))]
-public class ConfigurationRepositoryTests(ConfigurationTestFixture fixture)
+public class CommandsConfigurationRepositoryTests(ConfigurationTestFixture fixture)
 {
     private readonly ConfigurationTestFixture _fixture = fixture;
 

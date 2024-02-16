@@ -8,7 +8,9 @@ using System.Linq.Expressions;
 
 namespace Ahsoka.Infrastructure.Repositories.Configurations;
 
-public class QueriesConfigurationRepository(PrincipalContext context) : QueryHelper<Configuration, ConfigurationId>(context), IQueriesConfigurationRepository
+public class QueriesConfigurationRepository(PrincipalContext context) : 
+    QueryHelper<Configuration, ConfigurationId>(context), 
+    IQueriesConfigurationRepository
 {
     public async Task<Configuration?> GetByIdAsync(ConfigurationId id, CancellationToken cancellationToken)
     => await _dbSet
@@ -34,11 +36,15 @@ public class QueriesConfigurationRepository(PrincipalContext context) : QueryHel
     }
 
     public Task<List<Configuration>> GetAllByNameAsync(string name, ConfigurationState[] statuses, CancellationToken cancellationToken)
-        => Task.FromResult(GetMany(x => x.Name.Equals(name) && x.IsDeleted == false/*&& statuses.Contains(x.GetStatus())*/).ToList());
+        => Task.FromResult(GetMany(x => x.Name.Equals(name) 
+            && x.IsDeleted == false )
+            .AsEnumerable()
+            .Where(x => statuses.Contains(x.State))
+            .ToList());
 
     public async Task<Configuration?> GetByNameAsync(string name, ConfigurationState[] statuses, CancellationToken cancellationToken)
     => await _dbSet.AsNoTracking().FirstOrDefaultAsync(x => x.Name.Equals(name) &&
-        /*statuses.Contains(x.GetStatus()) &&*/
+        statuses.Contains(x.State) &&
         x.StartDate <= DateTime.UtcNow &&
         (x.ExpireDate == null || x.ExpireDate != null && x.ExpireDate >= DateTime.UtcNow), cancellationToken);
 }

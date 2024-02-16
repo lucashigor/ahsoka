@@ -20,12 +20,13 @@ public class RegisterConfigurationCommandHandler(ICommandsConfigurationRepositor
     IUnitOfWork unitOfWork,
     Notifier notifier,
     IConfigurationServices configurationServices,
-    ICurrentUserService userService) : BaseCommands(notifier), IRequestHandler<RegisterConfigurationCommand, ConfigurationOutput?>
+    ICurrentUserService userService) : IRequestHandler<RegisterConfigurationCommand, ConfigurationOutput?>
 {
     private readonly ICommandsConfigurationRepository _configurationRepository = repository;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly IConfigurationServices _configurationServices = configurationServices;
     private readonly ICurrentUserService _userService = userService;
+    private readonly Notifier _notifier = notifier;
 
     [Transaction]
     [Log]

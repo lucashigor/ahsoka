@@ -3,7 +3,7 @@ using Ahsoka.Infrastructure.Repositories.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Ahsoka.Infrastructure.Repositories.Configurations;
+namespace Ahsoka.Infrastructure.Repositories.Configurations.Config;
 
 public record ConfigurationConfig : IEntityTypeConfiguration<Configuration>
 {

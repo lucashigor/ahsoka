@@ -4,9 +4,9 @@ using System.Collections.Immutable;
 
 namespace Ahsoka.Domain.SeedWork;
 
-public abstract class Entity<T> where T : IEquatable<T>
+public abstract class Entity<TEntityId> where TEntityId : IEquatable<TEntityId>
 {
-    public T Id { get; init; }
+    public TEntityId Id { get; init; }
     protected readonly ICollection<Notification> _notifications;
     protected IReadOnlyCollection<Notification> Notifications => _notifications.ToImmutableArray();
     protected readonly ICollection<Notification> _warnings;

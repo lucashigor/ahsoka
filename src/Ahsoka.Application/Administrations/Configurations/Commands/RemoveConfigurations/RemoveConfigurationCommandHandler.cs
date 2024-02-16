@@ -1,5 +1,4 @@
 ﻿using Ahsoka.Application.Administrations.Configurations.Errors;
-using Ahsoka.Application.Common;
 using Ahsoka.Application.Common.Attributes;
 using Ahsoka.Application.Common.Interfaces;
 using Ahsoka.Application.Common.Models;
@@ -13,15 +12,18 @@ public record RemoveConfigurationCommand(ConfigurationId Id) : IRequest;
 
 public class RemoveConfigurationCommandHandler(ICommandsConfigurationRepository repository,
     IUnitOfWork unitOfWork,
-    Notifier notifier)
-    : BaseCommands(notifier), IRequestHandler<RemoveConfigurationCommand>
+    Notifier notifier) : IRequestHandler<RemoveConfigurationCommand>
 {
+    private readonly ICommandsConfigurationRepository _repository = repository;
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly Notifier _notifier = notifier;
+
 
     [Transaction]
     [Log]
     public async Task Handle(RemoveConfigurationCommand request, CancellationToken cancellationToken)
     {
-        var entity = await repository.GetByIdAsync(request.Id, cancellationToken);
+        var entity = await _repository.GetByIdAsync(request.Id, cancellationToken);
 
         if (entity is null)
         {
@@ -38,9 +40,9 @@ public class RemoveConfigurationCommandHandler(ICommandsConfigurationRepository 
             return;
         }
 
-        await repository.UpdateAsync(entity, cancellationToken);
+        await _repository.UpdateAsync(entity, cancellationToken);
 
-        await unitOfWork.CommitAsync(cancellationToken);
+        await _unitOfWork.CommitAsync(cancellationToken);
     }
 }
 
