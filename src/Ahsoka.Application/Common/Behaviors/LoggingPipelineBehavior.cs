@@ -2,6 +2,7 @@
 using MediatR;
 using Microsoft.Extensions.Logging;
 using System.Reflection;
+using System.Text;
 
 namespace Ahsoka.Application.Common.Behaviors;
 
@@ -35,7 +36,9 @@ public class LoggingPipelineBehavior<TRequest, TResponse> : IPipelineBehavior<TR
         var requestType = request.GetType();
         var properties = requestType.GetProperties();
 
-        var message = "Command - {RequestType} props:";
+        StringBuilder message = new();
+        message.Append("Command - {RequestType} props:");
+
 
         var values = new object?[properties.Length];
 
@@ -44,19 +47,19 @@ public class LoggingPipelineBehavior<TRequest, TResponse> : IPipelineBehavior<TR
             var propertyName = properties[i].Name;
             var propertyValue = properties[i].GetValue(request);
 
-            if (IsSensitive(properties[i]) is false)
+            if (!IsSensitive(properties[i]))
             {
                 values[i] = propertyValue;
 
-                message += " " + propertyName + " - {" + propertyName + "}";
+                message.Append(" " + propertyName + " - {" + propertyName + "}");
             }
         }
 
         var response = await next();
 
-        var parameters = new object[] { typeof(TRequest).FullName }.Concat(values.Where(x => x is not null).ToArray()).ToArray();
+        var parameters = new object[] { typeof(TRequest).FullName! }.Concat(values.Where(x => x is not null).ToArray()).ToArray();
 
-        _logger.LogInformation(message, parameters);
+        _logger.LogInformation(message.ToString(), parameters);
 
         return response;
     }

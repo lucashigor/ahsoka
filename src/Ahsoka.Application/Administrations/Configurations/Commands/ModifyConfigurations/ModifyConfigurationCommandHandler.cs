@@ -34,9 +34,8 @@ public class ModifyConfigurationCommandHandler(ICommandsConfigurationRepository 
                     $"/{nameof(Configuration.ExpireDate)}" ]
                    );
         }
-        catch (Exception ex)
+        catch
         {
-            //_notifier.Errors.Add(ex.ErrorCode);
             return null!;
         }
 
