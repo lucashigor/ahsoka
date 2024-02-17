@@ -21,7 +21,6 @@ public static class ApplicationExtension
                 Assembly.GetAssembly(typeof(RegisterConfigurationCommandValidator)));
 
         builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestValidationBehavior<,>));
-        builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestExceptionBehavior<,>));
         builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingPipelineBehavior<,>));
 
         builder.Services.AddTransient<IConfigurationServices, ConfigurationServices>();

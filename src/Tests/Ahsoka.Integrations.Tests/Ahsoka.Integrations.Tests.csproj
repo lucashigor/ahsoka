@@ -26,8 +26,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\Ahsoka.Infrastructure\Ahsoka.Infrastructure.csproj" />
-    <ProjectReference Include="..\src\Tests\Ahsoka.TestsUtil\Ahsoka.TestsUtil.csproj" />
+    <ProjectReference Include="..\..\Ahsoka.Infrastructure\Ahsoka.Infrastructure.csproj" />
+    <ProjectReference Include="..\Ahsoka.TestsUtil\Ahsoka.TestsUtil.csproj" />
   </ItemGroup>
 
 </Project>
