@@ -1,9 +1,18 @@
-﻿namespace Ahsoka.Integrations.Tests.Administrations.Configurations.Commands;
+﻿using Ahsoka.Application.Common.Interfaces;
+using Microsoft.AspNetCore.Http;
+using NSubstitute;
+
+namespace Ahsoka.Integrations.Tests.Administrations.Configurations.Commands;
 
 [Collection(nameof(ConfigurationTestFixture))]
-public class CommandsConfigurationRepositoryTests(ConfigurationTestFixture fixture)
+public class CommandsConfigurationRepositoryTests
 {
-    private readonly ConfigurationTestFixture _fixture = fixture;
+    private readonly IMessageSenderInterface message;
+
+    public CommandsConfigurationRepositoryTests()
+    {
+        message = Substitute.For<IMessageSenderInterface>();
+    }
 
     [Fact(DisplayName = nameof(InsertNewConfigurationAsync))]
     [Trait("Integration", "Configuration - ConfigurationRepository")]
@@ -52,7 +61,7 @@ public class CommandsConfigurationRepositoryTests(ConfigurationTestFixture fixtu
     public async void UpdateConfigurationAsync()
     {
         //Arrange
-        var dbOptions = _fixture.CreateDatabase();
+        var dbOptions = IntegrationsTestsFixture.CreateDatabase();
 
         var item = ConfigurationFixture.GetValidConfigurationAtDatabase(dbOptions,
             ConfigurationState.Awaiting,
@@ -61,7 +70,7 @@ public class CommandsConfigurationRepositoryTests(ConfigurationTestFixture fixtu
         var context = new PrincipalContext(dbOptions);
 
         var app = new CommandsConfigurationRepository(context);
-        var unitWork = new UnitOfWork(context);
+        var unitWork = new UnitOfWork(context, message);
 
         var oldDescription = item.Description;
         var newDescription = ConfigurationFixture.GetValidDescription();
@@ -93,10 +102,10 @@ public class CommandsConfigurationRepositoryTests(ConfigurationTestFixture fixtu
         }
     }
 
-    private (DbContextOptions<PrincipalContext>, RepositoryTestGeneric<Configuration, ConfigurationId, CommandsConfigurationRepository>)
+    private static (DbContextOptions<PrincipalContext>, RepositoryTestGeneric<Configuration, ConfigurationId, CommandsConfigurationRepository>)
         GetGenericRepositoryTest()
     {
-        var dbOptions = _fixture.CreateDatabase();
+        var dbOptions = IntegrationsTestsFixture.CreateDatabase();
 
         var repository = new RepositoryTestGeneric<Configuration, ConfigurationId, CommandsConfigurationRepository>(dbOptions);
         return (dbOptions, repository);

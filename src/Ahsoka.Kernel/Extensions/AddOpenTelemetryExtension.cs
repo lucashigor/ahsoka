@@ -2,41 +2,60 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Npgsql;
+using OpenTelemetry.Exporter;
+using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+
 public static class AddOpenTelemetryExtension
 {
-    private static readonly string tracingOtlpEndpoint = "";
-
     public static WebApplicationBuilder AddOpenTelemetry(this WebApplicationBuilder builder)
     {
-        var otel = builder.Services.AddOpenTelemetry();
+        Action<ResourceBuilder> configureResource = r => r.AddService(
+        serviceName: "ahsoka.api",
+        serviceVersion: "1.0",
+        serviceInstanceId: Environment.MachineName);
 
-        otel.ConfigureResource(resource => resource.AddService(serviceName: builder.Environment.ApplicationName));
-
-        otel.WithMetrics(metrics => metrics
+        builder.Services.AddOpenTelemetry()
+        .ConfigureResource(configureResource)
+        .WithTracing(tracing =>
+        {
+            tracing.AddAspNetCoreInstrumentation()
+            .AddHttpClientInstrumentation()
+            .AddNpgsql()
+            .AddOtlpExporter(opt =>
+            {
+                opt.Endpoint = new Uri("http://localhost:4318");
+                opt.Protocol = OtlpExportProtocol.Grpc;
+            });
+        })
+        .WithMetrics(metrics => metrics
             .AddAspNetCoreInstrumentation()
             .AddMeter("Microsoft.AspNetCore.Hosting")
             .AddMeter("Microsoft.AspNetCore.Server.Kestrel")
-            .AddPrometheusExporter());
+            .AddOtlpExporter(opt =>
+            {
+                opt.Endpoint = new Uri("http://localhost:4318");
+                opt.Protocol = OtlpExportProtocol.Grpc;
+            }));
 
-        otel.WithTracing(tracing =>
+        builder.Logging.ClearProviders();
+
+        builder.Logging
+        .AddOpenTelemetry(options =>
         {
-            tracing.AddAspNetCoreInstrumentation();
-            tracing.AddHttpClientInstrumentation();
-            if (string.IsNullOrEmpty(tracingOtlpEndpoint) is false)
+            options.AddOtlpExporter(opt =>
             {
-                tracing.AddOtlpExporter(otlpOptions =>
-                {
-                    otlpOptions.Endpoint = new Uri(tracingOtlpEndpoint);
-                });
-            }
-            else
-            {
-                tracing.AddConsoleExporter();
-            }
+                opt.Endpoint = new Uri("http://localhost:4318");
+                opt.Protocol = OtlpExportProtocol.Grpc;
+            });
+
+            options.AddConsoleExporter();
         });
+
 
         return builder;
     }

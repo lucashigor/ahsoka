@@ -5,13 +5,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Ahsoka.Infrastructure.Repositories.Common;
 
-public class UnitOfWork(PrincipalContext _context) : IUnitOfWork
+public class UnitOfWork(PrincipalContext context, IMessageSenderInterface messageSenderInterface) : IUnitOfWork
 {
+    private readonly PrincipalContext _context = context;
+    private readonly IMessageSenderInterface _messageSenderInterface = messageSenderInterface;
+
     public async Task CommitAsync(CancellationToken cancellationToken)
     {
-        await _context.SaveChangesAsync(cancellationToken);
+        await DispatchDomainEventsAsync(cancellationToken);
 
-        await DispatchDomainEventsAsync();
+        await _context.SaveChangesAsync(cancellationToken);
     }
     public Task RollbackAsync(CancellationToken cancellationToken)
     {
@@ -22,7 +25,7 @@ public class UnitOfWork(PrincipalContext _context) : IUnitOfWork
         return Task.CompletedTask;
     }
 
-    private Task DispatchDomainEventsAsync()
+    private Task DispatchDomainEventsAsync(CancellationToken cancellationToken)
     {
         var domainEntities = _context.ChangeTracker
             .Entries<IAggregateRoot>()
@@ -36,10 +39,10 @@ public class UnitOfWork(PrincipalContext _context) : IUnitOfWork
             .ForEach(entity => entity.Entity.ClearEvents());
 
         foreach (var domainEvent in domainEvents.OrderBy(x => x.EventDateUTC))
-        { }
+        {
+            _messageSenderInterface.PubSubSendAsync(domainEvent, cancellationToken);
+        }
 
         return Task.CompletedTask;
-
-        //await _mediator.Publish(domainEvent);
     }
 }

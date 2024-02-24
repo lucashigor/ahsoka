@@ -10,11 +10,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Ahsoka.Kernel.Extensions;
+namespace Ahsoka.Kernel.Extensions.Infrastructures;
 
-public static class InfrastructureExtension
+public static class DbExtension
 {
-    public static WebApplicationBuilder AddInfrastructureServices(this WebApplicationBuilder builder)
+    public static WebApplicationBuilder AddDbExtension(this WebApplicationBuilder builder)
     {
         var conn = builder.Configuration.GetConnectionString("PrincipalDatabase");
 
@@ -24,21 +24,25 @@ public static class InfrastructureExtension
             {
                 options.EnableDetailedErrors();
                 options.EnableSensitiveDataLogging();
-                options.UseNpgsql(conn!);
+
+                options.UseNpgsql(conn, x =>
+                {
+                    x.EnableRetryOnFailure(5);
+                    x.MinBatchSize(1);
+                });
             });
 
             var serviceProvider = builder.Services.BuildServiceProvider();
             using var scope = serviceProvider.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<PrincipalContext>();
             db.Database.Migrate();
-
         }
+
+        builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(TransactionBehavior<,>));
 
         builder.Services.AddScoped<ICommandsConfigurationRepository, CommandsConfigurationRepository>();
         builder.Services.AddScoped<IQueriesConfigurationRepository, QueriesConfigurationRepository>();
         builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
-        builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(TransactionBehavior<,>));
 
         return builder;
     }

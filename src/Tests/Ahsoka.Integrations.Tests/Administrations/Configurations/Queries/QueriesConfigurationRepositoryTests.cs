@@ -1,14 +1,10 @@
 ﻿using Ahsoka.Application.Administrations.Configurations.Commands;
-using Ahsoka.Domain.Entities.Admin.Configurations;
-using Bogus.DataSets;
 
 namespace Ahsoka.Integrations.Tests.Administrations.Configurations.Queries;
 
 [Collection(nameof(ConfigurationTestFixture))]
 public class QueriesConfigurationRepositoryTests(ConfigurationTestFixture fixture)
 {
-    private readonly ConfigurationTestFixture _fixture = fixture;
-
     [Fact(DisplayName = nameof(GetConfigurationByIdAsync))]
     [Trait("Integration", "Configuration - QueriesConfigurationRepository")]
     public async Task GetConfigurationByIdAsync()
@@ -45,7 +41,7 @@ public class QueriesConfigurationRepositoryTests(ConfigurationTestFixture fixtur
 
     internal async Task GetListConfigurations(string name)
     {
-        var dbOptions = _fixture.CreateDatabase();
+        var dbOptions = IntegrationsTestsFixture.CreateDatabase();
         using var context = new PrincipalContext(dbOptions);
 
         var list = new List<Configuration>();
@@ -82,7 +78,7 @@ public class QueriesConfigurationRepositoryTests(ConfigurationTestFixture fixtur
     private (DbContextOptions<PrincipalContext>, QueriesConfigurationRepository)
         GetGenericRepositoryTest()
     {
-        var dbOptions = _fixture.CreateDatabase();
+        var dbOptions = IntegrationsTestsFixture.CreateDatabase();
 
         var context = new PrincipalContext(dbOptions);
 

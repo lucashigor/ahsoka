@@ -9,10 +9,9 @@ using FluentValidation.TestHelper;
 namespace Ahsoka.Unit.Tests.Application.Administrations.Configurations.Commands.RegisterConfigurations;
 
 [Collection(nameof(ConfigurationTestFixture))]
-public class RegisterConfigurationCommandValidatorTests(ConfigurationTestFixture fixture)
+public class RegisterConfigurationCommandValidatorTests()
 {
     private readonly RegisterConfigurationCommandValidator _validator = new();
-    private readonly ConfigurationTestFixture _fixture = fixture;
 
     [Fact]
     public void Name_ShouldHaveError_WhenNameIsEmpty()

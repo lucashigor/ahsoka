@@ -11,10 +11,9 @@ using FluentValidation.TestHelper;
 namespace Ahsoka.Unit.Tests.Application.Administrations.Configurations.Commands.ChangeConfigurations;
 
 [Collection(nameof(ConfigurationTestFixture))]
-public class ChangeConfigurationCommandValidatorTests(ConfigurationTestFixture fixture)
+public class ChangeConfigurationCommandValidatorTests()
 {
     private readonly ChangeConfigurationCommandValidator _validator = new();
-    private readonly ConfigurationTestFixture _fixture = fixture;
 
     [Fact]
     public void Name_ShouldHaveError_WhenNameIsEmpty()

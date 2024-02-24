@@ -28,7 +28,7 @@ public class RegisterConfigurationCommandHandler(ICommandsConfigurationRepositor
     private readonly ICurrentUserService _userService = userService;
     private readonly Notifier _notifier = notifier;
 
-    [Transaction]
+    //[Transaction]
     [Log]
     public async Task<ConfigurationOutput?> Handle(RegisterConfigurationCommand request, CancellationToken cancellationToken)
     {

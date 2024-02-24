@@ -12,12 +12,12 @@ public class ConfigurationServices(IQueriesConfigurationRepository configuration
 
         if (listWithSameName is not null && listWithSameName.Exists(x => x.Id != entity.Id))
         {
-            if (listWithSameName.Exists(x => x.StartDate < entity.StartDate && x.ExpireDate > entity.StartDate && x.Id != entity.Id))
+            if (listWithSameName.Exists(x => x.StartDate <= entity.StartDate && x.ExpireDate >= entity.StartDate && x.Id != entity.Id))
             {
                 notifier.Errors.Add(Ahsoka.Application.Dto.Common.ApplicationsErrors.Errors.ThereWillCurrentConfigurationStartDate());
             }
 
-            if (listWithSameName.Exists(x => x.StartDate < entity.ExpireDate && x.ExpireDate > entity.ExpireDate && x.Id != entity.Id))
+            if (listWithSameName.Exists(x => x.StartDate <= entity.ExpireDate && x.ExpireDate >= entity.ExpireDate && x.Id != entity.Id))
             {
                 notifier.Errors.Add(Ahsoka.Application.Dto.Common.ApplicationsErrors.Errors.ThereWillCurrentConfigurationEndDate());
             }

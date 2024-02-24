@@ -1,6 +1,7 @@
 ﻿// Ignore Spelling: Upsert
 
 using Ahsoka.Domain.Entities.Admin.Configurations;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using System.Reflection;
@@ -37,8 +38,11 @@ public partial class PrincipalContext(DbContextOptions<PrincipalContext> options
                 .ForEach(p => p.SetMaxLength(255));
         }
 
-
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+
+        modelBuilder.AddInboxStateEntity();
+        modelBuilder.AddOutboxStateEntity();
+        modelBuilder.AddOutboxMessageEntity();
     }
 
     public void Upsert<T>(T entity) where T : class

@@ -12,7 +12,7 @@ public class IntegrationsTestsFixture : IAsyncLifetime
     .WithPassword("P@55w0rd")
     .Build();
 
-    public DbContextOptions<PrincipalContext> CreateDatabase()
+    public static DbContextOptions<PrincipalContext> CreateDatabase()
         => new DbContextOptionsBuilder<PrincipalContext>()
             .UseNpgsql(_dbContainer.GetConnectionString())
             .Options;

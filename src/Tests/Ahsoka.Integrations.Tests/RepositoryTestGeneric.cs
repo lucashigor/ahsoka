@@ -1,4 +1,6 @@
-﻿using Ahsoka.Domain.SeedWork.Repository.CommandRepository;
+﻿using Ahsoka.Application.Common.Interfaces;
+using Ahsoka.Domain.SeedWork.Repository.CommandRepository;
+using NSubstitute;
 
 namespace Ahsoka.Integrations.Tests;
 
@@ -7,13 +9,14 @@ public class RepositoryTestGeneric<TEntity, TEntityId, TRepository>(DbContextOpt
     where TEntity : Entity<TEntityId>
     where TRepository : ICommandRepository<TEntity, TEntityId>
 {
+    private readonly IMessageSenderInterface message = Substitute.For<IMessageSenderInterface>();
 
     public async Task<bool> CreateEntityAsync(Func<TEntity> GetEntity)
     {
         //Arrange
         using PrincipalContext context = new(_dbOptions);
         var _repository = (TRepository)Activator.CreateInstance(typeof(TRepository), context)!;
-        var unitWork = new UnitOfWork(context);
+        var unitWork = new UnitOfWork(context, message);
 
         var item = GetEntity.Invoke();
 
@@ -44,7 +47,7 @@ public class RepositoryTestGeneric<TEntity, TEntityId, TRepository>(DbContextOpt
         //Arrange
         using PrincipalContext context = new(_dbOptions);
         var _repository = (TRepository)Activator.CreateInstance(typeof(TRepository), context)!;
-        var unitWork = new UnitOfWork(context);
+        var unitWork = new UnitOfWork(context, message);
 
         var item = GetEntityFromDatabase.Invoke();
 
@@ -64,7 +67,7 @@ public class RepositoryTestGeneric<TEntity, TEntityId, TRepository>(DbContextOpt
 
         using PrincipalContext context = new(_dbOptions);
         var _repository = (TRepository)Activator.CreateInstance(typeof(TRepository), context)!;
-        var unitWork = new UnitOfWork(context);
+        var unitWork = new UnitOfWork(context, message);
 
         //Act
         await _repository.DeleteAsync(item.Id, CancellationToken.None);
