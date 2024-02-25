@@ -36,6 +36,7 @@ public class ModifyConfigurationCommandHandler(ICommandsConfigurationRepository 
         }
         catch
         {
+            _notifier.Errors.Add(Dto.Common.ApplicationsErrors.Errors.InvalidOperationOnPatch());
             return null!;
         }
 

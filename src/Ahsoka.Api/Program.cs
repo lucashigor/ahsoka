@@ -5,13 +5,20 @@ using Ahsoka.Application.Dto.Common.ApplicationsErrors.Models;
 using Ahsoka.Kernel.Extensions;
 using Ahsoka.Kernel.Extensions.Infrastructures;
 using Asp.Versioning.ApiExplorer;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddOpenTelemetry();
 
-builder.Services.AddControllers();
+builder.Services
+    .AddControllers(options =>
+    {
+        options.InputFormatters.Insert(0, MyJPIF.GetJsonPatchInputFormatter());
+    })
+    .AddNewtonsoftJson();
 
 builder.AddDbExtension()
     .AddDbMessagingExtension();
@@ -48,3 +55,23 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+
+public static class MyJPIF
+{
+    public static NewtonsoftJsonPatchInputFormatter GetJsonPatchInputFormatter()
+    {
+        var builder = new ServiceCollection()
+            .AddLogging()
+            .AddMvc()
+            .AddNewtonsoftJson()
+            .Services.BuildServiceProvider();
+
+        return builder
+            .GetRequiredService<IOptions<MvcOptions>>()
+            .Value
+            .InputFormatters
+            .OfType<NewtonsoftJsonPatchInputFormatter>()
+            .First();
+    }
+}

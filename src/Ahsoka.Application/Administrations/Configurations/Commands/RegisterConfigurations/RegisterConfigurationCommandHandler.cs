@@ -1,6 +1,5 @@
 ﻿using Ahsoka.Application.Administrations.Configurations.Errors;
 using Ahsoka.Application.Administrations.Configurations.Services;
-using Ahsoka.Application.Common;
 using Ahsoka.Application.Common.Attributes;
 using Ahsoka.Application.Common.Interfaces;
 using Ahsoka.Application.Common.Models;
@@ -22,13 +21,7 @@ public class RegisterConfigurationCommandHandler(ICommandsConfigurationRepositor
     IConfigurationServices configurationServices,
     ICurrentUserService userService) : IRequestHandler<RegisterConfigurationCommand, ConfigurationOutput?>
 {
-    private readonly ICommandsConfigurationRepository _configurationRepository = repository;
-    private readonly IUnitOfWork _unitOfWork = unitOfWork;
-    private readonly IConfigurationServices _configurationServices = configurationServices;
-    private readonly ICurrentUserService _userService = userService;
-    private readonly Notifier _notifier = notifier;
-
-    //[Transaction]
+    [Transaction]
     [Log]
     public async Task<ConfigurationOutput?> Handle(RegisterConfigurationCommand request, CancellationToken cancellationToken)
     {
@@ -37,24 +30,24 @@ public class RegisterConfigurationCommandHandler(ICommandsConfigurationRepositor
             request.Description,
             request.StartDate,
             request.ExpireDate,
-            _userService.User.UserId.ToString());
+            userService.User.UserId.ToString());
 
         if (result.IsFailure || config is null)
         {
-            HandleConfigurationResult.HandleResultConfiguration(result, _notifier);
+            HandleConfigurationResult.HandleResultConfiguration(result, notifier);
             return null;
         }
 
-        await _configurationServices.Handle(config!, cancellationToken);
+        await configurationServices.Handle(config!, cancellationToken);
 
-        if (_notifier.Errors.Count > 0)
+        if (notifier.Errors.Count > 0)
         {
             return null;
         }
 
-        await _configurationRepository.InsertAsync(config!, cancellationToken);
+        await repository.InsertAsync(config!, cancellationToken);
 
-        await _unitOfWork.CommitAsync(cancellationToken);
+        await unitOfWork.CommitAsync(cancellationToken);
 
         return config!.Adapt<ConfigurationOutput>();
     }

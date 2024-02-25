@@ -81,7 +81,6 @@ public class ConfigurationsController(Notifier notifier, IMediator mediator) : B
         return Result(output);
     }
 
-
     [HttpPut("{id:guid}")]
     [MapToApiVersion("1.0")]
     [ProducesResponseType(typeof(DefaultResponse<ConfigurationOutput>), StatusCodes.Status200OK)]
