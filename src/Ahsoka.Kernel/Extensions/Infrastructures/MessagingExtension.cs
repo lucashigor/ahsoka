@@ -3,7 +3,11 @@ using Ahsoka.Infrastructure.Messaging.RabbitMq;
 using Ahsoka.Infrastructure.Repositories.Context;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Ahsoka.Application.Common;
+using Ahsoka.Domain.Entities.Admin.Configurations.Events;
+using Ahsoka.Infrastructure.Messaging.Consumers.Administrations.Configurations.DomainEventHandlers;
 
 namespace Ahsoka.Kernel.Extensions.Infrastructures;
 
@@ -11,13 +15,19 @@ public static class MessagingExtension
 {
     public static WebApplicationBuilder AddDbMessagingExtension(this WebApplicationBuilder builder)
     {
+        var configs = builder.Configuration
+            .GetSection(nameof(RabbitMq))
+            .Get<RabbitMq>();
+
+        if (configs == null)
+        {
+            return builder;
+        }
+
         builder.Services.AddScoped<IMessageSenderInterface, SendMessagePublisher>();
 
         builder.Services.AddMassTransit(x =>
         {
-            var entryAssembly = AppDomain.CurrentDomain.Load("Ahsoka.Infrastructure");
-            x.AddConsumers(entryAssembly);
-
             x.SetKebabCaseEndpointNameFormatter();
             x.AddEntityFrameworkOutbox<PrincipalContext>(o =>
             {
@@ -30,13 +40,25 @@ public static class MessagingExtension
             {
                 cfg.AutoStart = true;
 
-                cfg.Host("localhost", "/", h =>
+                cfg.Host(configs.Host!, "/", h =>
                 {
-                    h.Username("guest");
-                    h.Password("guest");
+                    h.Username(configs.Username!);
+                    h.Password(configs.Password!);
                 });
 
-                cfg.ConfigureEndpoints(context);
+
+                cfg.Message<ConfigurationCreatedDomainEvent>(m => m.SetEntityName("ConfigurationTopic"));
+                cfg.Publish<ConfigurationCreatedDomainEvent>(e =>
+                {
+                    e.ExchangeType = "topic";
+                });
+
+                cfg.ReceiveEndpoint($"{nameof(ConfigurationCreatedDomainEventConsumer)}-queue", c =>
+                {
+                    c.ConfigureConsumeTopology = false;
+
+                    c.Consumer<ConfigurationCreatedDomainEventConsumer>(context);
+                });
             });
         });
 

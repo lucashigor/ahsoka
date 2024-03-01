@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Reflection;
 
-namespace Ahsoka.Kernel.Extensions;
+namespace Ahsoka.Kernel.Extensions.Api;
 
 public static class ApplicationInitializer
 {
@@ -29,6 +29,8 @@ public static class ApplicationInitializer
         builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(ApplicationAssembly));
 
         builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+        builder.Services.AddHealthChecks();
 
         return builder;
     }

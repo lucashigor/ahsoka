@@ -3,7 +3,6 @@ using Ahsoka.Application.Administrations.Configurations.Commands.ModifyConfigura
 using Ahsoka.Application.Administrations.Configurations.Commands.RegisterConfiguration;
 using Ahsoka.Application.Administrations.Configurations.Commands.RemoveConfiguration;
 using Ahsoka.Application.Administrations.Configurations.Queries;
-using Ahsoka.Application.Common.Extensions;
 using Ahsoka.Application.Common.Models;
 using Ahsoka.Application.Dto.Administrations.Configurations.Requests;
 using Ahsoka.Application.Dto.Administrations.Configurations.Responses;
@@ -15,7 +14,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Mime;
-using _application = Ahsoka.Application.Administrations.Configurations.Commands;
 
 namespace Ahsoka.Api.Controllers.Administrations.Configurations.v1;
 

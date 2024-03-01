@@ -3,6 +3,7 @@ using Ahsoka.Api.Common.Swagger;
 using Ahsoka.Application.Common;
 using Ahsoka.Application.Dto.Common.ApplicationsErrors.Models;
 using Ahsoka.Kernel.Extensions;
+using Ahsoka.Kernel.Extensions.Api;
 using Ahsoka.Kernel.Extensions.Infrastructures;
 using Asp.Versioning.ApiExplorer;
 using Microsoft.AspNetCore.Mvc;
@@ -25,6 +26,8 @@ builder.AddDbExtension()
 builder.AddApplicationExtensionServices();
 builder.AddApiExtensionServices();
 
+
+builder.ConfigureHealthChecks();
 builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(opts =>
                 opts.SerializerOptions.Converters.Add(new ErrorCodeConverter()));
 builder.Services.AddTransient<GlobalExceptionHandlerMiddleware>();
@@ -42,6 +45,8 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwaggerUI();
 }
+
+app.ConfigureHealthChecks();
 
 var configs = app.Services.GetRequiredService<IOptions<ApplicationSettings>>();
 

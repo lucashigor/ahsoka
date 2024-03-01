@@ -4,12 +4,10 @@ public record ApplicationSettings
 {
     public IdentityProvider? IdentityProvider { get; init; }
     public Cors? Cors { get; init; }
+    public OpenTelemetryConfig? OpenTelemetryConfig { get; init; }
 }
 
-public record Cors
-{
-    public List<string>? AllowedOrigins { get; set; }
-}
+public record Cors(List<string>? AllowedOrigins);
 
 public record IdentityProvider
 {
@@ -19,3 +17,7 @@ public record IdentityProvider
     public string? SwaggerClientId { get; init; }
     public string? PublicKeyJwt { get; set; }
 }
+
+public record OpenTelemetryConfig(string? StatusGaugeName, string? DurationGaugeName, string? Endpoint);
+
+public record RabbitMq(string? Host, string? Username, string? Password);

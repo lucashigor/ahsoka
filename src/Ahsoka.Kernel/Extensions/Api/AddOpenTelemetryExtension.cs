@@ -1,6 +1,9 @@
-﻿namespace Ahsoka.Kernel.Extensions;
+﻿namespace Ahsoka.Kernel.Extensions.Api;
 
+using Ahsoka.Application.Common;
+using HealthChecks.OpenTelemetry.Instrumentation;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Npgsql;
@@ -14,6 +17,15 @@ public static class AddOpenTelemetryExtension
 {
     public static WebApplicationBuilder AddOpenTelemetry(this WebApplicationBuilder builder)
     {
+        var configs = builder.Configuration
+            .GetSection(nameof(OpenTelemetryConfig))
+            .Get<OpenTelemetryConfig>();
+        
+        if (configs == null)
+        {
+            return builder;
+        }
+
         Action<ResourceBuilder> configureResource = r => r.AddService(
         serviceName: "ahsoka.api",
         serviceVersion: "1.0",
@@ -28,7 +40,7 @@ public static class AddOpenTelemetryExtension
             .AddNpgsql()
             .AddOtlpExporter(opt =>
             {
-                opt.Endpoint = new Uri("http://localhost:4318");
+                opt.Endpoint = new Uri(configs.Endpoint!);
                 opt.Protocol = OtlpExportProtocol.Grpc;
             });
         })
@@ -36,9 +48,14 @@ public static class AddOpenTelemetryExtension
             .AddAspNetCoreInstrumentation()
             .AddMeter("Microsoft.AspNetCore.Hosting")
             .AddMeter("Microsoft.AspNetCore.Server.Kestrel")
+            .AddHealthChecksInstrumentation(options =>
+            {
+                options.StatusGaugeName = configs.StatusGaugeName!;
+                options.DurationGaugeName = configs.DurationGaugeName!;
+            })
             .AddOtlpExporter(opt =>
             {
-                opt.Endpoint = new Uri("http://localhost:4318");
+                opt.Endpoint = new Uri(configs.Endpoint!);
                 opt.Protocol = OtlpExportProtocol.Grpc;
             }));
 
@@ -49,7 +66,7 @@ public static class AddOpenTelemetryExtension
         {
             options.AddOtlpExporter(opt =>
             {
-                opt.Endpoint = new Uri("http://localhost:4318");
+                opt.Endpoint = new Uri(configs.Endpoint!);
                 opt.Protocol = OtlpExportProtocol.Grpc;
             });
 

@@ -1,4 +1,5 @@
-﻿using Ahsoka.Application.Common.Interfaces;
+﻿using Ahsoka.Application.Common;
+using Ahsoka.Application.Common.Interfaces;
 using Ahsoka.Domain.Entities.Admin.Configurations.Repository;
 using Ahsoka.Infrastructure;
 using Ahsoka.Infrastructure.Repositories.Common;
@@ -16,7 +17,7 @@ public static class DbExtension
 {
     public static WebApplicationBuilder AddDbExtension(this WebApplicationBuilder builder)
     {
-        var conn = builder.Configuration.GetConnectionString("PrincipalDatabase");
+        var conn = builder.Configuration.GetConnectionString(nameof(PrincipalContext));
 
         if (string.IsNullOrEmpty(conn) is false)
         {

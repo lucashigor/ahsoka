@@ -33,7 +33,9 @@ public static class JwtAuthenticationMiddleware
 {
     private static RsaSecurityKey BuildRSAKey(IConfiguration configuration)
     {
-        var authOptions = configuration.GetSection("IdentityProvider").Get<IdentityProvider>();
+        var authOptions = configuration
+            .GetSection(nameof(IdentityProvider))
+            .Get<IdentityProvider>();
 
         RSA rsa = RSA.Create();
 
@@ -51,15 +53,18 @@ public static class JwtAuthenticationMiddleware
     {
         services.AddTransient<IClaimsTransformation, ClaimsTransformer>();
 
-        var authOptions = configuration.GetSection("IdentityProvider").Get<IdentityProvider>();
+        var authOptions = configuration
+            .GetSection(nameof(IdentityProvider))
+            .Get<IdentityProvider>();
 
         services.AddAuthorization(o =>
         {
             o.FallbackPolicy = new AuthorizationPolicyBuilder()
-            .RequireAuthenticatedUser()
-                            .Build();
+                .RequireAuthenticatedUser()
+                .Build();
 
-            o.DefaultPolicy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme).RequireAuthenticatedUser()
+            o.DefaultPolicy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme)
+                .RequireAuthenticatedUser()
                 .Build();
         });
 

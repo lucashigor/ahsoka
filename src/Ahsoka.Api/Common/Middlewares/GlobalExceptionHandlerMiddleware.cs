@@ -10,7 +10,6 @@ using System.Data;
 using System.Diagnostics;
 using System.Net;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 public class GlobalExceptionHandlerMiddleware(ILogger<GlobalExceptionHandlerMiddleware> logger) : IMiddleware
 {
