@@ -14,4 +14,4 @@ jobs:
         uses: docker/setup-qemu-action@v3
       - name: Build and analyze
         run: |
-          dotnet test .\ahsoka.sln
+          dotnet test ./ahsoka.sln
