@@ -9,11 +9,6 @@ public class SendMessagePublisher(IPublishEndpoint bus) : IMessageSenderInterfac
 
     public async Task PubSubSendAsync(object data, CancellationToken cancellationToken)
     {
-        await _bus.Publish(data, x => { x.SetRoutingKey(nameof(data)); }, cancellationToken);
-    }
-
-    public async Task SendQueueAsync(object data, CancellationToken cancellationToken)
-    {
         await _bus.Publish(data, cancellationToken);
     }
 }

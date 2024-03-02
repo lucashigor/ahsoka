@@ -123,7 +123,7 @@ public class Configuration : AggregateRoot<ConfigurationId>
             return (result, null);
         }
 
-        entity.RaiseDomainEvent(new ConfigurationCreatedDomainEvent(entity));
+        entity.RaiseDomainEvent(ConfigurationCreatedDomainEvent.FromConfiguration(entity));
 
         return (result, entity);
     }
@@ -199,7 +199,7 @@ public class Configuration : AggregateRoot<ConfigurationId>
             return result;
         }
 
-        RaiseDomainEvent(new ConfigurationUpdatedDomainEvent(this));
+        RaiseDomainEvent(ConfigurationUpdatedDomainEvent.FromConfiguration(this));
 
         return result;
     }
@@ -227,7 +227,7 @@ public class Configuration : AggregateRoot<ConfigurationId>
         {
             IsDeleted = true;
 
-            RaiseDomainEvent(new ConfigurationDeletedDomainEvent(this));
+            RaiseDomainEvent(ConfigurationDeletedDomainEvent.FromConfiguration(this));
         }
 
         var result = Validate();

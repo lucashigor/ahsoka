@@ -123,7 +123,7 @@ public class ConfigurationsController(Notifier notifier, IMediator mediator) : B
 
         await _mediator.Send(new RemoveConfigurationCommand(id), cancellationToken);
 
-        return Result<ConfigurationOutput>(null!);
+        return Result<object>();
     }
 
     [HttpGet("{id:guid}")]

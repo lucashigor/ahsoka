@@ -1,13 +1,13 @@
-﻿using Ahsoka.Application.Common.Interfaces;
+﻿using Ahsoka.Application.Common;
+using Ahsoka.Application.Common.Interfaces;
+using Ahsoka.Infrastructure.Messaging.Consumers.Administrations.Configurations;
+using Ahsoka.Infrastructure.Messaging.Publisher.Administrations.Configurations.DomainEventHandlersConfig;
 using Ahsoka.Infrastructure.Messaging.RabbitMq;
 using Ahsoka.Infrastructure.Repositories.Context;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Ahsoka.Application.Common;
-using Ahsoka.Domain.Entities.Admin.Configurations.Events;
-using Ahsoka.Infrastructure.Messaging.Consumers.Administrations.Configurations.DomainEventHandlers;
 
 namespace Ahsoka.Kernel.Extensions.Infrastructures;
 
@@ -31,10 +31,12 @@ public static class MessagingExtension
             x.SetKebabCaseEndpointNameFormatter();
             x.AddEntityFrameworkOutbox<PrincipalContext>(o =>
             {
-                o.QueryDelay = TimeSpan.FromSeconds(100);
+                o.QueryDelay = TimeSpan.FromMilliseconds(200);
 
                 o.UsePostgres().UseBusOutbox();
             });
+
+            x.AddConfigurationsConsumers();
 
             x.UsingRabbitMq((context, cfg) =>
             {
@@ -46,19 +48,9 @@ public static class MessagingExtension
                     h.Password(configs.Password!);
                 });
 
-
-                cfg.Message<ConfigurationCreatedDomainEvent>(m => m.SetEntityName("ConfigurationTopic"));
-                cfg.Publish<ConfigurationCreatedDomainEvent>(e =>
-                {
-                    e.ExchangeType = "topic";
-                });
-
-                cfg.ReceiveEndpoint($"{nameof(ConfigurationCreatedDomainEventConsumer)}-queue", c =>
-                {
-                    c.ConfigureConsumeTopology = false;
-
-                    c.Consumer<ConfigurationCreatedDomainEventConsumer>(context);
-                });
+                cfg
+                .AddConfigurationsPublisherDomainEventHandlersConfigs()
+                .AddConfigurationsConsumerDomainEventHandlersConfigs(context);
             });
         });
 

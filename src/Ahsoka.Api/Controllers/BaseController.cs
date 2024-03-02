@@ -9,7 +9,7 @@ public class BaseController(Notifier notifier) : ControllerBase
 {
     protected readonly Notifier notifier = notifier;
 
-    protected IResult Result<T>(T? model) where T : class
+    protected IResult Result<T>(T? model = null) where T : class
     {
         if (model is null && notifier.Warnings.Count == 0 && notifier.Errors.Count == 0)
         {
