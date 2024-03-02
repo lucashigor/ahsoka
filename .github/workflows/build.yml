@@ -13,6 +13,5 @@ jobs:
       - name: Set up JDK 17
         uses: docker/setup-qemu-action@v3
       - name: Build and analyze
-        shell: shell
         run: |
           dotnet test .\ahsoka.sln
