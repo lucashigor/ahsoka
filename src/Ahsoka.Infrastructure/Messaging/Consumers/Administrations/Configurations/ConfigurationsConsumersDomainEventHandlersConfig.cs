@@ -17,7 +17,7 @@ public static class ConfigurationsConsumersDomainEventHandlersConfig
 
     public static IRabbitMqBusFactoryConfigurator AddConfigurationsConsumerDomainEventHandlersConfigs(this IRabbitMqBusFactoryConfigurator config, IRegistrationContext context)
     {
-        config.ReceiveEndpoint("configurations-domain-events-queues", x =>
+        config.ReceiveEndpoint($"{nameof(ConfigurationCreatedDomainEventConsumer)}-queues", x =>
         {
             x.ConfigureConsumeTopology = false;
 
