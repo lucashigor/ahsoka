@@ -1,7 +1,6 @@
 ﻿using Ahsoka.Application.Administrations.Configurations.Commands.RegisterConfiguration;
 using Ahsoka.Application.Administrations.Configurations.Services;
 using Ahsoka.Application.Common.Behaviors;
-using Ahsoka.Application.Common.Models;
 using Ahsoka.Application.Common.Models.Authorizations;
 using FluentValidation;
 using MediatR;
@@ -15,8 +14,6 @@ public static class ApplicationExtension
 {
     public static WebApplicationBuilder AddApplicationExtensionServices(this WebApplicationBuilder builder)
     {
-        builder.Services.AddScoped<Notifier>();
-
         builder.Services.AddValidatorsFromAssembly(
                 Assembly.GetAssembly(typeof(RegisterConfigurationCommandValidator)));
 

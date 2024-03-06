@@ -1,5 +1,6 @@
 ﻿namespace Ahsoka.Application.Common.Extensions;
 using Ahsoka.Application.Dto.Common.ApplicationsErrors;
+using Ahsoka.Application.Dto.Common.ApplicationsErrors.Models;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.JsonPatch.Operations;
 using System;
@@ -8,51 +9,37 @@ using System.Linq;
 
 public static class JSonPatchDocumentExtensions
 {
-    public static void Validate<T>(
+    public static List<ErrorModel> Validate<T>(
         this JsonPatchDocument<T> payload,
         OperationType acceptedOperation,
         List<string> acceptedPaths) where T : class
     {
+        var errors = new List<ErrorModel>();
+
         var operations = payload.Operations.Where(x => x.OperationType == acceptedOperation);
 
         if (!operations.Any())
         {
-            var err = Errors.InvalidOperationOnPatch();
-
             var collection = payload.Operations.Select(x => x.OperationType).ToList();
 
-            var op = "";
-
-            foreach (var item in collection)
-            {
-                op += $"{item},";
-            }
-
-            err.ChangeInnerMessage(op);
-
-            throw new Exception(err.Message);
+            collection.ForEach(x => errors.Add(Errors
+                    .InvalidOperationOnPatch()
+                    .ChangeInnerMessage(x.ToString())));
         }
 
         if (operations.Any(x => !acceptedPaths.Contains(x.path, StringComparer.OrdinalIgnoreCase)))
         {
-            var err = Errors.InvalidPathOnPatch();
-
             var collection = payload.Operations
                 .Where(x => !acceptedPaths.Contains(x.path, StringComparer.OrdinalIgnoreCase))
                 .Select(x => x.path)
                 .ToList();
 
-            var op = "";
+            collection.ForEach(x => errors.Add(Errors
+                    .InvalidPathOnPatch()
+                    .ChangeInnerMessage(x.ToString())));
+        }
 
-            foreach (var item in collection)
-            {
-                op += $"{item},";
-            }
-
-            err.ChangeInnerMessage(op);
-
-            throw new Exception(err.Message);
-        };
+        return errors;
     }
 
     public static JsonPatchDocument<R> MapPatchInputToPatchCommand<T, R>(this JsonPatchDocument<T> source) where R : class where T : class

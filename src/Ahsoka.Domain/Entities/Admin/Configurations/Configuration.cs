@@ -39,7 +39,7 @@ public record ConfigurationState : Enumeration<int>
     public static readonly ConfigurationState Expired = new(3, nameof(Expired));
 }
 
-public class Configuration : AggregateRoot<ConfigurationId>
+public class Configuration : AggregateRoot<ConfigurationId>, ISoftDeletableEntity
 {
     public string Name { get; private set; }
     public string Value { get; private set; }
@@ -88,7 +88,7 @@ public class Configuration : AggregateRoot<ConfigurationId>
         IsDeleted = false;
     }
 
-    public static (Result, Configuration?) New(
+    public static (DomainResult, Configuration?) New(
         string name,
         string value,
         string description,
@@ -160,7 +160,7 @@ public class Configuration : AggregateRoot<ConfigurationId>
     }
 
     #region Update
-    public Result Update(string name, string value, string description, DateTime startDate, DateTime? expireDate)
+    public DomainResult Update(string name, string value, string description, DateTime startDate, DateTime? expireDate)
     {
         var StartDateHasChanges = StartDate.Equals(startDate) is false;
         var ExpireDateHasChanges = ExpireDate.Equals(expireDate) is false;
@@ -206,7 +206,7 @@ public class Configuration : AggregateRoot<ConfigurationId>
 
     #endregion
 
-    public Result Delete()
+    public DomainResult Delete()
     {
         if (State == ConfigurationState.Expired)
         {
@@ -230,8 +230,6 @@ public class Configuration : AggregateRoot<ConfigurationId>
             RaiseDomainEvent(ConfigurationDeletedDomainEvent.FromConfiguration(this));
         }
 
-        var result = Validate();
-
-        return result;
+        return Validate();
     }
 }

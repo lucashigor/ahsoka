@@ -1,31 +1,46 @@
-﻿using Ahsoka.Application.Common.Models;
-using Ahsoka.Application.Dto.Common.ApplicationsErrors;
+﻿using Ahsoka.Application.Dto.Common.ApplicationsErrors;
 using Ahsoka.Application.Dto.Common.Responses;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 
 namespace Ahsoka.Api.Controllers;
 
-public class BaseController(Notifier notifier) : ControllerBase
+public class BaseController() : ControllerBase
 {
-    protected readonly Notifier notifier = notifier;
-
-    protected IResult Result<T>(T? model = null) where T : class
+    protected IResult Result<T>(ApplicationResult<T> response) where T : class
     {
-        if (model is null && notifier.Warnings.Count == 0 && notifier.Errors.Count == 0)
+        var traceId = Activity.Current?.TraceId.ToString() ?? string.Empty;
+
+        if (response.Data is null 
+            && response.Warnings.Count == 0 
+            && response.Errors.Count == 0
+            && response.Infos.Count == 0)
         {
             return Results.NoContent();
         }
 
-        DefaultResponse<T> responseDto = new(model!);
-
-        if (notifier.Warnings.Any())
+        DefaultResponse<T> responseDto = new DefaultResponse<T>()
+            with
         {
-            responseDto.Warnings.AddRange(notifier.Warnings);
+            Data = response.Data,
+            TraceId = traceId,
+        };
+
+        if (response.Warnings.Count != 0)
+        {
+            responseDto.Warnings.AddRange(response.Warnings);
         }
 
-        if (notifier.Errors.Any())
+        if (response.Errors.Count != 0)
         {
-            responseDto.Errors.AddRange(notifier.Errors);
+            responseDto.Errors.AddRange(response.Errors);
+
+            return Results.BadRequest(responseDto);
+        }
+
+        if (response.Infos.Count != 0)
+        {
+            responseDto.Errors.AddRange(response.Errors);
 
             return Results.BadRequest(responseDto);
         }
@@ -33,16 +48,19 @@ public class BaseController(Notifier notifier) : ControllerBase
         return Results.Ok(responseDto);
     }
 
-    protected void CheckIdIfIdIsNull(Guid id)
+    protected ApplicationResult<T> CheckIdIfIdIsNull<T>(Guid? id) where T : class
     {
+        var response = ApplicationResult<T>.Success();
+
         if (id == Guid.Empty)
         {
             var err = Errors.Validation();
 
             err.ChangeInnerMessage("Id cannot be null");
 
-            this.notifier.Errors.Add(err);
-
+            response.AddError(err);
         }
+
+        return response;
     }
 }

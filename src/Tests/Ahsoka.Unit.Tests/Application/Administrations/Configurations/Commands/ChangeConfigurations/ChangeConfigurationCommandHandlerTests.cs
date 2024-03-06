@@ -16,7 +16,6 @@ namespace Ahsoka.Unit.Tests.Application.Administrations.Configurations.Commands.
 public class ChangeConfigurationCommandHandlerTests(ConfigurationTestFixture fixture)
 {
     private readonly ICommandsConfigurationRepository _configurationRepository = Substitute.For<ICommandsConfigurationRepository>();
-    private readonly Notifier _notifier = new();
     private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
     private readonly IConfigurationServices _configurationServices = Substitute.For<IConfigurationServices>();
     private readonly ConfigurationTestFixture _fixture = fixture;
@@ -36,7 +35,7 @@ public class ChangeConfigurationCommandHandlerTests(ConfigurationTestFixture fix
 
         var command = GetCommand(config.Id, newName);
 
-        await app.Handle(command, CancellationToken.None);
+        var _notifier = await app.Handle(command, CancellationToken.None);
 
         _notifier.Errors.Should().BeEmpty();
         await _configurationServices.Received(1).Handle(Arg.Any<Configuration>(), Arg.Any<CancellationToken>());
@@ -56,7 +55,7 @@ public class ChangeConfigurationCommandHandlerTests(ConfigurationTestFixture fix
 
         var command = GetCommand(config.Id, newName);
 
-        await app.Handle(command, CancellationToken.None);
+        var _notifier = await app.Handle(command, CancellationToken.None);
 
         _notifier.Errors.Should().NotBeEmpty();
         _notifier.Errors.Should().Contain(x => x.Code == ConfigurationErrorCodes.NotFound);
@@ -79,7 +78,7 @@ public class ChangeConfigurationCommandHandlerTests(ConfigurationTestFixture fix
 
         var command = GetCommand(config.Id, "");
 
-        await app.Handle(command, CancellationToken.None);
+        var _notifier = await app.Handle(command, CancellationToken.None);
 
         _notifier.Errors.Should().NotBeEmpty();
         _notifier.Errors.Should().Contain(x => x.Code == ConfigurationErrorCodes.ConfigurationsValidation);
@@ -94,6 +93,5 @@ public class ChangeConfigurationCommandHandlerTests(ConfigurationTestFixture fix
     private ChangeConfigurationCommandHandler GetApp()
         => new(_configurationRepository,
                 _unitOfWork,
-                _notifier,
                 _configurationServices);
 }

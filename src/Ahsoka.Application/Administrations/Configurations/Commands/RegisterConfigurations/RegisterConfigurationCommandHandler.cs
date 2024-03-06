@@ -2,9 +2,9 @@
 using Ahsoka.Application.Administrations.Configurations.Services;
 using Ahsoka.Application.Common.Attributes;
 using Ahsoka.Application.Common.Interfaces;
-using Ahsoka.Application.Common.Models;
 using Ahsoka.Application.Common.Models.Authorizations;
 using Ahsoka.Application.Dto.Administrations.Configurations.Responses;
+using Ahsoka.Application.Dto.Common.Responses;
 using Ahsoka.Domain.Entities.Admin.Configurations;
 using Ahsoka.Domain.Entities.Admin.Configurations.Repository;
 using Mapster;
@@ -13,18 +13,19 @@ using _dto = Ahsoka.Application.Dto.Administrations.Configurations.Requests;
 
 namespace Ahsoka.Application.Administrations.Configurations.Commands.RegisterConfiguration;
 public record RegisterConfigurationCommand(_dto.BaseConfiguration BaseConfiguration)
-    : BaseConfiguration(BaseConfiguration), IRequest<ConfigurationOutput?>;
+    : BaseConfiguration(BaseConfiguration), IRequest<ApplicationResult<ConfigurationOutput>>;
 
 public class RegisterConfigurationCommandHandler(ICommandsConfigurationRepository repository,
     IUnitOfWork unitOfWork,
-    Notifier notifier,
     IConfigurationServices configurationServices,
-    ICurrentUserService userService) : IRequestHandler<RegisterConfigurationCommand, ConfigurationOutput?>
+    ICurrentUserService userService) : IRequestHandler<RegisterConfigurationCommand, ApplicationResult<ConfigurationOutput>>
 {
     [Transaction]
     [Log]
-    public async Task<ConfigurationOutput?> Handle(RegisterConfigurationCommand request, CancellationToken cancellationToken)
+    public async Task<ApplicationResult<ConfigurationOutput>> Handle(RegisterConfigurationCommand request, CancellationToken cancellationToken)
     {
+        var response = ApplicationResult<ConfigurationOutput>.Success();
+
         var (result, config) = Configuration.New(request.Name,
             request.Value,
             request.Description,
@@ -34,15 +35,15 @@ public class RegisterConfigurationCommandHandler(ICommandsConfigurationRepositor
 
         if (result.IsFailure || config is null)
         {
-            HandleConfigurationResult.HandleResultConfiguration(result, notifier);
-            return null;
+            HandleConfigurationResult.HandleResultConfiguration(result, response);
+            return response;
         }
 
-        await configurationServices.Handle(config!, cancellationToken);
+        response = await configurationServices.Handle(config!, cancellationToken);
 
-        if (notifier.Errors.Count > 0)
+        if (response.IsFailure)
         {
-            return null;
+            return response;
         }
 
         await repository.InsertAsync(config!, cancellationToken);

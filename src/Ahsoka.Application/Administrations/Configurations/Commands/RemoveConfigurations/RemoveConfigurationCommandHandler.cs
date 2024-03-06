@@ -1,48 +1,48 @@
 ﻿using Ahsoka.Application.Administrations.Configurations.Errors;
 using Ahsoka.Application.Common.Attributes;
 using Ahsoka.Application.Common.Interfaces;
-using Ahsoka.Application.Common.Models;
+using Ahsoka.Application.Dto.Common.Responses;
 using Ahsoka.Domain.Entities.Admin.Configurations;
 using Ahsoka.Domain.Entities.Admin.Configurations.Repository;
 using MediatR;
 
 namespace Ahsoka.Application.Administrations.Configurations.Commands.RemoveConfiguration;
 
-public record RemoveConfigurationCommand(ConfigurationId Id) : IRequest;
+public record RemoveConfigurationCommand(ConfigurationId Id) : IRequest<ApplicationResult<object>>;
 
 public class RemoveConfigurationCommandHandler(ICommandsConfigurationRepository repository,
-    IUnitOfWork unitOfWork,
-    Notifier notifier) : IRequestHandler<RemoveConfigurationCommand>
+    IUnitOfWork unitOfWork) : IRequestHandler<RemoveConfigurationCommand, ApplicationResult<object>>
 {
     private readonly ICommandsConfigurationRepository _repository = repository;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
-    private readonly Notifier _notifier = notifier;
-
 
     [Transaction]
     [Log]
-    public async Task Handle(RemoveConfigurationCommand request, CancellationToken cancellationToken)
+    public async Task<ApplicationResult<object>> Handle(RemoveConfigurationCommand request, CancellationToken cancellationToken)
     {
+        var response = ApplicationResult<object>.Success();
+
         var entity = await _repository.GetByIdAsync(request.Id, cancellationToken);
 
         if (entity is null)
         {
-            _notifier.Warnings.Add(Dto.Common.ApplicationsErrors.Errors.ConfigurationNotFound());
-            return;
+            response.AddWarnings(Dto.Common.ApplicationsErrors.Errors.ConfigurationNotFound());
+            return response;
         }
 
         var result = entity.Delete();
 
-        HandleConfigurationResult.HandleResultConfiguration(result, _notifier);
+        HandleConfigurationResult.HandleResultConfiguration(result, response);
 
-        if (_notifier.Errors.Count > 0)
+        if (response.IsFailure)
         {
-            return;
+            return response;
         }
 
         await _repository.UpdateAsync(entity, cancellationToken);
 
         await _unitOfWork.CommitAsync(cancellationToken);
+        return response;
     }
 }
 

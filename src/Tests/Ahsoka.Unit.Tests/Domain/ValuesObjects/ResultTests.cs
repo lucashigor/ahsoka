@@ -10,7 +10,7 @@ public class ResultTests
         // Arrange
 
         // Act
-        var result = Result.Success();
+        var result = DomainResult.Success();
 
         // Assert
         Assert.True(result.IsSuccess);
@@ -24,12 +24,12 @@ public class ResultTests
         // Arrange
         var warnings = new List<Notification>
         {
-            new Notification("FieldName1", "Warning Message 1", DomainErrorCode.Validation),
-            new Notification("FieldName2", "Warning Message 2", DomainErrorCode.Validation)
+            new ("FieldName1", "Warning Message 1", DomainErrorCode.Validation),
+            new ("FieldName2", "Warning Message 2", DomainErrorCode.Validation)
         };
 
         // Act
-        var result = Result.Success(warnings);
+        var result = DomainResult.Success(warnings);
 
         // Assert
         Assert.True(result.IsSuccess);
@@ -43,16 +43,16 @@ public class ResultTests
         // Arrange
         var errors = new List<Notification>
         {
-            new Notification("FieldName1", "Error Message 1", DomainErrorCode.Validation),
-            new Notification("FieldName2", "Error Message 2", DomainErrorCode.Validation)
+            new ("FieldName1", "Error Message 1", DomainErrorCode.Validation),
+            new ("FieldName2", "Error Message 2", DomainErrorCode.Validation)
         };
         var warnings = new List<Notification>
         {
-            new Notification("FieldName3", "Warning Message 1", DomainErrorCode.Validation)
+            new ("FieldName3", "Warning Message 1", DomainErrorCode.Validation)
         };
 
         // Act
-        var result = Result.Failure(errors, warnings);
+        var result = DomainResult.Failure(errors, warnings);
 
         // Assert
         Assert.False(result.IsSuccess);
@@ -66,12 +66,12 @@ public class ResultTests
         // Arrange
         var errors = new List<Notification>
         {
-            new Notification("FieldName1", "Error Message 1", DomainErrorCode.Validation),
-            new Notification("FieldName2", "Error Message 2", DomainErrorCode.Validation)
+            new ("FieldName1", "Error Message 1", DomainErrorCode.Validation),
+            new ("FieldName2", "Error Message 2", DomainErrorCode.Validation)
         };
 
         // Act
-        var result = Result.Failure(errors);
+        var result = DomainResult.Failure(errors);
 
         // Assert
         Assert.False(result.IsSuccess);

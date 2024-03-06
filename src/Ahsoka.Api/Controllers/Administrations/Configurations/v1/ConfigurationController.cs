@@ -3,7 +3,6 @@ using Ahsoka.Application.Administrations.Configurations.Commands.ModifyConfigura
 using Ahsoka.Application.Administrations.Configurations.Commands.RegisterConfiguration;
 using Ahsoka.Application.Administrations.Configurations.Commands.RemoveConfiguration;
 using Ahsoka.Application.Administrations.Configurations.Queries;
-using Ahsoka.Application.Common.Models;
 using Ahsoka.Application.Dto.Administrations.Configurations.Requests;
 using Ahsoka.Application.Dto.Administrations.Configurations.Responses;
 using Ahsoka.Application.Dto.Common.Requests;
@@ -23,7 +22,7 @@ namespace Ahsoka.Api.Controllers.Administrations.Configurations.v1;
 [Route("v{version:apiVersion}/[controller]")]
 [Produces(MediaTypeNames.Application.Json)]
 [Consumes(MediaTypeNames.Application.Json)]
-public class ConfigurationsController(Notifier notifier, IMediator mediator) : BaseController(notifier)
+public class ConfigurationsController(IMediator mediator) : BaseController
 {
     private readonly IMediator _mediator = mediator;
 
@@ -65,16 +64,16 @@ public class ConfigurationsController(Notifier notifier, IMediator mediator) : B
             return Results.UnprocessableEntity();
         }
 
-        CheckIdIfIdIsNull(id);
+        var output = CheckIdIfIdIsNull<ConfigurationOutput>(id);
 
-        if (notifier.Errors.Any())
+        if (output.IsFailure)
         {
-            return Result<ConfigurationOutput>(null!);
+            return Result(output);
         }
 
         var command = new ModifyConfigurationCommand(id, request);
 
-        var output = await _mediator.Send(command, cancellationToken);
+        output = await _mediator.Send(command, cancellationToken);
 
         return Result(output);
     }
@@ -90,16 +89,16 @@ public class ConfigurationsController(Notifier notifier, IMediator mediator) : B
         CancellationToken cancellationToken
     )
     {
-        CheckIdIfIdIsNull(id);
+        var output = CheckIdIfIdIsNull<ConfigurationOutput>(id);
 
-        if (notifier.Errors.Any())
+        if (output.IsFailure)
         {
-            return Result<ConfigurationOutput>(null!);
+            return Result(output);
         }
 
         var command = new ChangeConfigurationCommand(id, request);
 
-        var output = await _mediator.Send(command, cancellationToken);
+        output = await _mediator.Send(command, cancellationToken);
 
         return Result(output);
     }
@@ -114,16 +113,16 @@ public class ConfigurationsController(Notifier notifier, IMediator mediator) : B
         CancellationToken cancellationToken
     )
     {
-        CheckIdIfIdIsNull(id);
+        var output = CheckIdIfIdIsNull<object>(id);
 
-        if (notifier.Errors.Any())
+        if (output.IsFailure)
         {
-            return Result<ConfigurationOutput>(null!);
+            return Result(output);
         }
 
-        await _mediator.Send(new RemoveConfigurationCommand(id), cancellationToken);
+        output = await _mediator.Send(new RemoveConfigurationCommand(id), cancellationToken);
 
-        return Result<object>();
+        return Result(output);
     }
 
     [HttpGet("{id:guid}")]
@@ -135,14 +134,14 @@ public class ConfigurationsController(Notifier notifier, IMediator mediator) : B
         CancellationToken cancellationToken
     )
     {
-        CheckIdIfIdIsNull(id);
+        var output = CheckIdIfIdIsNull<ConfigurationOutput>(id);
 
-        if (notifier.Errors.Any())
+        if (output.IsFailure)
         {
-            return Result<ConfigurationOutput>(null!);
+            return Result(output);
         }
 
-        var output = await _mediator.Send(new GetConfigurationByIdQuery(id), cancellationToken);
+        output = await _mediator.Send(new GetConfigurationByIdQuery(id), cancellationToken);
 
         return Result(output);
     }
@@ -168,6 +167,7 @@ public class ConfigurationsController(Notifier notifier, IMediator mediator) : B
             );
 
         var output = await _mediator.Send(input, cancellationToken);
-        return Result(output);
+
+        return Results.Ok(output);
     }
 }

@@ -1,6 +1,8 @@
 ﻿using Ahsoka.Application.Common.Attributes;
+using Ahsoka.Application.Dto.Common.Responses;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 using System.Reflection;
 using System.Text;
 
@@ -33,15 +35,74 @@ public class LoggingPipelineBehavior<TRequest, TResponse> : IPipelineBehavior<TR
             return await next();
         }
 
+        var sw = new Stopwatch();
+        sw.Start();
+
+        var response = await next();
+
+        sw.Stop();
+
+        LogResponse(response, sw);
+
+        LogRequest(request, sw);
+
+        return response;
+    }
+
+    private void LogRequest(TRequest request, Stopwatch sw)
+    {
+        StringBuilder messageRequest;
+        object?[] valuesRequest;
+
+        GetMessageToLog(request, "request", out messageRequest, out valuesRequest);
+
+        var parameters = new object[] { typeof(TRequest).FullName! }
+            .Concat(valuesRequest.Where(x => x is not null).ToArray())
+            .Concat(new object[] { sw.ElapsedMilliseconds })
+            .ToArray();
+
+        messageRequest.Append(" ProcessTime - {ProcessTime}");
+
+        _logger.LogInformation(messageRequest.ToString(), parameters);
+    }
+
+    private void LogResponse(TResponse? response, Stopwatch sw)
+    {
+        if (response is ApplicationResult<object>)
+        {
+            var ret = response as ApplicationResult<object>;
+
+            if (ret != null)
+            {
+                ret.SetData(null!);
+
+                StringBuilder messageResponse;
+                object?[] valuesResponse;
+
+                GetMessageToLog(ret, "response", out messageResponse, out valuesResponse);
+
+                var parameters = new object[] { typeof(TRequest).FullName! }
+                    .Concat(valuesResponse.Where(x => x is not null).ToArray())
+                    .Concat(new object[] { sw.ElapsedMilliseconds })
+                    .ToArray();
+
+                messageResponse.Append(" ProcessTime - {ProcessTime}");
+
+                _logger.LogInformation(messageResponse.ToString(), parameters);
+            }
+        }
+    }
+
+    private void GetMessageToLog(object request, string messageType,  out StringBuilder message, out object?[] values)
+    {
         var requestType = request.GetType();
         var properties = requestType.GetProperties();
 
-        StringBuilder message = new();
-        message.Append("Command - {RequestType} props:");
+        message = new();
+        message.Append(messageType);
+        message.Append("Command - {command} props:");
 
-
-        var values = new object?[properties.Length];
-
+        values = new object?[properties.Length];
         for (int i = 0; i < properties.Length; i++)
         {
             var propertyName = properties[i].Name;
@@ -49,19 +110,11 @@ public class LoggingPipelineBehavior<TRequest, TResponse> : IPipelineBehavior<TR
 
             if (!IsSensitive(properties[i]))
             {
-                values[i] = propertyValue;
+                values[i] = propertyValue ?? "";
 
                 message.Append(" " + propertyName + " - {" + propertyName + "}");
             }
         }
-
-        var response = await next();
-
-        var parameters = new object[] { typeof(TRequest).FullName! }.Concat(values.Where(x => x is not null).ToArray()).ToArray();
-
-        _logger.LogInformation(message.ToString(), parameters);
-
-        return response;
     }
 
     private bool IsSensitive(PropertyInfo property)

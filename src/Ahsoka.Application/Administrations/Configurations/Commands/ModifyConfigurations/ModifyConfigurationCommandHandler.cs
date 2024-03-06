@@ -1,9 +1,10 @@
 ﻿using Ahsoka.Application.Administrations.Configurations.Errors;
 using Ahsoka.Application.Administrations.Configurations.Services;
+using Ahsoka.Application.Common.Attributes;
 using Ahsoka.Application.Common.Extensions;
 using Ahsoka.Application.Common.Interfaces;
-using Ahsoka.Application.Common.Models;
 using Ahsoka.Application.Dto.Administrations.Configurations.Responses;
+using Ahsoka.Application.Dto.Common.Responses;
 using Ahsoka.Domain.Entities.Admin.Configurations;
 using Ahsoka.Domain.Entities.Admin.Configurations.Repository;
 using Mapster;
@@ -14,38 +15,39 @@ using Microsoft.AspNetCore.JsonPatch.Operations;
 namespace Ahsoka.Application.Administrations.Configurations.Commands.ModifyConfiguration;
 
 public record ModifyConfigurationCommand(ConfigurationId Id,
-    JsonPatchDocument<Dto.Administrations.Configurations.Requests.BaseConfiguration> PatchDocument) : IRequest<ConfigurationOutput?>;
+    JsonPatchDocument<Dto.Administrations.Configurations.Requests.BaseConfiguration> PatchDocument) : IRequest<ApplicationResult<ConfigurationOutput>>;
 
 public class ModifyConfigurationCommandHandler(ICommandsConfigurationRepository repository,
     IUnitOfWork unitOfWork,
-    Notifier _notifier,
-    IConfigurationServices configurationServices) : IRequestHandler<ModifyConfigurationCommand, ConfigurationOutput?>
+    IConfigurationServices configurationServices) : IRequestHandler<ModifyConfigurationCommand, ApplicationResult<ConfigurationOutput>>
 {
-    public async Task<ConfigurationOutput?> Handle(ModifyConfigurationCommand request, CancellationToken cancellationToken)
+    [Transaction]
+    [Log]
+    public async Task<ApplicationResult<ConfigurationOutput>> Handle(ModifyConfigurationCommand request, CancellationToken cancellationToken)
     {
-        try
-        {
+        var response = ApplicationResult<ConfigurationOutput>.Success();
+
+        response.AddErrors(
             request.PatchDocument.Validate(
-                   OperationType.Replace,
-                   [ $"/{nameof(Configuration.Name)}",
-                    $"/{nameof(Configuration.Value)}",
-                    $"/{nameof(Configuration.Description)}",
-                    $"/{nameof(Configuration.StartDate)}",
-                    $"/{nameof(Configuration.ExpireDate)}" ]
-                   );
-        }
-        catch
+               OperationType.Replace,
+               [$"/{nameof(Configuration.Name)}",
+                   $"/{nameof(Configuration.Value)}",
+                   $"/{nameof(Configuration.Description)}",
+                   $"/{nameof(Configuration.StartDate)}",
+                   $"/{nameof(Configuration.ExpireDate)}"]
+               ));
+
+        if (response.IsFailure)
         {
-            _notifier.Errors.Add(Dto.Common.ApplicationsErrors.Errors.InvalidOperationOnPatch());
-            return null!;
+            return response;
         }
 
         var entity = await repository.GetByIdAsync(request.Id, cancellationToken);
 
         if (entity == null)
         {
-            _notifier.Errors.Add(Dto.Common.ApplicationsErrors.Errors.ConfigurationNotFound());
-            return null!;
+            response.AddError(Dto.Common.ApplicationsErrors.Errors.ConfigurationNotFound());
+            return response;
         }
 
         var oldItem = new Dto.Administrations.Configurations.Requests.BaseConfiguration(
@@ -66,15 +68,15 @@ public class ModifyConfigurationCommandHandler(ICommandsConfigurationRepository 
 
         if (result.IsFailure)
         {
-            HandleConfigurationResult.HandleResultConfiguration(result, _notifier);
-            return null;
+            HandleConfigurationResult.HandleResultConfiguration(result, response);
+            return response;
         }
 
         await configurationServices.Handle(entity, cancellationToken);
 
-        if (_notifier.Errors.Count > 0)
+        if (response.IsFailure)
         {
-            return null;
+            return response;
         }
 
         await repository.UpdateAsync(entity, cancellationToken);

@@ -9,7 +9,5 @@ public sealed partial record DomainErrorCode
     }
     public override string ToString() => Value.ToString();
 
-    //public static implicit operator DomainErrorCode(Guid value) => new(value);
-
     public static implicit operator int(DomainErrorCode id) => id.Value;
 }

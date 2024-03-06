@@ -30,7 +30,8 @@ public sealed record DefaultResponse<T> where T : class
     { }
 
     public T? Data { get; set; }
-    public string TraceId { get; set; }
-    public List<ErrorModel> Errors { get; set; }
-    public List<ErrorModel> Warnings { get; set; }
+    public string TraceId { get; set; } = string.Empty;
+    public List<ErrorModel> Errors { get; set; } = [];
+    public List<ErrorModel> Warnings { get; set; } = [];
+    public List<ErrorModel> Infos { get; set; } = [];
 }

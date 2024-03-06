@@ -1,9 +1,12 @@
 ﻿// Ignore Spelling: Upsert
 
+using Ahsoka.Domain.Common;
 using Ahsoka.Domain.Entities.Admin.Configurations;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.EntityFrameworkCore.Metadata;
+using System.Linq.Expressions;
 using System.Reflection;
 
 namespace Ahsoka.Infrastructure.Repositories.Context;
@@ -38,6 +41,20 @@ public partial class PrincipalContext(DbContextOptions<PrincipalContext> options
                 .ForEach(p => p.SetMaxLength(255));
         }
 
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        {
+            if (typeof(ISoftDeletableEntity).IsAssignableFrom(entityType.ClrType))
+            {
+                modelBuilder.Entity(entityType.ClrType)
+                    .Property<bool>(nameof(ISoftDeletableEntity.IsDeleted))
+                    .HasDefaultValue(false);
+                entityType.AddSoftDeleteQueryFilter();
+            }
+        }
+
+        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+
+
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
         modelBuilder.AddInboxStateEntity();
@@ -60,5 +77,25 @@ public partial class PrincipalContext(DbContextOptions<PrincipalContext> options
                 Set<T>().Add(entity);
             }
         }
+    }
+}
+
+public static class GlobalQueryExtensions
+{
+    public static void AddSoftDeleteQueryFilter(this IMutableEntityType entityType)
+    {
+        var method = typeof(GlobalQueryExtensions)
+            .GetMethod(nameof(GetSoftDeleteFilter), BindingFlags.NonPublic | BindingFlags.Static)
+            .MakeGenericMethod(entityType.ClrType);
+        var filter = method.Invoke(null, Array.Empty<object>());
+        entityType.SetQueryFilter((LambdaExpression)filter);
+        entityType.AddIndex(entityType.FindProperty(nameof(ISoftDeletableEntity.IsDeleted)));
+    }
+
+    private static LambdaExpression GetSoftDeleteFilter<TEntity>()
+        where TEntity : class, ISoftDeletableEntity
+    {
+        Expression<Func<TEntity, bool>> filter = x => !x.IsDeleted;
+        return filter;
     }
 }

@@ -31,7 +31,7 @@ public static class MessagingExtension
             x.SetKebabCaseEndpointNameFormatter();
             x.AddEntityFrameworkOutbox<PrincipalContext>(o =>
             {
-                o.QueryDelay = TimeSpan.FromMilliseconds(200);
+                o.QueryDelay = TimeSpan.FromSeconds(200);
 
                 o.UsePostgres().UseBusOutbox();
             });

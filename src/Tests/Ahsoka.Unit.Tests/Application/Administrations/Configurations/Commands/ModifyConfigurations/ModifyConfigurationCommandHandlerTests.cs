@@ -18,7 +18,6 @@ namespace Ahsoka.Unit.Tests.Application.Administrations.Configurations.Commands.
 public class ModifyConfigurationCommandHandlerTests
 {
     private readonly ICommandsConfigurationRepository _configurationRepository;
-    private readonly Notifier _notifier;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IConfigurationServices _configurationServices;
     private readonly ConfigurationTestFixture _fixture;
@@ -28,7 +27,6 @@ public class ModifyConfigurationCommandHandlerTests
         _configurationRepository = Substitute.For<ICommandsConfigurationRepository>();
         _unitOfWork = Substitute.For<IUnitOfWork>();
         _configurationServices = Substitute.For<IConfigurationServices>();
-        _notifier = new Notifier();
         _fixture = fixture;
     }
 
@@ -57,7 +55,7 @@ public class ModifyConfigurationCommandHandlerTests
         var entity = new ModifyConfigurationCommand(config.Id, configurationPatch);
 
         //Act
-        await app.Handle(entity, CancellationToken.None);
+        var _notifier = await app.Handle(entity, CancellationToken.None);
 
         //Assert
         _notifier.Errors.Should().BeEmpty();
@@ -83,7 +81,7 @@ public class ModifyConfigurationCommandHandlerTests
 
         var command = GetCommand(config.Id, newName);
 
-        await app.Handle(command, CancellationToken.None);
+        var _notifier = await app.Handle(command, CancellationToken.None);
 
         _notifier.Errors.Should().NotBeEmpty();
         _notifier.Errors.Should().Contain(x => x.Code == ConfigurationErrorCodes.NotFound);
@@ -106,7 +104,7 @@ public class ModifyConfigurationCommandHandlerTests
 
         var command = GetCommand(config.Id, "");
 
-        await app.Handle(command, CancellationToken.None);
+        var _notifier = await app.Handle(command, CancellationToken.None);
 
         _notifier.Errors.Should().NotBeEmpty();
         _notifier.Errors.Should().Contain(x => x.Code == ConfigurationErrorCodes.ConfigurationsValidation);
@@ -126,6 +124,5 @@ public class ModifyConfigurationCommandHandlerTests
     private ModifyConfigurationCommandHandler GetApp()
         => new(_configurationRepository,
                 _unitOfWork,
-                _notifier,
                 _configurationServices);
 }

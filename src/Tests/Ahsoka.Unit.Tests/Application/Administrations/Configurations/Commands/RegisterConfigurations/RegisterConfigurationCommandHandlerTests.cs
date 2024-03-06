@@ -3,7 +3,8 @@
 using Ahsoka.Application.Administrations.Configurations.Commands.RegisterConfiguration;
 using Ahsoka.Application.Administrations.Configurations.Services;
 using Ahsoka.Application.Common.Interfaces;
-using Ahsoka.Application.Common.Models;
+using Ahsoka.Application.Dto.Administrations.Configurations.Responses;
+using Ahsoka.Application.Dto.Common.Responses;
 using Ahsoka.Domain.Entities.Admin.Configurations;
 using Ahsoka.Domain.Entities.Admin.Configurations.Repository;
 using Ahsoka.TestsUtil;
@@ -17,7 +18,6 @@ using Xunit;
 public class RegisterConfigurationCommandHandlerTests(ConfigurationTestFixture fixture)
 {
     private readonly ICommandsConfigurationRepository _configurationRepository = Substitute.For<ICommandsConfigurationRepository>();
-    private readonly Notifier _notifier = new();
     private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
     private readonly IConfigurationServices _configurationServices = Substitute.For<IConfigurationServices>();
     private readonly ConfigurationTestFixture _fixture = fixture;
@@ -30,7 +30,10 @@ public class RegisterConfigurationCommandHandlerTests(ConfigurationTestFixture f
 
         var command = GetCommand(null);
 
-        await app.Handle(command, CancellationToken.None);
+        _configurationServices.Handle(Arg.Any<Configuration>(),
+            Arg.Any<CancellationToken>()).Returns(ApplicationResult<ConfigurationOutput>.Success());
+
+        var _notifier = await app.Handle(command, CancellationToken.None);
 
         _notifier.Errors.Should().BeEmpty();
         await _configurationServices.Received(1).Handle(Arg.Any<Configuration>(), Arg.Any<CancellationToken>());
@@ -46,7 +49,7 @@ public class RegisterConfigurationCommandHandlerTests(ConfigurationTestFixture f
 
         var command = GetCommand("");
 
-        await app.Handle(command, CancellationToken.None);
+        var _notifier = await app.Handle(command, CancellationToken.None);
 
         _notifier.Errors.Should().NotBeEmpty();
         await _configurationServices.Received(0).Handle(Arg.Any<Configuration>(), Arg.Any<CancellationToken>());
@@ -60,7 +63,6 @@ public class RegisterConfigurationCommandHandlerTests(ConfigurationTestFixture f
     private RegisterConfigurationCommandHandler GetApp()
         => new(_configurationRepository,
                 _unitOfWork,
-                _notifier,
                 _configurationServices,
                 GeneralFixture.GetUserService());
 }

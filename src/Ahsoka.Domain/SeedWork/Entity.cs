@@ -8,8 +8,10 @@ public abstract class Entity<TEntityId> where TEntityId : IEquatable<TEntityId>
 {
     public TEntityId Id { get; init; }
     protected readonly ICollection<Notification> _notifications;
+
     protected IReadOnlyCollection<Notification> Notifications => _notifications.ToImmutableArray();
     protected readonly ICollection<Notification> _warnings;
+    
     protected IReadOnlyCollection<Notification> Warnings => _warnings.ToImmutableArray();
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -20,16 +22,16 @@ public abstract class Entity<TEntityId> where TEntityId : IEquatable<TEntityId>
         _warnings = new HashSet<Notification>();
     }
 
-    protected virtual Result Validate()
+    protected virtual DomainResult Validate()
     {
         AddNotification(Id!.NotNull());
 
         if (Notifications.Count != 0)
         {
-            return Result.Failure(_notifications);
+            return DomainResult.Failure(errors: _notifications);
         }
 
-        return Result.Success(_warnings);
+        return DomainResult.Success(warnings: _warnings);
     }
 
     protected void AddNotification(Notification? notification)

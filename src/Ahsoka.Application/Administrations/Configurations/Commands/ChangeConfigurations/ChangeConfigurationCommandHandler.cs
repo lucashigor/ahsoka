@@ -4,6 +4,7 @@ using Ahsoka.Application.Common.Attributes;
 using Ahsoka.Application.Common.Interfaces;
 using Ahsoka.Application.Common.Models;
 using Ahsoka.Application.Dto.Administrations.Configurations.Responses;
+using Ahsoka.Application.Dto.Common.Responses;
 using Ahsoka.Domain.Entities.Admin.Configurations;
 using Ahsoka.Domain.Entities.Admin.Configurations.Repository;
 using Mapster;
@@ -13,23 +14,24 @@ using _dto = Ahsoka.Application.Dto.Administrations.Configurations.Requests;
 namespace Ahsoka.Application.Administrations.Configurations.Commands.ChangeConfiguration;
 
 public record ChangeConfigurationCommand(ConfigurationId Id, _dto.BaseConfiguration BaseConfiguration)
-    : BaseConfiguration(BaseConfiguration), IRequest<ConfigurationOutput?>;
+    : BaseConfiguration(BaseConfiguration), IRequest<ApplicationResult<ConfigurationOutput>>;
 
 public class ChangeConfigurationCommandHandler(ICommandsConfigurationRepository repository,
     IUnitOfWork unitOfWork,
-    Notifier _notifier,
-    IConfigurationServices configurationServices) : IRequestHandler<ChangeConfigurationCommand, ConfigurationOutput?>
+    IConfigurationServices configurationServices) : IRequestHandler<ChangeConfigurationCommand, ApplicationResult<ConfigurationOutput>>
 {
     [Transaction]
     [Log]
-    public async Task<ConfigurationOutput?> Handle(ChangeConfigurationCommand request, CancellationToken cancellationToken)
+    public async Task<ApplicationResult<ConfigurationOutput>> Handle(ChangeConfigurationCommand request, CancellationToken cancellationToken)
     {
+        var response = ApplicationResult<ConfigurationOutput>.Success();
+
         var entity = await repository.GetByIdAsync(request.Id, cancellationToken);
 
         if (entity is null)
         {
-            _notifier.Errors.Add(Dto.Common.ApplicationsErrors.Errors.ConfigurationNotFound());
-            return null;
+            response.AddError(Dto.Common.ApplicationsErrors.Errors.ConfigurationNotFound());
+            return response;
         }
 
         var result = entity.Update(request.Name,
@@ -40,15 +42,15 @@ public class ChangeConfigurationCommandHandler(ICommandsConfigurationRepository 
 
         if (result.IsFailure)
         {
-            HandleConfigurationResult.HandleResultConfiguration(result, _notifier);
-            return null;
+            HandleConfigurationResult.HandleResultConfiguration(result, response);
+            return response;
         }
 
         await configurationServices.Handle(entity, cancellationToken);
 
-        if (_notifier.Errors.Count > 0)
+        if (response.IsFailure)
         {
-            return null;
+            return response;
         }
 
         await repository.UpdateAsync(entity, cancellationToken);

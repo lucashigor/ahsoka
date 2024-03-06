@@ -1,10 +1,8 @@
 ﻿using Ahsoka.Application.Administrations.Configurations.Commands.RemoveConfiguration;
 using Ahsoka.Application.Common.Interfaces;
-using Ahsoka.Application.Common.Models;
 using Ahsoka.Application.Dto.Administrations.Configurations.ApplicationsErrors;
 using Ahsoka.Domain.Entities.Admin.Configurations;
 using Ahsoka.Domain.Entities.Admin.Configurations.Repository;
-using Ahsoka.TestsUtil;
 using Ahsoka.Unit.Tests.Domain.Entities.Admin.Configurations;
 using FluentAssertions;
 using NSubstitute;
@@ -14,14 +12,12 @@ namespace Ahsoka.Unit.Tests.Application.Administrations.Configurations.Commands.
 public class RemoveConfigurationCommandHandlerTests
 {
     private readonly ICommandsConfigurationRepository _configurationRepository;
-    private readonly Notifier _notifier;
     private readonly IUnitOfWork _unitOfWork;
 
     public RemoveConfigurationCommandHandlerTests(ConfigurationTestFixture fixture)
     {
         _configurationRepository = Substitute.For<ICommandsConfigurationRepository>();
         _unitOfWork = Substitute.For<IUnitOfWork>();
-        _notifier = new Notifier();
     }
 
     [Fact(DisplayName = nameof(HandleRemoveConfigurationCommandHandler_NotFoundAsync))]
@@ -32,7 +28,7 @@ public class RemoveConfigurationCommandHandlerTests
 
         var command = GetCommand(Guid.NewGuid());
 
-        await app.Handle(command, CancellationToken.None);
+        var _notifier = await app.Handle(command, CancellationToken.None);
 
         _notifier.Warnings.Should().NotBeEmpty();
         _notifier.Warnings.Should().Contain(x => x.Code == ConfigurationErrorCodes.NotFound);
@@ -45,6 +41,5 @@ public class RemoveConfigurationCommandHandlerTests
 
     private RemoveConfigurationCommandHandler GetApp()
         => new(_configurationRepository,
-                _unitOfWork,
-                _notifier);
+                _unitOfWork);
 }

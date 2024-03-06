@@ -4,16 +4,11 @@ using Ahsoka.Application.Dto.Common.ApplicationsErrors;
 using Ahsoka.Application.Dto.Common.ApplicationsErrors.Models;
 using FluentValidation;
 using MediatR;
-using ValidationException = Exceptions.ValidationException;
 
-public class RequestValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>
+public class RequestValidationBehavior<TRequest, TResponse>(IEnumerable<IValidator<TRequest>> validators) 
+    : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>
 {
-    private readonly IEnumerable<IValidator<TRequest>> _validators;
-
-    public RequestValidationBehavior(IEnumerable<IValidator<TRequest>> validators)
-    {
-        _validators = validators;
-    }
+    private readonly IEnumerable<IValidator<TRequest>> _validators = validators;
 
     public Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
@@ -32,6 +27,6 @@ public class RequestValidationBehavior<TRequest, TResponse> : IPipelineBehavior<
                 new ErrorModel(Errors.Validation().Code, validationFailure.ErrorMessage))
             .ToList();
 
-        throw new ValidationException(errors);
+        throw new Exceptions.ValidationException(errors);
     }
 }

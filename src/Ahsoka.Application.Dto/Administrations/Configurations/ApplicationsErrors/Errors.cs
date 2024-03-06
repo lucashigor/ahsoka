@@ -34,9 +34,9 @@ namespace Ahsoka.Application.Dto.Common.ApplicationsErrors
         public static ErrorModel ErrorOnSavingNewConfiguration() => new(ConfigurationErrorCodes.ErrorOnSavingNewConfiguration, "Unfortunately an error occurred when saving the Configuration.");
         public static ErrorModel ThereWillCurrentConfigurationStartDate() => new(ConfigurationErrorCodes.ThereWillCurrentConfigurationStartDate, "There will be a current configuration on the start date.");
         public static ErrorModel ThereWillCurrentConfigurationEndDate() => new(ConfigurationErrorCodes.ThereWillCurrentConfigurationEndDate, "There will be a current configuration on the end date.");
-        public static ErrorModel StartDateCannotBeBeforeToUtcNow() => new(ConfigurationErrorCodes.StartDateCannotBeBeforeUtcNow, "The start date cannot be before utc now.");
+        public static ErrorModel StartDateCannotBeBeforeToUtcNow() => new(ConfigurationErrorCodes.StartDateCannotBeBeforeUtcNow, "The start date cannot be before UTC now.");
         public static ErrorModel EndDateCannotBeBeforeToToday() => new(ConfigurationErrorCodes.EndDateCannotBeBeforeToToday, "The end date cannot be before today.");
-        public static ErrorModel OnlyDescriptionAreAvailableToChangedOnClosedConfiguration() => new(ConfigurationErrorCodes.OnlyDescriptionAreAvailableToChangedOnClosedConfiguration, "Only description are avaliable to be changed on closed configuration.");
+        public static ErrorModel OnlyDescriptionAreAvailableToChangedOnClosedConfiguration() => new(ConfigurationErrorCodes.OnlyDescriptionAreAvailableToChangedOnClosedConfiguration, "Only description are available to be changed on closed configuration.");
         public static ErrorModel ItsNotAllowedToChangeFinalDateToBeforeToday() => new(ConfigurationErrorCodes.ItsNotAllowedToChangeFinalDateToBeforeToday, "It's not allowed to change final date to before today.");
         public static ErrorModel ItsNotAllowedToChangeInitialDate() => new(ConfigurationErrorCodes.ItsNotAllowedToChangeInitialDate, "It's not allowed to change initial date on configurations in course.");
         public static ErrorModel ItsNotAllowedToChangeName() => new(ConfigurationErrorCodes.ItsNotAllowedToChangeName, "It's not allowed to change name on configurations in course.");
