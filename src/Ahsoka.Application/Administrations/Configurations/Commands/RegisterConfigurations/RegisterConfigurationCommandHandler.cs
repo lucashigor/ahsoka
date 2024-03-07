@@ -20,8 +20,6 @@ public class RegisterConfigurationCommandHandler(ICommandsConfigurationRepositor
     IConfigurationServices configurationServices,
     ICurrentUserService userService) : IRequestHandler<RegisterConfigurationCommand, ApplicationResult<ConfigurationOutput>>
 {
-    private readonly IConfigurationServices _configurationServices;
-
     [Transaction]
     [Log]
     public async Task<ApplicationResult<ConfigurationOutput>> Handle(RegisterConfigurationCommand request, CancellationToken cancellationToken)
@@ -41,7 +39,7 @@ public class RegisterConfigurationCommandHandler(ICommandsConfigurationRepositor
             return response;
         }
 
-        response = await _configurationServices.Handle(config!, cancellationToken);
+        response = await configurationServices.Handle(config!, cancellationToken);
 
         if (response.IsFailure)
         {
