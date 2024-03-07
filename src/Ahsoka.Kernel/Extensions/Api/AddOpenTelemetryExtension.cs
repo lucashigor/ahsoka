@@ -46,6 +46,9 @@ public static class AddOpenTelemetryExtension
         })
         .WithMetrics(metrics => metrics
             .AddAspNetCoreInstrumentation()
+            .AddHttpClientInstrumentation()
+            .AddRuntimeInstrumentation()
+            .AddProcessInstrumentation()
             .AddMeter("Microsoft.AspNetCore.Hosting")
             .AddMeter("Microsoft.AspNetCore.Server.Kestrel")
             .AddHealthChecksInstrumentation(options =>

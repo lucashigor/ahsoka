@@ -1,5 +1,6 @@
 ﻿using Ahsoka.Application.Common.Attributes;
 using Ahsoka.Application.Dto.Common.Responses;
+using Azure;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
@@ -42,21 +43,23 @@ public class LoggingPipelineBehavior<TRequest, TResponse> : IPipelineBehavior<TR
 
         sw.Stop();
 
-        LogResponse(response, sw);
+        LogInformation(request, "request", sw);
 
-        LogRequest(request, sw);
+        LogInformation(response, "response", sw);
 
         return response;
     }
 
-    private void LogRequest(TRequest request, Stopwatch sw)
+    private void LogInformation(object? request, string type, Stopwatch sw)
     {
+        if (request is null) { return; }
+
         StringBuilder messageRequest;
         object?[] valuesRequest;
 
-        GetMessageToLog(request, "request", out messageRequest, out valuesRequest);
+        GetMessageToLog(request, out messageRequest, out valuesRequest);
 
-        var parameters = new object[] { typeof(TRequest).FullName! }
+        var parameters = new object[] { type, typeof(TRequest).FullName! }
             .Concat(valuesRequest.Where(x => x is not null).ToArray())
             .Concat(new object[] { sw.ElapsedMilliseconds })
             .ToArray();
@@ -66,41 +69,13 @@ public class LoggingPipelineBehavior<TRequest, TResponse> : IPipelineBehavior<TR
         _logger.LogInformation(messageRequest.ToString(), parameters);
     }
 
-    private void LogResponse(TResponse? response, Stopwatch sw)
-    {
-        if (response is ApplicationResult<object>)
-        {
-            var ret = response as ApplicationResult<object>;
-
-            if (ret != null)
-            {
-                ret.SetData(null!);
-
-                StringBuilder messageResponse;
-                object?[] valuesResponse;
-
-                GetMessageToLog(ret, "response", out messageResponse, out valuesResponse);
-
-                var parameters = new object[] { typeof(TRequest).FullName! }
-                    .Concat(valuesResponse.Where(x => x is not null).ToArray())
-                    .Concat(new object[] { sw.ElapsedMilliseconds })
-                    .ToArray();
-
-                messageResponse.Append(" ProcessTime - {ProcessTime}");
-
-                _logger.LogInformation(messageResponse.ToString(), parameters);
-            }
-        }
-    }
-
-    private void GetMessageToLog(object request, string messageType,  out StringBuilder message, out object?[] values)
+    private void GetMessageToLog(object request, out StringBuilder message, out object?[] values)
     {
         var requestType = request.GetType();
         var properties = requestType.GetProperties();
 
         message = new();
-        message.Append(messageType);
-        message.Append("Command - {command} props:");
+        message.Append("Type - {type} Command - {command} props:");
 
         values = new object?[properties.Length];
         for (int i = 0; i < properties.Length; i++)

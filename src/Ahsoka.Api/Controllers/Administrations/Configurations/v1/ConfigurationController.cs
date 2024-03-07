@@ -41,9 +41,7 @@ public class ConfigurationsController(IMediator mediator) : BaseController
             return Results.UnprocessableEntity();
         }
 
-        var command = new RegisterConfigurationCommand(request);
-
-        var output = await _mediator.Send(command, cancellationToken);
+        var output = await _mediator.Send(new RegisterConfigurationCommand(request), cancellationToken);
 
         return Result(output);
     }
@@ -71,9 +69,7 @@ public class ConfigurationsController(IMediator mediator) : BaseController
             return Result(output);
         }
 
-        var command = new ModifyConfigurationCommand(id, request);
-
-        output = await _mediator.Send(command, cancellationToken);
+        output = await _mediator.Send(new ModifyConfigurationCommand(id, request), cancellationToken);
 
         return Result(output);
     }
@@ -96,9 +92,7 @@ public class ConfigurationsController(IMediator mediator) : BaseController
             return Result(output);
         }
 
-        var command = new ChangeConfigurationCommand(id, request);
-
-        output = await _mediator.Send(command, cancellationToken);
+        output = await _mediator.Send(new ChangeConfigurationCommand(id, request), cancellationToken);
 
         return Result(output);
     }
@@ -141,9 +135,9 @@ public class ConfigurationsController(IMediator mediator) : BaseController
             return Result(output);
         }
 
-        output = await _mediator.Send(new GetConfigurationByIdQuery(id), cancellationToken);
+        var config = await _mediator.Send(new GetConfigurationByIdQuery(id), cancellationToken);
 
-        return Result(output);
+        return Results.Ok(config);
     }
 
     [HttpGet]
@@ -158,15 +152,13 @@ public class ConfigurationsController(IMediator mediator) : BaseController
         [FromQuery] SearchOrder? dir = null
     )
     {
-        var input = new ListConfigurationsQuery(
+        var output = await _mediator.Send(new ListConfigurationsQuery(
             page ?? 0,
             perPage ?? 10,
             search,
             sort,
             dir ?? SearchOrder.Asc
-            );
-
-        var output = await _mediator.Send(input, cancellationToken);
+            ), cancellationToken);
 
         return Results.Ok(output);
     }
