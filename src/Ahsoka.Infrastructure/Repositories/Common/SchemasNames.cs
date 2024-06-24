@@ -2,5 +2,5 @@
 
 public struct SchemasNames
 {
-    public static readonly string ahsoka = "ahsoka";
+    public static readonly string ahsoka = "Andor";
 }
